@@ -1,9 +1,9 @@
 {-
 compile with -O
 
-real	0m1.020s
-user	0m1.020s
-sys	    0m0.000s
+real    0m1.020s
+user    0m1.020s
+sys     0m0.000s
 -}
 
 divSum :: Int -> Int

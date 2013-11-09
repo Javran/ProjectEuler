@@ -3,9 +3,9 @@ import Data.List
 {-
 compile with `-O`
 time:
-real	0m25.942s
-user	0m25.440s
-sys	    0m0.520s
+real    0m25.942s
+user    0m25.440s
+sys     0m0.520s
 -}
 
 -- return a list of divisors of x
