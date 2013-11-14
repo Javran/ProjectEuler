@@ -10,6 +10,4 @@ isTruncatable x = all isPrime $ possibleNumLeft ++ possibleNumRight
 
 main = do
     let searchSpace = dropWhile (<=7) primes
-
     print $ sum $ take 11 $ filter isTruncatable searchSpace
-    return ()
