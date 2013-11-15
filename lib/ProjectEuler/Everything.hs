@@ -1,0 +1,4 @@
+module ProjectEuler.Everything
+( 
+) where
+
