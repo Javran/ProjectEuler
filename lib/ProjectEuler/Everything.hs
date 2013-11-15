@@ -2,7 +2,9 @@ module ProjectEuler.Everything
 ( factorial
 , permuteTo
 , removeElement
+, allPermutation
 , digitToNum
+, arithmeticSequenceLength
 ) where
 
 factorial :: Int -> Int
@@ -22,6 +24,10 @@ permuteTo pid arr = h:(permuteTo subPid t)
         (h,t) = removeElement headInd arr
         subPid = pid `mod` subCycle
 
+-- gives you all permutation of xs
+allPermutation :: (Eq a) => [a] -> [[a]]
+allPermutation xs = map (flip permuteTo xs) $ take (factorial (length xs)) [0..]
+
 -- fetch and remove the n-th element from a list
 removeElement :: (Eq a) => Int -> [a] -> (a,[a])
 removeElement 0 (x:xs) = (x,xs)
@@ -31,3 +37,13 @@ removeElement n (x:xs) = (x1,x:xs1)
 
 digitToNum :: [Int] -> Int
 digitToNum = foldl (\acc i -> acc*10 + i) 0
+
+-- find the longest arithmetic sequence from begining
+arithmeticSequenceLength :: (Num a, Eq a) => [a] -> Int
+arithmeticSequenceLength xs =
+    case xs of
+        []     -> 0
+        (a:[]) -> 1
+        _      -> 1 + (length $ takeWhile (\x -> x == (head diff)) diff)
+            where
+                diff = zipWith (-) xs (tail xs)
