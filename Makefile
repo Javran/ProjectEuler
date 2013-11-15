@@ -7,4 +7,5 @@ clean:
 		\( -iname "*.hi" -or -iname "*.o" -or -executable \) \
 		-exec \
 			rm {} \;
-
+count:
+	ls -d problem-* | wc -l
