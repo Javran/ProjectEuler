@@ -41,7 +41,7 @@ main = do
     
     print $ maximumBy (compare `on` head) solutions
 {-
-compile with: ghc -O problem-38.hs
+compile with: ghc -O2 problem-38.hs
 real    0m1.169s
 user    0m1.163s
 sys     0m0.003s
