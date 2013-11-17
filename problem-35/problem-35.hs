@@ -4,9 +4,9 @@ import Data.List
 -- observe that 0,2,4,6,8 should not appear in a circular prime
 -- "2" is a special case
 searchSpace :: [Int]
-searchSpace = 2:(filter (not.hasEven) $ takeWhile (<1000000) primes)
+searchSpace = 2: filter (not.hasEven) (takeWhile (<1000000) primes)
     where
-        hasEven x = any (`elem` (show x)) "02468"
+        hasEven x = any (`elem` show x) "02468"
 
 circularNums :: Int -> [Int]
 circularNums n = take len $ iterate doCirNum n
@@ -24,5 +24,5 @@ findCirculars curSpace foundPrimes
         (hd:tl) = curSpaceValid
         cirH = circularNums hd
 
-main = do
+main =
     print $ length $ findCirculars searchSpace []

@@ -2,7 +2,7 @@ import Data.Char
 import Numeric
 
 checkPalind :: String -> Bool
-checkPalind x = x == (reverse x)
+checkPalind x = x == reverse x
 
 toBinString :: (Integral a, Show a) => a -> String
 toBinString x = showIntAtBase 2 intToDigit x ""

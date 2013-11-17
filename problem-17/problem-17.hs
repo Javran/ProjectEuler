@@ -32,7 +32,7 @@ numToLenxy x
 	| x > 99 = error "Unsupported"
 	| x <= 9 = digitToLen x -- case 1 to 9
 	| x <= 19 = numToLen1x x -- case 10 to 19
-	| otherwise = (numToLenx0 x) + (digitToLen lowDigit) -- case 20-99
+	| otherwise = numToLenx0 x + digitToLen lowDigit -- case 20-99
 	where highDigit = x `div` 10
 	      lowDigit = x `mod` 10
 
@@ -42,7 +42,7 @@ numToLen x
 	| x > 1000 = error "Unsupported"
 	| x == 1000 = length "onethousand"
 	| x < 100 = numToLenxy x
-	| otherwise = (digitToLen high1Digit) + length "hundred" + (if low2Digit == 0 then 0 else length "and") + (numToLenxy low2Digit)
+	| otherwise = digitToLen high1Digit + length "hundred" + (if low2Digit == 0 then 0 else length "and") + numToLenxy low2Digit
 	where high1Digit = x `div` 100
 	      low2Digit = x `mod` 100
 

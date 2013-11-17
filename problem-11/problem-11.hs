@@ -8,7 +8,7 @@ stringsToInts :: [String] -> [Int]
 stringsToInts = map read
 
 breakInto4 :: [Int] -> [[Int]]
-breakInto4 (a:b:c:d:xs) = filter ((/= 0) . length) $ [a,b,c,d] : (breakInto4 (b:c:d:xs)) 
+breakInto4 (a:b:c:d:xs) = filter ((/= 0) . length) $ [a,b,c,d] : breakInto4 (b:c:d:xs)
 breakInto4 xs = []
 
 
@@ -19,7 +19,7 @@ breakInto4 xs = []
 -- given x, y from 0 to (weight-1)
 generateLineX :: Int -> Int -> [[ (Int, Int) ]]
 generateLineX x weight = takeWhile acceptList [ generateFromXStart x yIter | yIter <- [0..] ] where
-	acceptList xs =  and $ map ((<= (weight-1)).snd) xs 
+	acceptList =  all ((<= (weight-1)).snd)
 	generateFromXStart x start = [ (x,y) | y <- [start .. start+3] ]
 
 orderAccessListX :: [[ (Int, Int) ]]
@@ -31,14 +31,14 @@ orderAccessListY = map (map (\(a,b)->(b,a))) orderAccessListX
 -- this list will take elements diagonally ( from left-top to right-bottom )
 orderAccessListA :: [[ (Int, Int) ]]
 orderAccessListA = filter allowItem $ map transTo4List [ (x,y) | x <- [0..19] , y <- [0..20]] where
-	allowItem xs = and $ map allowPair xs
+	allowItem = all allowPair 
 	allowPair (x,y) = x `elem` [0..19] && y `elem` [0..19]
 	transTo4List (x,y) = map (pairAdd (x,y)) [0..3]
 	pairAdd (x,y) n = (x+n, y+n)
 
 orderAccessListB :: [[ (Int, Int) ]]
 orderAccessListB = map mirrorListCoor orderAccessListA where
-	mirrorListCoor xs = map mirrorCoor xs
+	mirrorListCoor = map mirrorCoor
 	mirrorCoor (x,y) = (x, 19-y)
 
 -- take 4 coor and returns the product of them
@@ -49,5 +49,5 @@ takeProduct table [a,b,c,d] = product $ map toValue [a,b,c,d] where
 main = do
 	handle <- openFile "./grid.txt" ReadMode
 	contents <- hGetContents handle
-	putStrLn $ show $ modifyContents contents
+	print $ modifyContents contents
 	hClose handle

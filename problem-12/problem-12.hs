@@ -7,13 +7,13 @@ factors n = filter ((/=0).snd)  $ factorsAux n possiblePrimes
         possiblePrimes = takeWhile (\x -> x^2 <= n) primes
         factorsAux 1 [] = []
         factorsAux n [] = [(n,1)]
-        factorsAux n (p:ps) = (p,times) : (factorsAux (n `div` (p^times)) ps) 
+        factorsAux n (p:ps) = (p,times) : factorsAux (n `div` (p^times)) ps
             where
                 times = last $ takeWhile (\c -> n `mod` (p^c) == 0) [0..] 
 
-divisorCount n = product $ map (+1) $ map snd $ factors n
+divisorCount n = product $ map ((+1) . snd) $ factors n
 
-main = do
+main =
     print $ head $ filter (\x -> divisorCount x > 500) $ map triNumber [1..]
 
 {-

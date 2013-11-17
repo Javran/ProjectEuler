@@ -17,7 +17,7 @@ divisors x = init $ sort $ union leftHalf rightHalf
         rightHalf = [x `div` y | y <- leftHalf]
 
 isAbundant :: Int -> Bool
-isAbundant n = n < (sum $ divisors n)
+isAbundant n = n < sum (divisors n)
 
 -- remove duplicate elements from a sorted list
 removeDup :: [Int] -> [Int]

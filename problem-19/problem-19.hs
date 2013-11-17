@@ -3,8 +3,8 @@ x `divisibleBy` y = x `mod` y == 0
 
 isLeap :: Int -> Bool
 isLeap x =
-       ((not $ x `divisibleBy` 100) && (x `divisibleBy`   4))
-    || (      (x `divisibleBy` 100) && (x `divisibleBy` 400))
+       (not (x `divisibleBy` 100) && (x `divisibleBy`   4))
+    || (    (x `divisibleBy` 100) && (x `divisibleBy` 400))
 
 -- given year and month, return a list of days
 dayList :: Int -> Int -> [Int]
@@ -12,7 +12,7 @@ dayList year month = [1..lastDay month]
     where
         lastDay m
             | m `elem` [1,3,5,7,8,10,12]  = 31
-            | m == 2                      = 28 + if (isLeap year) then 1 else 0
+            | m == 2                      = 28 + if isLeap year then 1 else 0
             | otherwise                   = 30
 
 -- a list of dates: [(m,d)]

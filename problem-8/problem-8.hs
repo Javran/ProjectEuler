@@ -6,8 +6,7 @@ take5EachFrom :: String -> [[Int]]
 take5EachFrom x
 	| length x < 5 = []
 	| otherwise = stringToIntList(take 5 x) : take5EachFrom (tail x) where
-		stringToIntList :: [Char] -> [Int]
-		stringToIntList x = map digitToInt x
+		stringToIntList = map digitToInt
 
 solve = maximum( map product (take5EachFrom rawdata) )
 

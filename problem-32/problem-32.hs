@@ -6,7 +6,7 @@ factorial n = product [1..n]
 
 pidToPermutation :: Int -> [Int] -> [Int]
 pidToPermutation 0 arr = arr
-pidToPermutation pid arr = h:(pidToPermutation subPid t)
+pidToPermutation pid arr = h:pidToPermutation subPid t
     where
         n = length arr
         subCycle = factorial $ n - 1
@@ -36,10 +36,10 @@ threePartition xs (a,b,c) = (digitToNum aPart, digitToNum bPart, digitToNum cPar
           (cPart,  _) = splitAt c xs2
 
 digitToNum :: [Int] -> Int
-digitToNum xs = foldl (\acc i -> acc*10+i) 0 xs
+digitToNum = foldl (\acc i -> acc*10+i) 0
 
 main = do
-    let allPerms = map (flip pidToPermutation [1..9]) [0..(factorial 9)-1]
+    let allPerms = map (`pidToPermutation` [1..9]) [0..factorial 9 -1]
     let searchSpace = concatMap (\perm -> map (threePartition perm) threeParts) allPerms
     let valid (x,y,z) = x*y == z
     let answers = filter valid searchSpace

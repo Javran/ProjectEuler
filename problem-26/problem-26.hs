@@ -19,12 +19,12 @@ fracPartList n = unfoldr doDiv 10
                 where (quo,rem) = x `divMod` n
 
 cycleLen :: (Eq a) => [a] -> Int
-cycleLen xs = cycleLenAux [] xs
+cycleLen = cycleLenAux []
     where
         cycleLenAux visited [] = 0
         cycleLenAux visited (hd:tl) =
             if hd `elem` visited
-                then (fromJust $ elemIndex hd visited) + 1
+                then fromJust (elemIndex hd visited) + 1
                 else cycleLenAux (hd:visited) tl
 
 fracCycleLen :: Int -> Int

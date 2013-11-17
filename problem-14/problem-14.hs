@@ -22,7 +22,7 @@ collatz n = if odd n
 
 generateCollatzList :: Integer -> [Integer]
 generateCollatzList 1 = [1]
-generateCollatzList x = x : (generateCollatzList $ collatz x)
+generateCollatzList x = x : generateCollatzList (collatz x)
 
 -- returns (x, value) in which value should be the biggest one in terms of its collatz length
 solve :: Integer -> CalcStatus
@@ -30,7 +30,7 @@ solve limit = foldl doCalc (S.fromList [1], (1, 1) ) $ reverse [1 .. limit] wher
     doCalc :: CalcStatus -> Integer -> CalcStatus
     doCalc (s, (maxX, maxLen)) i = result 
         where
-            result = if (newList == []) 
+            result = if null newList
                 then 
                 -- there is nothing new
                     (s, (maxX, maxLen))
@@ -40,7 +40,7 @@ solve limit = foldl doCalc (S.fromList [1], (1, 1) ) $ reverse [1 .. limit] wher
             newGenList = generateCollatzList i
             newList = takeWhile (\e -> not $ e `S.member` s) newGenList
             newS = foldr S.insert s newList 
-            (newMaxX, newMaxLen) = if ( length newGenList > maxLen )
+            (newMaxX, newMaxLen) = if length newGenList > maxLen
                 then (i, length newGenList)
                 else (maxX, maxLen)
 

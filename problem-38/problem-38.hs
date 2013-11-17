@@ -34,10 +34,10 @@ valid nums = all (uncurry (==)) $ zip nums [hd,hd*2..]
 main = do
     let solutions = do
         perm <- allPermutation [1..9]
-        oneScheme <- map (flip splitBy perm) possibleSchemes
+        oneScheme <- map (`splitBy` perm) possibleSchemes
         let nums = map digitToNum oneScheme
         guard $ valid nums
-        return $ nums
+        return nums
     
     print $ maximumBy (compare `on` head) solutions
 {-

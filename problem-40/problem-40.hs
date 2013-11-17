@@ -28,7 +28,7 @@ rangeMax = iterate go (0,0)
         go (n,prev) = (m,prev + (10^m - 10^(m-1))*m)
             where m = n + 1
 
-champSeq = concat $ map show [1..]
+champSeq = concatMap show [1..]
 
 -- the n-th digit
 theDigit n = charToDigit digitChar
@@ -37,7 +37,7 @@ theDigit n = charToDigit digitChar
         diff = n - rMax
         (numDiff,posDiff) = (diff-1) `divMod` (numLen + 1)
         num = 10^numLen + numDiff
-        digitChar = (show num) !! posDiff
+        digitChar = show num !! posDiff
 
 charToDigit c = ord c - ord '0'
 

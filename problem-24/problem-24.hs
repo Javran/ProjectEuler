@@ -6,7 +6,7 @@ factorial n = product [1..n]
 -- the problem is to find the (999999+1)-th permutation for [0..9], pid = 999999
 pidToPermutation :: Int -> [Int] -> [Int]
 pidToPermutation 0 arr = arr
-pidToPermutation pid arr = h:(pidToPermutation subPid t)
+pidToPermutation pid arr = h: pidToPermutation subPid t
     where
         n = length arr
         subCycle = factorial $ n - 1
@@ -21,5 +21,5 @@ breakList n (x:xs) = (x1,x:xs1)
     where
         (x1,xs1) = breakList (n-1) xs
 
-main = do
+main =
     print $ map (\x -> chr $ ord '0' + x) $ pidToPermutation 999999 [0..9] 

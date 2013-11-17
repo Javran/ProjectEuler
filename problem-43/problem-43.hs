@@ -8,7 +8,7 @@ factorial n = product [1..n]
 -- the problem is to find the (999999+1)-th permutation for [0..9], pid = 999999
 pidToPermutation :: Int -> [Int] -> [Int]
 pidToPermutation 0 arr = arr
-pidToPermutation pid arr = h:(pidToPermutation subPid t)
+pidToPermutation pid arr = h:pidToPermutation subPid t
     where
         n = length arr
         subCycle = factorial $ n - 1
@@ -23,7 +23,7 @@ breakList n (x:xs) = (x1,x:xs1)
     where
         (x1,xs1) = breakList (n-1) xs
 
-toNum xs = foldl (\acc i-> acc*10 + i) 0 xs
+toNum = foldl (\acc i-> acc*10 + i) 0 
 
 valid xs = all (uncurry (\num prime -> num `mod` prime == 0)) tests
     where
@@ -32,8 +32,8 @@ valid xs = all (uncurry (\num prime -> num `mod` prime == 0)) tests
         primeList = [2,3,5,7,11,13,17]
         tests = zip numList primeList
 
-main = do
-    print $ sum $ map toNum $ filter valid $ map (flip pidToPermutation [0..9]) [0..(factorial 10)-1]
+main =
+    print $ sum $ map toNum $ filter valid $ map (`pidToPermutation` [0..9]) [0..factorial 10 -1]
 
 {-
 compile with: ghc -O

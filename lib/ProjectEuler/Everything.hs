@@ -16,7 +16,7 @@ factorial x = product [1..x]
 --     0 <= n <= factorial (length arr)
 permuteTo :: (Eq a) => Int -> [a] -> [a]
 permuteTo 0 arr = arr
-permuteTo pid arr = h:(permuteTo subPid t)
+permuteTo pid arr = h:permuteTo subPid t
     where
         n = length arr
         subCycle = factorial $ n - 1
@@ -26,7 +26,7 @@ permuteTo pid arr = h:(permuteTo subPid t)
 
 -- gives you all permutation of xs
 allPermutation :: (Eq a) => [a] -> [[a]]
-allPermutation xs = map (flip permuteTo xs) $ take (factorial (length xs)) [0..]
+allPermutation xs = map (`permuteTo` xs) $ take (factorial (length xs)) [0..]
 
 -- fetch and remove the n-th element from a list
 removeElement :: (Eq a) => Int -> [a] -> (a,[a])
@@ -44,6 +44,6 @@ arithmeticSequenceLength xs =
     case xs of
         []     -> 0
         (a:[]) -> 1
-        _      -> 1 + (length $ takeWhile (\x -> x == (head diff)) diff)
+        _      -> 1 + length ( takeWhile (\x -> x == head diff) diff )
             where
                 diff = zipWith (-) xs (tail xs)

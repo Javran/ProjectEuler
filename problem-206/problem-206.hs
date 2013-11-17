@@ -23,7 +23,7 @@ space = [1010101010..1389026624]
 
 main = print $ squareRoot $ fromIntegral $ head $ filter f $ map (^2) space
 
-f x = (length xStr == length "1_2_3_4_5_6_7_8_9_0") && (and $ zipWith (test) xStr [1..])
+f x = (length xStr == length "1_2_3_4_5_6_7_8_9_0") && and (zipWith test xStr [1..])
     where
         xStr = show x
         test ch ind

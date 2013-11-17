@@ -15,7 +15,7 @@ main = do
         guard $ c + d > 0
         return (c,d)
 
-    print $ uncurry (*) $ maximumBy (compare `on` (uncurry consePrimeLen)) searchSpace
+    print $ uncurry (*) $ maximumBy (compare `on` uncurry consePrimeLen) searchSpace
 
 {-
 compile with: ghc -O2 problem-27.hs -rtsopts

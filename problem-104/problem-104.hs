@@ -12,7 +12,7 @@ lstPandigital :: Integer -> Bool
 lstPandigital n = charNum == "123456789" where
     charNum = sort $ show $ n `mod` 1000000000
 
-result = fst $ head $ filter (\(n, x)-> (lstPandigital x) && (fstPandigital x) ) fibSeq
+result = fst $ head $ filter (\(n, x)-> lstPandigital x && fstPandigital x ) fibSeq
 
 main = print result
 

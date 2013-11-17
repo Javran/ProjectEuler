@@ -7,8 +7,8 @@ main = do
         removeCommon a b = (a1,b1)
             where
                 c = inCommon a b
-                a1 = (ord $ head $ show a \\ c) - ord '0'
-                b1 = (ord $ head $ show b \\ c) - ord '0'
+                a1 = ord (head $ show a \\ c) - ord '0'
+                b1 = ord (head $ show b \\ c) - ord '0'
 
         canCancel a b = length (inCommon a b) == 1 && a1 * b == a * b1
             where
@@ -23,4 +23,4 @@ main = do
         simplify (a,b) = (a `div` g, b `div` g)
             where g = gcd a b
 
-    print $ simplify $ foldl (\(a,b) (c,d) -> (a*c,b*d)) (1,1) $ searchSpace
+    print $ simplify $ foldl (\(a,b) (c,d) -> (a*c,b*d)) (1,1) searchSpace

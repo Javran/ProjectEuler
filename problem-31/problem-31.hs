@@ -22,9 +22,7 @@ coinSumCount coins@(x:xs) target = do
             modify $ M.insert key result
             return result
 
-    if cached == Nothing
-        then calcF
-        else return $ fromJust cached
+    maybe calcF return cached
 
 coinSumCount1 :: [Int] -> Int -> Int
 coinSumCount1 _ 0 = 1
@@ -35,5 +33,5 @@ coinSumCount1 (x:xs) target = sum $ map (coinSumCount1 xs) possibleSubTarget
 
 main = do
     let coins = reverse [1,2,5,10,20,50,100,200]
-    print $ fst $ runState (coinSumCount coins 200) M.empty
+    print $ evalState (coinSumCount coins 200) M.empty
     --print $ coinSumCount1 coins 200

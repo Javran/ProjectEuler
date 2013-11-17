@@ -13,5 +13,5 @@ main = do
     content <- hGetContents h
     let wordList = read $ "[" ++ content ++ "]" :: [String]
     let valueList = map wordValue wordList
-    let rangedTriangleNumbers = takeWhile (<=(maximum valueList)) triangleNumbers
+    let rangedTriangleNumbers = takeWhile (<= maximum valueList) triangleNumbers
     print $ length $ filter (`elem` rangedTriangleNumbers) valueList

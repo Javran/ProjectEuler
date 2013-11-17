@@ -11,7 +11,7 @@ solveMax (t:ts) = foldl max 0 bottomLine
         solveNextLine curLine nextTableLine = map possibleMax nextTableLinePos
             where
                 nextTableLinePos = zip [0..] nextTableLine
-                possibleMax (pos,val) = val + (foldl max 0 possibleVal)
+                possibleMax (pos,val) = val + foldl max 0 possibleVal
                     where
                         possiblePos = filter valid [pos - 1, pos]
                         possibleVal = map (curLine !!) possiblePos
@@ -21,6 +21,6 @@ main :: IO ()
 main = do
     h <- openFile "./problem18.txt" ReadMode
     content <- hGetContents h
-    let table = map ( (map read) . words) $ lines content :: [[Int]]
+    let table = map ( map read . words) $ lines content :: [[Int]]
 
     print $ solveMax table

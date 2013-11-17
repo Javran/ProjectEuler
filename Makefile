@@ -5,6 +5,7 @@ clean:
 	find problem-* \
 		-type f \
 		\( -iname "*.hi" -or -iname "*.o" -or -executable \) \
+		-print \
 		-exec \
 			rm {} \;
 count:
