@@ -1,5 +1,5 @@
-
--- I think inductive way is faster.
+-- it actually takes longer using inductive way
+--   maybe the normal way allows some parallelization.
 
 -- T(n) = n(n+1)/2
 -- T(n) = T(n-1) + n 
