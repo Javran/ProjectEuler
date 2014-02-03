@@ -8,5 +8,11 @@ clean:
 		-print \
 		-exec \
 			rm {} \;
+	find working \
+		-type f \
+		\( -iname "*.hi" -or -iname "*.o" -or -executable \) \
+		-print \
+		-exec \
+			rm {} \;
 count:
 	ls -d problem-* | wc -l
