@@ -1,4 +1,3 @@
-import Control.Arrow
 -- it's a pity that we can't use the formula l = 1 + floor( log10( n ) ) here
 -- because of the precision error. try n = 1000 to find out
 -- but I think this approach is good enough,
