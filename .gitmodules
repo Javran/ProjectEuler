@@ -1,0 +1,3 @@
+[submodule "lib/petbox"]
+	path = lib/petbox
+	url = git@github.com:Javran/petbox.git

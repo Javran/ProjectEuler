@@ -1,0 +1,20 @@
+-- This is a dummy cabal project file
+-- for setting up required dependencies
+-- use "cabal install"
+name:                ProjectEuler-Javran
+version:             0.1.0.0
+synopsis:            Javran's Project Euler Solutions Written in Haskell
+homepage:            https://github.com/Javran/Project-Euler
+license:             MIT
+license-file:        LICENSE
+author:              Javran Cheng
+maintainer:          Javran.c@gmail.com
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  build-depends:       base >=4.7 && <4.8,
+                       primes,
+                       data-ordlist
+  default-language:    Haskell2010
