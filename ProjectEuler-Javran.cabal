@@ -16,5 +16,9 @@ cabal-version:       >=1.10
 library
   build-depends:       base >=4.7 && <4.8,
                        primes,
-                       data-ordlist
+                       data-ordlist,
+                       strict,
+                       array,
+                       containers,
+                       petbox
   default-language:    Haskell2010
