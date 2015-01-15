@@ -20,7 +20,7 @@ solveMax (t:ts) = foldl max 0 bottomLine
 
 main :: IO ()
 main = do
-    h <- openFile "./triangle.txt" ReadMode
+    h <- openFile "../data/p67-triangle.txt" ReadMode
     content <- hGetContents h
     let table = map (map read . words) $ lines content :: [[Int]]
     print $ solveMax table

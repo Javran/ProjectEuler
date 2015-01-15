@@ -11,15 +11,20 @@ author:              Javran Cheng
 maintainer:          Javran.c@gmail.com
 build-type:          Simple
 extra-source-files:  README.md
+data-files:          data/*.txt
 cabal-version:       >=1.10
 
 library
-  build-depends:       base >=4.7 && <4.8,
+  hs-source-dirs:      src
+  exposed-modules:     ProjectEuler.Javran
+  build-depends:       base,
                        primes,
                        data-ordlist,
                        strict,
                        array,
                        containers,
                        split,
+                       filepath,
                        petbox
   default-language:    Haskell2010
+  other-modules:       Paths_ProjectEuler_Javran

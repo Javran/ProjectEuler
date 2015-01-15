@@ -1,8 +1,9 @@
 import Control.Applicative
+import ProjectEuler.Javran
 import qualified System.IO.Strict as SIO
 
 rawData :: IO String
-rawData = concat . lines <$> SIO.readFile "../data/p8.txt"
+rawData = concat . lines <$> getDataFile "p8.txt"
 
 slidingWindows :: Int -> [a] -> [[a]]
 slidingWindows n xs = take (l-n+1)

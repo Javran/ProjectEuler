@@ -1,4 +1,4 @@
-import ProjectEuler.Everything
+import Petbox
 import Control.Monad
 import Data.Function (on)
 import Data.List
@@ -33,9 +33,9 @@ valid nums = all (uncurry (==)) $ zip nums [hd,hd*2..]
 
 main = do
     let solutions = do
-        perm <- allPermutation [1..9]
+        perm <- permutations [1..9]
         oneScheme <- map (`splitBy` perm) possibleSchemes
-        let nums = map digitToNum oneScheme
+        let nums = map digitsToInt oneScheme
         guard $ valid nums
         return nums
     

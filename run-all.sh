@@ -12,7 +12,7 @@ do
     echo Compiling $PROBLEM ...
     ghc -O2 $PROBLEM_SRC -o _build/${PROBLEM}.bin -outputdir=_build -fforce-recomp
     cd _build
-
-    timeout 5s /usr/bin/time -f "%e" ./${PROBLEM}.bin
+    /usr/bin/time -f "%e" -o time-report.txt -a -- ./${PROBLEM}.bin
+    echo exitcode = $?
     cd ..
 done
