@@ -21,3 +21,4 @@ cabal.config
 *.hp
 /_build/
 /hsenv.log
+/_shake/
