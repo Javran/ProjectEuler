@@ -1,4 +1,5 @@
 import qualified System.IO.Strict as SIO
+import ProjectEuler.Javran
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]
@@ -20,6 +21,6 @@ solveMax (t:ts) = foldl max 0 bottomLine
 
 main :: IO ()
 main = do
-    content <- SIO.readFile "../data/p18.txt"
+    content <- getDataFile "p18.txt"
     let table = map (map read . words) $ lines content :: [[Int]]
     print $ solveMax table

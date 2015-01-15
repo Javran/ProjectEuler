@@ -6,10 +6,11 @@ import Data.Function
 import Data.Char
 import Data.Bits
 import Text.Printf
+import ProjectEuler.Javran
 
 getCipherText :: IO [Word8]
 getCipherText = do
-    contents <- readFile "../data/p59-cipher.txt"
+    contents <- getDataFile "p59-cipher.txt"
     return $ read $ "[" ++ contents ++ "]"
 
 getFreq :: [Word8] -> [(Word8, Int)]

@@ -1,5 +1,5 @@
-import System.IO
 import Data.Ix
+import ProjectEuler.Javran
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]
@@ -20,7 +20,6 @@ solveMax (t:ts) = foldl max 0 bottomLine
 
 main :: IO ()
 main = do
-    h <- openFile "../data/p67-triangle.txt" ReadMode
-    content <- hGetContents h
+    content <- getDataFile "p67-triangle.txt"
     let table = map (map read . words) $ lines content :: [[Int]]
     print $ solveMax table

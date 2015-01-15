@@ -1,4 +1,4 @@
-import qualified System.IO.Strict as SIO
+import ProjectEuler.Javran
 import Data.Array
 import Control.Applicative
 import Control.Arrow
@@ -7,7 +7,7 @@ type Index = (Int, Int)
 
 getGrid :: IO (Array Index Integer)
 getGrid = do
-    grid <- map (map read . words) . lines <$> SIO.readFile "../data/p11-grid.txt"
+    grid <- map (map read . words) . lines <$> getDataFile "p11-grid.txt"
     let rows = length grid
         cols = length (head grid)
         size = (rows,cols)

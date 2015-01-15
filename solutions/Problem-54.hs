@@ -6,6 +6,7 @@ import Control.DeepSeq
 import Data.List
 import Data.Char
 import Data.Function
+import ProjectEuler.Javran
 
 data Suit = C | S | H | D
     deriving (Eq, Show, Read)
@@ -122,11 +123,10 @@ handRank cs = fst $ head $ dropWhile (\(_, p) -> not $ p cs) $ zip [0..] ranking
         -- Ten, Jack, Queen, King, Ace, in same suit.
         isRoyalFlush    cs = isStraightFlush cs && any ((== 14) . cValue) cs
 
-handleFile :: Handle -> IO Int
-handleFile h = do
-    contents <- S.hGetContents h
+handleFile :: String -> IO Int
+handleFile contents = do
     let handPairs = map lineToHand $ lines contents
     return $ length $ filter (uncurry firstWins) handPairs
 
-main = withFile "../data/p54-poker.txt" ReadMode handleFile
+main = getDataFile "p54-poker.txt" >>= handleFile
    >>= print

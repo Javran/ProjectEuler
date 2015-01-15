@@ -1,5 +1,5 @@
 import Data.Char
-import System.IO
+import ProjectEuler.Javran
 import Data.List
 
 nameWorth :: String -> Int
@@ -8,7 +8,6 @@ nameWorth n = sum $ map toInt n
 
 main :: IO ()
 main = do
-    h <- openFile "../data/p22-names.txt" ReadMode
-    content <- hGetContents h
+    content <- getDataFile "p22-names.txt"
     let names = read $ concat ["[", content, "]"] :: [String]
     print $ sum $ zipWith (*) [1..] $ map nameWorth $ sort names
