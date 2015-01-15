@@ -25,6 +25,7 @@ library
                        containers,
                        split,
                        filepath,
+                       mtl,
                        petbox
   default-language:    Haskell2010
   other-modules:       Paths_ProjectEuler_Javran
