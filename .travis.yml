@@ -1,0 +1,12 @@
+language: haskell
+ghc:
+  - 7.8
+
+before_install:
+  - "cd lib/petbox && cabal install && cd ../.."
+  - cabal install shake
+  - cabal install
+
+script:
+  - "./build.sh"
+  - "cat _build/report.txt"
