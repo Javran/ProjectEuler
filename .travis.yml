@@ -5,6 +5,8 @@ ghc:
 before_install:
   - "cd lib/petbox && cabal install && cd ../.."
   - cabal install shake
+
+install:
   - cabal install
 
 script:
