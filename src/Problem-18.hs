@@ -1,10 +1,11 @@
-import System.IO
+import qualified System.IO.Strict as SIO
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]
 --   a2 -> examine positiion in acc: -1 and 0
 --   a3 -> examine positiion in acc: 0 and 1
 solveMax :: [[Int]] -> Int
+solveMax [] = undefined
 solveMax (t:ts) = foldl max 0 bottomLine
     where
         bottomLine = foldl solveNextLine t ts
@@ -19,8 +20,6 @@ solveMax (t:ts) = foldl max 0 bottomLine
 
 main :: IO ()
 main = do
-    h <- openFile "./problem18.txt" ReadMode
-    content <- hGetContents h
-    let table = map ( map read . words) $ lines content :: [[Int]]
-
+    content <- SIO.readFile "../data/p18.txt"
+    let table = map (map read . words) $ lines content :: [[Int]]
     print $ solveMax table

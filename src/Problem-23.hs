@@ -1,5 +1,7 @@
 import Data.List
 
+-- TODO: need some work, skipping for now
+
 {-
 compile with `-O`
 time:

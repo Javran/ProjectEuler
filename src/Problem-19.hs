@@ -25,11 +25,12 @@ dateList = concatMap (\y -> map (\ (m,d) -> (y,m,d))  (monthList y) ) [1900..]
 dayOfWeekCycle :: [Int]
 dayOfWeekCycle = cycle [1..7]
 
+main :: IO ()
 main = do
-    let dataNotBegin (dow, (y,m,d)) = y < 1901
-    let dataNotEnd   (dow, (y,m,d)) = y < 2001
+    let dateNotBegin (dow, (y,m,d)) = y < 1901
+    let dateNotEnd   (dow, (y,m,d)) = y < 2001
 
-    let searchSpace = takeWhile dataNotEnd $ dropWhile dataNotBegin $ zip dayOfWeekCycle dateList
+    let searchSpace = takeWhile dateNotEnd $ dropWhile dateNotBegin $ zip dayOfWeekCycle dateList
 
     let valid (dow, (y,m,d)) = dow == 7 && d == 1
 
