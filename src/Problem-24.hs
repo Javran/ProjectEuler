@@ -1,4 +1,6 @@
 import Data.Char
+
+factorial :: Int -> Int
 factorial n = product [1..n]
 
 -- define `permutation id` x to be the identity of the (x+1)-th permutaion
@@ -14,6 +16,8 @@ pidToPermutation pid arr = h: pidToPermutation subPid t
         (h,t) = breakList headInd arr
         subPid = pid `mod` subCycle
 
+-- TODO: break list
+
 -- get the x-indexed element, return the list after removing that element
 breakList :: (Eq a) => Int -> [a] -> (a,[a])
 breakList 0 (x:xs) = (x,xs)
@@ -21,5 +25,6 @@ breakList n (x:xs) = (x1,x:xs1)
     where
         (x1,xs1) = breakList (n-1) xs
 
+main :: IO ()
 main =
-    print $ map (\x -> chr $ ord '0' + x) $ pidToPermutation 999999 [0..9] 
+    print $ map (\x -> chr $ ord '0' + x) $ pidToPermutation 999999 [0..9]

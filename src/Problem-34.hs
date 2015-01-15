@@ -1,6 +1,6 @@
 import Data.Char
 
-factorial :: Integer -> Integer 
+factorial :: Integer -> Integer
 factorial 0 = 1
 factorial x = product [1..x]
 

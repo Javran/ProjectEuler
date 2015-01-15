@@ -1,7 +1,7 @@
 import Data.List
 import Data.Maybe
 import Data.Function (on)
-
+-- TODO
 -- 1/n = 0.???? ...
 -- this function finds ???? for n
 --   by emulating how we do division on draft
@@ -9,9 +9,9 @@ import Data.Function (on)
 --   so you might need `map fst $ fracPartList n`
 fracPartList :: Int -> [(Int,Int)]
 fracPartList n = unfoldr doDiv 10
-    where 
+    where
         doDiv x
-            | x   == 0  = Nothing 
+            | x   == 0  = Nothing
             -- try to keep the first digit
             --   by assigning next state to be a dummy value(0)
             | rem == 0  = Just ((quo,rem),     0)
@@ -21,7 +21,7 @@ fracPartList n = unfoldr doDiv 10
 cycleLen :: (Eq a) => [a] -> Int
 cycleLen = cycleLenAux []
     where
-        cycleLenAux visited [] = 0
+        cycleLenAux _ [] = 0
         cycleLenAux visited (hd:tl) =
             if hd `elem` visited
                 then fromJust (elemIndex hd visited) + 1
@@ -30,4 +30,5 @@ cycleLen = cycleLenAux []
 fracCycleLen :: Int -> Int
 fracCycleLen n = cycleLen $ map snd $ fracPartList n
 
+main :: IO ()
 main = print $ maximumBy (compare `on` fracCycleLen) [2..999]

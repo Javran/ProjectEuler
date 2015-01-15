@@ -20,5 +20,6 @@ library
                        strict,
                        array,
                        containers,
+                       split,
                        petbox
   default-language:    Haskell2010

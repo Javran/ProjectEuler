@@ -9,7 +9,7 @@ wordValue word = sum values
 triangleNumbers = map snd $ iterate (\(i,f) -> (i+1, i+f+1)) (1,1)
 
 main = do
-    h <- openFile "./words.txt" ReadMode
+    h <- openFile "../data/p42-words.txt" ReadMode
     content <- hGetContents h
     let wordList = read $ "[" ++ content ++ "]" :: [String]
     let valueList = map wordValue wordList

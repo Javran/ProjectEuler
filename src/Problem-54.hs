@@ -10,7 +10,7 @@ import Data.Function
 data Suit = C | S | H | D
     deriving (Eq, Show, Read)
 
-data Card = Card 
+data Card = Card
     { cValue :: Int
     , cSuit  :: Suit
     } deriving (Eq, Show)
@@ -20,7 +20,7 @@ allEqual (x:xs) = all (== x) xs
 allEqual []     = True
 
 wordToCard :: String -> Card
-wordToCard (v:s) = Card val (read s) 
+wordToCard (v:s) = Card val (read s)
     where
         -- make 'A' being 14, so that:
         --  card1 >= card2 iff. v1 >= v2
@@ -34,7 +34,7 @@ wordToCard (v:s) = Card val (read s)
 
 -- a raw string line to a hand
 lineToHand :: String -> ([Card],[Card])
-lineToHand l = splitAt 5 $ map wordToCard $ words l 
+lineToHand l = splitAt 5 $ map wordToCard $ words l
 
 -- the situation when the first player wins
 firstWins :: [Card] -> [Card] -> Bool
@@ -70,10 +70,10 @@ handRank cs = fst $ head $ dropWhile (\(_, p) -> not $ p cs) $ zip [0..] ranking
         -- search through predicates,
         --   find first predicate that returns True
         --   and use its index as rank
-        rankingPredicates :: [[Card] -> Bool] 
+        rankingPredicates :: [[Card] -> Bool]
         -- note: the lowest number stands for the highest rank
         rankingPredicates =
-            [ isRoyalFlush 
+            [ isRoyalFlush
             , isStraightFlush
             , isFourOfAKind
             , isFullHouse
@@ -127,6 +127,6 @@ handleFile h = do
     contents <- S.hGetContents h
     let handPairs = map lineToHand $ lines contents
     return $ length $ filter (uncurry firstWins) handPairs
-    
-main = withFile "./poker.txt" ReadMode handleFile
+
+main = withFile "../data/p54-poker.txt" ReadMode handleFile
    >>= print

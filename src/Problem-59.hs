@@ -9,7 +9,7 @@ import Text.Printf
 
 getCipherText :: IO [Word8]
 getCipherText = do
-    contents <- readFile "p059_cipher.txt"
+    contents <- readFile "../data/p59-cipher.txt"
     return $ read $ "[" ++ contents ++ "]"
 
 getFreq :: [Word8] -> [(Word8, Int)]

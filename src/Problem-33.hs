@@ -2,6 +2,7 @@ import Data.List
 import Data.Char
 import Control.Monad
 
+main :: IO ()
 main = do
     let inCommon a b = show a `intersect` show b
         removeCommon a b = (a1,b1)

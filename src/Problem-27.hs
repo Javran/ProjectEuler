@@ -3,6 +3,8 @@ import Data.Function (on)
 import Data.List
 import Control.Monad
 
+-- TODO: things after problem 27 are migrated without too much refactoring
+
 consePrimeLen a b = length $ takeWhile isPrime [ n * n + a * n + b | n <- [0..] ]
 
 main = do
