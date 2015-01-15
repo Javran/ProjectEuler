@@ -1,49 +1,30 @@
-{-
-compile with: ghc problem-14.hs -rtsopts -O
-run with: ./problem-14 +RTS -K200000000 -RTS
-
-real    0m7.215s
-user    0m6.960s
-sys     0m0.260s
--}
-
-import qualified Data.Set as S
-import Data.List
-
--- (set, (x,value))
--- set:     a set to keep numbers that has been calculated
--- x:       a number
--- value:   the length that corresponding number, namely x has
-type CalcStatus = ( S.Set Integer, (Integer, Int) )
+import Control.Applicative
+import Control.Arrow
+import Control.Monad.State
+import qualified Data.Map.Strict as M
 
 collatz :: Integer -> Integer
 collatz n = if odd n
               then 3 * n + 1
-            else n `div` 2
+              else n `div` 2
 
-generateCollatzList :: Integer -> [Integer]
-generateCollatzList 1 = [1]
-generateCollatzList x = x : generateCollatzList (collatz x)
-
--- returns (x, value) in which value should be the biggest one in terms of its collatz length
-solve :: Integer -> CalcStatus
-solve limit = foldl' doCalc (S.fromList [1], (1, 1) ) $ [limit,limit-1..1] where
-    doCalc :: CalcStatus -> Integer -> CalcStatus
-    doCalc (s, (maxX, maxLen)) i = result
-        where
-            result = if null newList
-                then
-                -- there is nothing new
-                    (s, (maxX, maxLen))
-                else
-                -- insert new elements into the list and update (x, value) if it is possible
-                    (newS, (newMaxX, newMaxLen))
-            newGenList = generateCollatzList i
-            newList = takeWhile (\e -> not $ e `S.member` s) newGenList
-            newS = foldr S.insert s newList
-            (newMaxX, newMaxLen) = if length newGenList > maxLen
-                then (i, length newGenList)
-                else (maxX, maxLen)
+memoCollatz :: Integer
+            -> State (M.Map Integer Int, (Integer,Int)) Int
+memoCollatz 1 = return 1
+memoCollatz n = do
+    result <- gets (M.lookup n . fst)
+    case result of
+        Nothing -> do
+            l <- succ <$> memoCollatz (collatz n)
+            let update p@(_,curMaxV) =
+                    if l > curMaxV
+                       then (n,l)
+                       else p
+            modify (M.insert n l *** update)
+            return l
+        Just v -> return v
 
 main :: IO ()
-main = print $ snd $ solve 1000000
+main = print $ snd (execState (mapM_ memoCollatz [1..limit]) (M.empty,(1,1)))
+  where
+    limit = 1000000
