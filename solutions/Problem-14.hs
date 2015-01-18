@@ -1,11 +1,6 @@
 import Control.Applicative
-import Control.Arrow
-import Control.Monad.State
-import qualified Data.Map.Strict as M
-import Data.Int
 import Data.Array
 import Data.Array.ST
-import Control.Monad.ST
 import Data.Function
 import Data.List
 
