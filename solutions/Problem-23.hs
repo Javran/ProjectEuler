@@ -1,38 +1,43 @@
-import Data.List
-import qualified Data.List.Ordered as LO
+import Data.Numbers.Primes
+import Data.Foldable
 
--- TODO: need some work, skipping for now
+import qualified Data.IntSet as IS
+import Prelude hiding (product,sum)
 
-{-
-compile with `-O`
-time:
-real    0m25.942s
-user    0m25.440s
-sys     0m0.520s
--}
+-- see: http://mathschallenge.net/library/number/sum_of_divisors
+divisorSum :: Integral a => a -> a
+divisorSum 1 = 1
+divisorSum n = product . map tranform . factorization $ n
+  where
+    tranform (p,t) = (p ^ (t+1) - 1) `div` (p - 1)
 
--- return a list of divisors of x
-divisors :: Int -> [Int]
--- guaranteed that the last one should be x, remove it safely
-divisors x = init $ sort $ LO.union leftHalf rightHalf
-    where
-        leftHalf = [ y | y <- [1..x], y * y <= x, x `mod` y == 0]
-        rightHalf = reverse [x `div` y | y <- leftHalf]
+factorization :: Integral a => a -> [(a, Int)]
+factorization n
+    | n <= 1    = error "must be greater than 1"
+    | otherwise = factorization' n primes
+  where
+    factorization' _ [] = undefined -- impossible
+    factorization' 1 _ = []
+    factorization' m (p:ps)
+        | m `mod` p == 0 = let (times,pn) = last
+                                          . takeWhile ((== 0) . (m `mod`) . snd)
+                                          . zip [1..]
+                                          $ iterate (*p) p
+                           in (p,times) : factorization' (m `div` pn) ps
+        | otherwise = factorization' m ps
 
 isAbundant :: Int -> Bool
-isAbundant n = n < sum (divisors n)
+isAbundant n = n < divisorSum n - n
 
--- remove duplicate elements from a sorted list
-removeDup :: [Int] -> [Int]
-removeDup (x:xs) = reverse $ foldl (\acc i -> if head acc == i then acc else i:acc) [x] xs
-removeDup [] = []
-
-maxAbun = 28123
-
+main :: IO ()
 main = do
     let possibleAbuns = takeWhile (<= maxAbun) $ filter isAbundant [1..]
-    let reachables = sort $ do
+        maxAbun = 28123
+        -- TODO:
+        -- seems like the list comprehension version is slower
+        -- not sure why
+        reachables = IS.fromList $ do
           x <- possibleAbuns
           y <- takeWhile (\u -> u + x <= maxAbun) possibleAbuns
           return (x+y)
-    print $ sum $ LO.minus [1..maxAbun] $ LO.nub reachables
+    print $ sum $ IS.toList $ IS.fromList [1..maxAbun] IS.\\ reachables
