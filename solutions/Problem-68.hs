@@ -52,9 +52,9 @@ solutions = do
                           ]
   where
     -- clockwise, lowest external node
-    encodeResult arms = head [ concat (firstArm:restArms)
-                             | (firstArm:restArms) <- pickOne arms
-                             , all ( (> head firstArm) . head) restArms
+    encodeResult arms = head [ concat enc
+                             | enc@(firstArm:restArms) <- pickOne arms
+                             , all ((> head firstArm) . head) restArms
                              ]
 
 main :: IO ()
