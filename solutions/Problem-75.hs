@@ -2,6 +2,15 @@
 import Control.Monad
 import qualified Data.Array.Unboxed as A
 
+-- see: http://en.wikipedia.org/wiki/Pythagorean_triple
+-- when m,n are coprimes and (m-n) is odd,
+-- the formula: a = m^2 + n^2, b = 2 * m * n, c = m^2 - n^2
+-- will generate Pythagorean triples
+-- the perimeter is a+b+c = 2 * k * m * (m+n)
+-- we simplify the constraint 1,500,000 >= 2 * k * m * (m+n)
+-- to: 750,000 >= k * m * (m+n)
+-- we can enumerate all possible combinations and count each of them
+
 limit :: Int
 limit = 750000
 
@@ -13,7 +22,7 @@ searchSpace = do
         halfPeri = m * mpn
     guard $ m > n
          && 1 == gcd m n
-         && mpn `rem` 2 == 1
+         && odd mpn -- if m + n is odd, then so does m - n
     [halfPeri,halfPeri+halfPeri..limit]
 
 solutions :: [Int]
