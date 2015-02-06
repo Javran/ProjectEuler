@@ -4,18 +4,14 @@ import qualified Data.Array.ST as A
 import qualified Data.Array.Unboxed as A
 import Data.Ix
 import Control.Monad
+import Petbox
 
 getMat :: IO (A.UArray (Int,Int) Int)
 getMat = do
     raws <- getRaws
     let rowN = length (head raws)
         colN = length raws
-        genPairs = concat
-                 $ zipWith (\col line ->
-                            map
-                            (\(row,v)->((col,row),v))
-                            line) [1..]
-                           (map (zip [1..]) raws)
+        genPairs = concat $ add2DCoords 1 1 raws
     return $ A.array ((1,1), (colN,rowN)) genPairs
   where
     getRaws = map parseLine . lines <$> getDataFile "p81-matrix.txt"
