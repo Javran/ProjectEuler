@@ -9,10 +9,10 @@ import Petbox
 getMat :: IO (A.UArray (Int,Int) Int)
 getMat = do
     raws <- getRaws
-    let rowN = length (head raws)
-        colN = length raws
+    let colN = length (head raws)
+        rowN = length raws
         genPairs = concat $ add2DCoords 1 1 raws
-    return $ A.array ((1,1), (colN,rowN)) genPairs
+    return $ A.array ((1,1), (rowN,colN)) genPairs
   where
     getRaws = map parseLine . lines <$> getDataFile "p81-matrix.txt"
     parseLine s = read ("[" ++ s ++ "]") :: [Int]
@@ -24,8 +24,8 @@ pathSum mat = A.runSTUArray $ do
             | inRange bd c = A.readArray mary c
             | otherwise    = return 0
     A.writeArray mary (1,1) (mat A.! (1,1))
-    forM_ [1..colN] $ \i ->
-        forM_ [1..rowN] $ \j -> do
+    forM_ [1..rowN] $ \i ->
+        forM_ [1..colN] $ \j -> do
             fromUp <- safeAccess (i-1,j)
             fromLeft <- safeAccess (i,j-1)
             let candidates = [fromUp | i-1 >= 1] ++ [fromLeft | j-1>=1]
@@ -33,7 +33,7 @@ pathSum mat = A.runSTUArray $ do
                 (A.writeArray mary (i,j) (mat A.! (i,j) + minimum candidates))
     return mary
   where
-    bd@(_,(colN,rowN)) = A.bounds mat
+    bd@(_,(rowN,colN)) = A.bounds mat
 
 main :: IO ()
 main = getMat >>= print . getResult . pathSum
