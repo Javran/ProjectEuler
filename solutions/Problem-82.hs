@@ -14,7 +14,7 @@ getMat = do
         genPairs = concat $ add2DCoords 1 1 raws
     return $ A.array ((1,1), (rowN,colN)) genPairs
   where
-    getRaws = map parseLine . lines <$> getDataFile "p81-matrix.txt"
+    getRaws = map parseLine . lines <$> getDataFile "p82-matrix.txt"
     parseLine s = read ("[" ++ s ++ "]") :: [Int]
 
 pathSum :: A.UArray (Int,Int) Int -> A.UArray (Int,Int) Int
