@@ -27,6 +27,7 @@ library
                        filepath,
                        mtl,
                        petbox,
-                       parsec
+                       parsec,
+                       PSQueue
   default-language:    Haskell2010
   other-modules:       Paths_ProjectEuler_Javran
