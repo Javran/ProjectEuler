@@ -1,7 +1,5 @@
 import Development.Shake
-import Development.Shake.Command
 import Development.Shake.FilePath
-import Development.Shake.Util
 import Data.List
 import Data.Function
 import Data.Time.Clock
@@ -31,9 +29,9 @@ main = shakeArgs shakeOptions{shakeFiles="_build/"} $ do
                        . map getNumber
                        $ bins
             measure (binFile,_) = do
-                putNormal $ "Measuring " ++ binFile
+                putNormal $ "Measuring " ++ (binFile :: String)
                 t1 <- liftIO getCurrentTime
-                (Exit ec, Stdout _) <- cmd binFile
+                Exit ec <- cmd binFile
                 t2 <- liftIO getCurrentTime
                 return (binFile,ec, round (1000 * t2 `diffUTCTime` t1))
 
