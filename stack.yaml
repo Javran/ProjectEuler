@@ -1,0 +1,8 @@
+resolver: lts-13.20
+packages:
+- .
+
+extra-deps:
+- git: https://github.com/Javran/petbox.git
+  commit: fa75b9496db96791e33ec4f1346a402602958325
+- PSQueue-1.1.0.1
