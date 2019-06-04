@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts  #-}
 import Control.Monad
 import Petbox
 import qualified Data.IntSet as IS

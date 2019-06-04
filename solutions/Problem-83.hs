@@ -1,4 +1,4 @@
-{-# LANGUAGE TupleSections, RankNTypes, ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections, RankNTypes, ScopedTypeVariables, FlexibleContexts #-}
 import ProjectEuler.Javran
 import Petbox
 import Control.Applicative
