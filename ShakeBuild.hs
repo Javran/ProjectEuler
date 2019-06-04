@@ -57,7 +57,7 @@ main = shakeArgs shakeOptions{shakeFiles="_build/"} $ do
         let srcFileName = "solutions" </> takeFileName out -<.> "hs"
         need [srcFileName]
 
-        cmd "ghc -O2 -fforce-recomp" srcFileName
+        cmd "stack exec -- ghc -O2 -fforce-recomp" srcFileName
             "-o" out "-outputdir" "_build" :: Action ()
 
         removeFilesAfter "_build" ["//*.hi", "//*.o"]
