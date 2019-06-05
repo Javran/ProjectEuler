@@ -38,3 +38,6 @@ Some ideas:
   (3) Update package.yaml so that the module is known to cabal or stack
 
   I haven't give it too much thought about how should we improve this though.
+
+- Also note that the data does not need to be there - we can have a caching
+  mechanism that fetches data on the fly and put it locally for future uses.
