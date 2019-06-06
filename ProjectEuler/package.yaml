@@ -3,7 +3,7 @@ version:             0.1.0.0
 github:              "Javran/ProjectEuler"
 license:             MIT
 author:              "Javran Cheng"
-maintainer:          "javran.c@gmail.com"
+maintainer:          "Javran.C@gmail.com"
 copyright:           "Copyright: (c) 2019 Javran Cheng"
 
 description:         "Javran's ProjectEuler Workspace"
@@ -17,6 +17,18 @@ data-files:
 dependencies:
 - base
 - petbox
+- primes
+- data-ordlist
+- strict
+- array
+- containers
+- split
+- filepath
+- mtl
+- parsec
+- PSQueue
+- lens
+- MonadRandom
 
 executables:
   pet:
@@ -26,3 +38,9 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    other-modules: 
+    - Paths_ProjectEuler
+    - ProjectEuler.Types
+    - ProjectEuler.GetData
+    - ProjectEuler.Problem1
+    - ProjectEuler.Problem24
