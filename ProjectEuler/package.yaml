@@ -16,31 +16,51 @@ data-files:
 
 dependencies:
 - base
-- petbox
-- primes
-- data-ordlist
-- strict
-- array
-- containers
-- split
-- filepath
-- mtl
-- parsec
-- PSQueue
-- lens
-- MonadRandom
 
 executables:
   pet:
     main:                Main.hs
     source-dirs:         src
+
+    dependencies:
+    - petbox
+    - primes
+    - data-ordlist
+    - strict
+    - array
+    - containers
+    - split
+    - filepath
+    - mtl
+    - parsec
+    - PSQueue
+    - lens
+    - MonadRandom
+
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+
     other-modules: 
     - Paths_ProjectEuler
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.Problem1
     - ProjectEuler.Problem24
+  templater:
+    main: Main.hs
+    source-dirs: templater
+
+    dependencies:
+    - microstache
+    - turtle
+    - system-filepath
+    - aeson
+    - text
+    - unordered-containers
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N

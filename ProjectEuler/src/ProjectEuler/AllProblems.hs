@@ -11,8 +11,7 @@ import ProjectEuler.Problem24
 
 allProblems :: IM.IntMap Problem
 allProblems =
-    IM.fromList
-    . fmap (\x -> (problemId x, x))
-    $ [ ProjectEuler.Problem1.problem
-      , ProjectEuler.Problem24.problem
-      ]
+  IM.fromList
+    [ (1, ProjectEuler.Problem1.problem)
+    , (24, ProjectEuler.Problem24.problem)
+    ]
