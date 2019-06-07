@@ -1,12 +1,12 @@
-module ProjectEuler.Problem1 (P) where
+module ProjectEuler.Problem1 (problem) where
 
 import ProjectEuler.Types
 
-data P
+problem :: Problem
+problem = Problem 1 Solved $ const main
 
-instance Problem P where
-  getStatus _ = Solved
-  run _ _ = print
+main :: IO ()
+main = print
      $ sum [ x
            | x <- [1::Int .. 999]
            , x `mod` 3 == 0 || x `mod` 5 == 0

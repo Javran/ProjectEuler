@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
 module ProjectEuler.Types
   ( ProblemStatus(..)
   , Problem(..)
@@ -6,9 +5,9 @@ module ProjectEuler.Types
 
 data ProblemStatus = Solved | Unsolved
 
-class Problem a where
-  getStatus :: forall p. p a -> ProblemStatus
-  getStatus _ = Unsolved
-
-  run :: forall p. p a -> [String] -> IO ()
-  run _ _ = pure ()
+data Problem
+  = Problem
+  { problemId :: Int
+  , problemStatus :: ProblemStatus
+  , problemRun :: [String] -> IO ()
+  }
