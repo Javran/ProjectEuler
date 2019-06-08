@@ -46,8 +46,10 @@ executables:
     - Paths_ProjectEuler
     - ProjectEuler.Types
     - ProjectEuler.GetData
+    - ProjectEuler.AllProblems
     - ProjectEuler.Problem1
     - ProjectEuler.Problem24
+
   templater:
     main: Main.hs
     source-dirs: templater

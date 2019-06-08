@@ -1,4 +1,6 @@
-module ProjectEuler.AllProblems where
+module ProjectEuler.AllProblems
+  ( allProblems
+  ) where
 
 import qualified Data.IntMap.Strict as IM
 
