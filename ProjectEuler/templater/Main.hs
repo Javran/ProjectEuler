@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Turtle.Prelude
@@ -6,7 +6,7 @@ import Turtle.Shell
 import Turtle.Pattern
 import Data.Maybe
 import Text.Microstache
-import Data.Aeson.QQ.Simple
+import Data.Aeson
 import Control.Applicative
 
 import qualified Data.Text as T
@@ -14,6 +14,8 @@ import qualified Data.Text.Lazy as TL
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified Control.Foldl as Foldl
 import qualified Data.IntSet as IS
+import qualified Data.HashMap.Strict as HM
+import qualified Data.Vector as V
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -47,6 +49,23 @@ scanProblems projectHome = do
     patProblem :: Pattern Int
     patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
 
+renderAllProblemsContent :: Template -> IS.IntSet -> TL.Text
+renderAllProblemsContent tmpl pIds = renderMustache tmpl ctxt
+  where
+    ctxt :: Value
+    ctxt = Object $ HM.fromList
+      [ ("timestamp", "covfefe")
+      , ("problem_list", problemList)
+      ]
+    problemList =
+        Array $ V.fromList $
+          zipWith mk (IS.toAscList pIds) (True:repeat False)
+      where
+        mk pId isFirst =
+          Object $ HM.fromList
+            [ ("first", Bool isFirst)
+            , ("val", Number $ fromIntegral pId)
+            ]
 
 main :: IO ()
 main = do
@@ -55,12 +74,6 @@ main = do
       allProblemsTmplPath =
         projectHome FP.</> "templater" FP.</> "mustache" FP.</> "AllProblems.hs"
   template <- compileMustacheFile (FP.encodeString allProblemsTmplPath)
-  let v = [aesonQQ|
-                    { "problem_list":
-                      [{"first": true, "val": 1}, {"val": 2}, {"val": 6}]
-                    , "timestamp": "covfefe"
-                    }
-                  |]
-      out = renderMustache template v
+  pIds <- scanProblems projectHome
+  let out = renderAllProblemsContent template pIds
   putStr (T.unpack . TL.toStrict $ out)
-  print =<< scanProblems projectHome

@@ -65,6 +65,8 @@ executables:
     - text
     - unordered-containers
     - foldl
+    - vector
+    - containers
 
     ghc-options:
     - -threaded
