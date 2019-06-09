@@ -64,6 +64,7 @@ executables:
     - aeson
     - text
     - unordered-containers
+    - foldl
 
     ghc-options:
     - -threaded
