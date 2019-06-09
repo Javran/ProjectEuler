@@ -8,12 +8,12 @@ import Data.Maybe
 import Text.Microstache
 import Data.Aeson.QQ.Simple
 import Control.Applicative
-import Data.List
 
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified Control.Foldl as Foldl
+import qualified Data.IntSet as IS
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -32,8 +32,21 @@ import qualified Control.Foldl as Foldl
 
  -}
 
-patProblem :: Pattern Int
-patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
+
+scanProblems :: FP.FilePath -> IO IS.IntSet
+scanProblems projectHome = do
+    moduleFiles <-
+      reduce Foldl.list $
+        ls $ projectHome FP.</> "src" FP.</> "ProjectEuler"
+    let moduleNames = either id id . FP.toText . FP.filename <$> moduleFiles
+    pure $
+      IS.fromList
+      . mapMaybe (listToMaybe . match patProblem)
+      $ moduleNames
+  where
+    patProblem :: Pattern Int
+    patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
+
 
 main :: IO ()
 main = do
@@ -50,8 +63,4 @@ main = do
                   |]
       out = renderMustache template v
   putStr (T.unpack . TL.toStrict $ out)
-  moduleFiles <- reduce Foldl.list $
-          ls $ projectHome FP.</> "src" FP.</> "ProjectEuler"
-  let moduleNames = either id id . FP.toText . FP.filename <$> moduleFiles
-      problems = Data.List.sort $ mapMaybe (listToMaybe . match patProblem) moduleNames
-  print problems
+  print =<< scanProblems projectHome
