@@ -67,6 +67,7 @@ executables:
     - foldl
     - vector
     - containers
+    - time
 
     ghc-options:
     - -threaded

@@ -8,6 +8,7 @@ import Data.Maybe
 import Text.Microstache
 import Data.Aeson
 import Control.Applicative
+import Data.Time.Clock
 
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -49,12 +50,12 @@ scanProblems projectHome = do
     patProblem :: Pattern Int
     patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
 
-renderAllProblemsContent :: Template -> IS.IntSet -> TL.Text
-renderAllProblemsContent tmpl pIds = renderMustache tmpl ctxt
+renderAllProblemsContent :: UTCTime -> Template -> IS.IntSet -> TL.Text
+renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
   where
     ctxt :: Value
     ctxt = Object $ HM.fromList
-      [ ("timestamp", "covfefe")
+      [ ("timestamp", String (T.pack . show $ t))
       , ("problem_list", problemList)
       ]
     problemList =
@@ -75,5 +76,6 @@ main = do
         projectHome FP.</> "templater" FP.</> "mustache" FP.</> "AllProblems.hs"
   template <- compileMustacheFile (FP.encodeString allProblemsTmplPath)
   pIds <- scanProblems projectHome
-  let out = renderAllProblemsContent template pIds
+  t <- getCurrentTime
+  let out = renderAllProblemsContent t template pIds
   putStr (T.unpack . TL.toStrict $ out)
