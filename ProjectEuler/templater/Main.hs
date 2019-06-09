@@ -19,7 +19,9 @@ import qualified Filesystem.Path.CurrentOS as FP
   Usage: require environment variable "PROJECT_EULER_HOME" to point to project home directory.
 
   - `templater <num>`: create Problem<num> using template (implies `sync`)
-  - `templater sync`: scan through problems and re-generate AllProblems.hs.
+  - `templater sync`:
+    + scan through problems and re-generate AllProblems.hs.
+    + upate package.yaml and update the list of problem modules
 
  -}
 
