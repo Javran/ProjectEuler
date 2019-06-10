@@ -10,6 +10,7 @@ import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
 import Turtle.Shell
+import System.IO
 
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
@@ -72,7 +73,7 @@ renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
             , ("val", Number $ fromIntegral pId)
             ]
 
-updateAllProblems :: FP.FilePath -> IO ()
+updateAllProblems :: FP.FilePath -> IO IS.IntSet
 updateAllProblems projectHome = do
   let allProblemsTmplPath =
         projectHome </> "templater" </> "mustache" </> "AllProblems.hs"
@@ -83,9 +84,22 @@ updateAllProblems projectHome = do
   t <- getCurrentTime
   let content = renderAllProblemsContent t template pIds
   TL.writeFile (FP.encodeString allProblemsFilePath) content
+  pure pIds
+
+updatePackageYaml :: FP.FilePath -> IS.IntSet -> IO ()
+updatePackageYaml projectHome _pIds = do
+    let fp = FP.encodeString $ projectHome </> "package.yaml"
+    newContent <- withFile fp ReadMode $ \h -> do
+      raws <- lines <$> hGetContents h
+      pure $ unlines . updatePackageYamlContent $ raws
+    writeFile fp newContent
+  where
+    updatePackageYamlContent :: [String] -> [String]
+    updatePackageYamlContent _xs = error "TODO"
 
 main :: IO ()
 main = do
   curEnv <- env
   let Just projectHome = FP.fromText <$> lookup "PROJECT_EULER_HOME" curEnv
-  updateAllProblems projectHome
+  pIds <- updateAllProblems projectHome
+  updatePackageYaml projectHome pIds
