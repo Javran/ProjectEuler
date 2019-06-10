@@ -12,6 +12,7 @@ import Turtle.Prelude
 import Turtle.Shell
 import System.IO
 
+import qualified System.IO.Strict
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
 import qualified Data.IntSet as IS
@@ -89,13 +90,30 @@ updateAllProblems projectHome = do
 updatePackageYaml :: FP.FilePath -> IS.IntSet -> IO ()
 updatePackageYaml projectHome _pIds = do
     let fp = FP.encodeString $ projectHome </> "package.yaml"
-    newContent <- withFile fp ReadMode $ \h -> do
-      raws <- lines <$> hGetContents h
-      pure $ unlines . updatePackageYamlContent $ raws
+    raws <- lines <$> System.IO.Strict.readFile fp
+    let newContent = unlines . updatePackageYamlContent $ raws
     writeFile fp newContent
   where
+    extractSectionBegin :: String -> Maybe Int
+    extractSectionBegin line = do
+        "# ==== PROBLEM_MODULE_LIST_BEGIN" <- pure content
+        pure (length sps)
+      where
+        (sps, content) = span (== ' ') line
+    extractSectionEnd :: String -> Maybe ()
+    extractSectionEnd line = do
+        "# ==== PROBLEM_MODULE_LIST_END" <- pure content
+        pure ()
+      where
+        (_sps, content) = span (== ' ') line
+
     updatePackageYamlContent :: [String] -> [String]
-    updatePackageYamlContent _xs = error "TODO"
+    updatePackageYamlContent [] = error "package.yaml is empty"
+    updatePackageYamlContent (x:xs)
+      | Just spaceCount <- extractSectionBegin x =
+          let (sectionEnd:sectionAfterEnd) = dropWhile (isNothing . extractSectionEnd) xs
+          in x:[replicate spaceCount ' ' <> "TODO: some stuff"] <> (sectionEnd : sectionAfterEnd)
+      | otherwise = x : updatePackageYamlContent xs
 
 main :: IO ()
 main = do
