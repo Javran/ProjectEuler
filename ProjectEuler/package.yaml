@@ -47,7 +47,7 @@ executables:
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.AllProblems
-    # TODO: The following section should be modified automatically by "templater"
+    # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN
     - ProjectEuler.Problem1
     - ProjectEuler.Problem24
@@ -68,6 +68,7 @@ executables:
     - vector
     - containers
     - time
+    - strict
 
     ghc-options:
     - -threaded

@@ -10,9 +10,7 @@ import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
 import Turtle.Shell
-import System.IO
 
-import qualified System.IO.Strict
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
 import qualified Data.IntSet as IS
@@ -21,6 +19,7 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
 import qualified Data.Vector as V
 import qualified Filesystem.Path.CurrentOS as FP
+import qualified System.IO.Strict
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -88,16 +87,16 @@ updateAllProblems projectHome = do
   pure pIds
 
 updatePackageYaml :: FP.FilePath -> IS.IntSet -> IO ()
-updatePackageYaml projectHome _pIds = do
+updatePackageYaml projectHome pIds = do
     let fp = FP.encodeString $ projectHome </> "package.yaml"
     raws <- lines <$> System.IO.Strict.readFile fp
     let newContent = unlines . updatePackageYamlContent $ raws
     writeFile fp newContent
   where
-    extractSectionBegin :: String -> Maybe Int
+    extractSectionBegin :: String -> Maybe String
     extractSectionBegin line = do
         "# ==== PROBLEM_MODULE_LIST_BEGIN" <- pure content
-        pure (length sps)
+        pure sps
       where
         (sps, content) = span (== ' ') line
     extractSectionEnd :: String -> Maybe ()
@@ -108,11 +107,18 @@ updatePackageYaml projectHome _pIds = do
         (_sps, content) = span (== ' ') line
 
     updatePackageYamlContent :: [String] -> [String]
-    updatePackageYamlContent [] = error "package.yaml is empty"
+    updatePackageYamlContent [] =
+      -- we could have return [], but here we want to
+      -- make sure that the section for templater is properly recognized.
+      -- and if it does, this part is unreachable.
+      error "package.yaml is empty"
     updatePackageYamlContent (x:xs)
-      | Just spaceCount <- extractSectionBegin x =
-          let (sectionEnd:sectionAfterEnd) = dropWhile (isNothing . extractSectionEnd) xs
-          in x:[replicate spaceCount ' ' <> "TODO: some stuff"] <> (sectionEnd : sectionAfterEnd)
+      | Just spChars <- extractSectionBegin x =
+          let (secEnd:secAfterEnd) = dropWhile (isNothing . extractSectionEnd) xs
+              problemModules =
+                (spChars <>) . ("- ProjectEuler.Problem" <>) . show
+                  <$> IS.toAscList pIds
+          in x:problemModules <> (secEnd:secAfterEnd)
       | otherwise = x : updatePackageYamlContent xs
 
 main :: IO ()
