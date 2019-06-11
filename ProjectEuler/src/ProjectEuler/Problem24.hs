@@ -1,7 +1,9 @@
 module ProjectEuler.Problem24 (problem) where
 
 import ProjectEuler.Types
-import Data.Char
+
+problem :: Problem
+problem = pureProblem 24 Solved result
 
 factorial :: Int -> Int
 factorial n = product [1..n]
@@ -28,8 +30,5 @@ breakList n (x:xs) = (x1,x:xs1)
     where
         (x1,xs1) = breakList (n-1) xs
 
-problem :: Problem
-problem = Problem 24 Solved $ const main
-
-main :: IO ()
-main = print $ map (\x -> chr $ ord '0' + x) $ pidToPermutation 999999 [0..9]
+result :: String
+result = (\x -> ['0'..] !! x) <$> pidToPermutation 999999 [0..9]
