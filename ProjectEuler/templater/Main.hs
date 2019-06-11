@@ -106,14 +106,14 @@ updatePackageYaml projectHome pIds = do
       -- make sure that the section for templater is properly recognized.
       -- and if it does, this part is unreachable.
       error "package.yaml is empty"
-    updatePackageYamlContent (x:xs)
-      | Just spChars <- extractSectionBegin x =
-          let secAfter = dropWhile (isNothing . extractSectionEnd) xs
-              problemModules =
-                (spChars <>) . ("- ProjectEuler.Problem" <>) . show
-                  <$> pIds
-          in x:problemModules <> secAfter
-      | otherwise = x : updatePackageYamlContent xs
+    updatePackageYamlContent (x:xs) = case extractSectionBegin x of
+      Just spChars ->
+        let secAfter = dropWhile (isNothing . extractSectionEnd) xs
+            problemModules =
+              (spChars <>) . ("- ProjectEuler.Problem" <>) . show
+                <$> pIds
+        in x : problemModules <> secAfter
+      _ -> x : updatePackageYamlContent xs
 
 main :: IO ()
 main = do
