@@ -5,7 +5,6 @@ import Control.Applicative
 import Data.Aeson
 import Data.List
 import Data.Maybe
-import Data.Time.Clock
 import Filesystem.Path.CurrentOS ((</>))
 import Text.Microstache
 import Turtle.Pattern
@@ -14,7 +13,6 @@ import Turtle.Shell
 
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
-import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
 import qualified Data.Vector as V
@@ -55,14 +53,11 @@ scanProblems projectHome = do
     patProblem :: Pattern Int
     patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
 
-renderAllProblemsContent :: UTCTime -> Template -> [Int] -> TL.Text
-renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
+renderAllProblemsContent :: Template -> [Int] -> TL.Text
+renderAllProblemsContent tmpl pIds = renderMustache tmpl ctxt
   where
     ctxt :: Value
-    ctxt = Object $ HM.fromList
-      [ ("timestamp", String (T.pack . show $ t))
-      , ("problem_list", problemList)
-      ]
+    ctxt = Object $ HM.fromList [("problem_list", problemList)]
     problemList =
         Array $ V.fromList $
           zipWith mk pIds (True:repeat False)
@@ -81,8 +76,7 @@ updateAllProblems projectHome = do
         projectHome </> "src" </> "ProjectEuler" </> "AllProblems.hs"
   template <- compileMustacheFile (FP.encodeString allProblemsTmplPath)
   pIds <- scanProblems projectHome
-  t <- getCurrentTime
-  let content = renderAllProblemsContent t template pIds
+  let content = renderAllProblemsContent template pIds
   TL.writeFile (FP.encodeString allProblemsFilePath) content
   pure pIds
 
