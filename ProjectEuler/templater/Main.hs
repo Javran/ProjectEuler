@@ -3,6 +3,7 @@ module Main where
 
 import Control.Applicative
 import Data.Aeson
+import Data.List
 import Data.Maybe
 import Data.Time.Clock
 import Filesystem.Path.CurrentOS ((</>))
@@ -13,7 +14,6 @@ import Turtle.Shell
 
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
-import qualified Data.IntSet as IS
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
@@ -41,21 +41,21 @@ import qualified System.IO.Strict
 
  -}
 
-scanProblems :: FP.FilePath -> IO IS.IntSet
+scanProblems :: FP.FilePath -> IO [Int]
 scanProblems projectHome = do
     moduleFiles <-
       reduce Foldl.list $
         ls $ projectHome FP.</> "src" FP.</> "ProjectEuler"
     let moduleNames = either id id . FP.toText . FP.filename <$> moduleFiles
     pure $
-      IS.fromList
+      Data.List.sort
       . mapMaybe (listToMaybe . match patProblem)
       $ moduleNames
   where
     patProblem :: Pattern Int
     patProblem = text "Problem" *> (read <$> some digit) <* text ".hs"
 
-renderAllProblemsContent :: UTCTime -> Template -> IS.IntSet -> TL.Text
+renderAllProblemsContent :: UTCTime -> Template -> [Int] -> TL.Text
 renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
   where
     ctxt :: Value
@@ -65,7 +65,7 @@ renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
       ]
     problemList =
         Array $ V.fromList $
-          zipWith mk (IS.toAscList pIds) (True:repeat False)
+          zipWith mk pIds (True:repeat False)
       where
         mk pId isFirst =
           Object $ HM.fromList
@@ -73,7 +73,7 @@ renderAllProblemsContent t tmpl pIds = renderMustache tmpl ctxt
             , ("val", Number $ fromIntegral pId)
             ]
 
-updateAllProblems :: FP.FilePath -> IO IS.IntSet
+updateAllProblems :: FP.FilePath -> IO [Int]
 updateAllProblems projectHome = do
   let allProblemsTmplPath =
         projectHome </> "templater" </> "mustache" </> "AllProblems.hs"
@@ -86,7 +86,7 @@ updateAllProblems projectHome = do
   TL.writeFile (FP.encodeString allProblemsFilePath) content
   pure pIds
 
-updatePackageYaml :: FP.FilePath -> IS.IntSet -> IO ()
+updatePackageYaml :: FP.FilePath -> [Int] -> IO ()
 updatePackageYaml projectHome pIds = do
     let fp = FP.encodeString $ projectHome </> "package.yaml"
     raws <- lines <$> System.IO.Strict.readFile fp
@@ -114,11 +114,11 @@ updatePackageYaml projectHome pIds = do
       error "package.yaml is empty"
     updatePackageYamlContent (x:xs)
       | Just spChars <- extractSectionBegin x =
-          let (secEnd:secAfterEnd) = dropWhile (isNothing . extractSectionEnd) xs
+          let secAfter = dropWhile (isNothing . extractSectionEnd) xs
               problemModules =
                 (spChars <>) . ("- ProjectEuler.Problem" <>) . show
-                  <$> IS.toAscList pIds
-          in x:problemModules <> (secEnd:secAfterEnd)
+                  <$> pIds
+          in x:problemModules <> secAfter
       | otherwise = x : updatePackageYamlContent xs
 
 main :: IO ()
