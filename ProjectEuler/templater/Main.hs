@@ -10,6 +10,7 @@ import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
 import Turtle.Shell
+import System.Environment
 
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
@@ -117,6 +118,9 @@ updatePackageYaml projectHome pIds = do
 
 main :: IO ()
 main = do
+  args <- getArgs
+  putStrLn "Args:"
+  mapM_ (putStrLn . ("- " <>)) args
   curEnv <- env
   let Just projectHome = FP.fromText <$> lookup "PROJECT_EULER_HOME" curEnv
   pIds <- updateAllProblems projectHome
