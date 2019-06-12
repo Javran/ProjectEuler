@@ -1,6 +1,7 @@
 {-# LANGUAGE
     LambdaCase
   , NamedFieldPuns
+  , TypeApplications
   #-}
 module Main
   ( main
@@ -12,6 +13,7 @@ import ProjectEuler.Types
 import System.CPUTime
 import System.Environment
 import System.Exit
+import Control.Exception
 import Text.Printf
 
 {-
@@ -30,7 +32,8 @@ evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId
   tStart <- getCPUTime
-  problemRun []
+  catch @SomeException (problemRun []) $ \e ->
+    putStrLn (displayException e)
   tEnd <- getCPUTime
   let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
   printf "Time elapsed: %0.4f ms\n" (diff :: Double)
