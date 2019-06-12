@@ -39,6 +39,7 @@ executables:
 
     ghc-options:
     - -threaded
+    - -O2
     - -rtsopts
     - -with-rtsopts=-N
 
@@ -72,5 +73,6 @@ executables:
 
     ghc-options:
     - -threaded
+    - -O2
     - -rtsopts
     - -with-rtsopts=-N
