@@ -45,6 +45,8 @@ evalProblem Problem {problemId, problemRun} = do
 
   - `pet run <problem id>` executes solution for a program.
   - `pet new <problem id>` sets up templates for a new problem.
+    (TODO) this should be templater's job.
+  - `pet run_all` for running all programs in sequence.
 
  -}
 
