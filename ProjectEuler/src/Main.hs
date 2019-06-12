@@ -48,6 +48,10 @@ evalProblem Problem {problemId, problemRun} = do
     (TODO) this should be templater's job.
   - `pet run_all` for running all programs in sequence.
 
+  TODO: problem args are not being respected
+  TODO: plan for migrating old problems into new infra, we should still
+    be able to see time reports in travis-ci.
+
  -}
 
 main :: IO ()
