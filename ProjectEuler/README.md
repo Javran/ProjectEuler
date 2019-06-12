@@ -7,3 +7,15 @@ This directory is supposed to be the new project home for the migration.
 - `src/ProjectEuler` is the place for both solutions and stuff
   commonly shared. In particular, `ProblemX.hs` where `X` is a number,
   is the program for the corresponding problem.
+
+## Executables
+
+- `pet`: main program.
+  `pet run <problem-number>` to run the program for the specific problem.
+
+- `templater`: scripting for automating module list update.
+  (TODO) It is also in plan to support creating new problem program.
+
+- `XXX-example`: these are simple scripts just to save some typing time.
+  To use them, edit its environment variables as appropriate and
+  rename droping the `-example` suffix.
