@@ -14,6 +14,18 @@ import System.Environment
 import System.Exit
 import Text.Printf
 
+{-
+  Run the program and measure time.
+
+  Note that this is by no means an accurate execution time,
+  as we have intentionally put all solution programs together,
+  some sharing will happen, making overall time less than
+  running each of them individually.
+
+  However, this still helps in detecting solutions that
+  takes a long time to run and therefore surface potential points
+  of improvement.
+ -}
 evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId
