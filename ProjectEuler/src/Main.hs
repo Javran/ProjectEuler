@@ -7,14 +7,17 @@ module Main
   ( main
   ) where
 
-import qualified Data.IntMap.Strict as IM
-import ProjectEuler.AllProblems
-import ProjectEuler.Types
+import Control.Exception
+import Control.Monad
 import System.CPUTime
 import System.Environment
 import System.Exit
-import Control.Exception
 import Text.Printf
+
+import qualified Data.IntMap.Strict as IM
+
+import ProjectEuler.AllProblems
+import ProjectEuler.Types
 
 {-
   Run the program and measure time.
@@ -30,7 +33,7 @@ import Text.Printf
  -}
 evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
-  putStrLn $ "Evaluating Problem #" <> show problemId
+  putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
   catch @SomeException (problemRun []) $ \e ->
     putStrLn (displayException e)
@@ -63,5 +66,5 @@ main = getArgs >>= \case
           Nothing -> do
             putStrLn $ "Problem #" <> show pId <> " not found."
             exitFailure
-  _ -> error "TODO"
-
+  ["run_all"] -> forM_ (IM.toAscList allProblems) $ \(_,p) -> evalProblem p
+  xs -> error $ "Unrecognized: " <> show xs
