@@ -24,6 +24,7 @@ before_install:
 - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 - stack install shake
 - stack build
+- "(cd ProjectEuler && stack build)"
 
 install:
 # Build dependencies
@@ -32,3 +33,4 @@ install:
 script:
   - "./build.sh"
   - "cat _build/report.txt"
+  - "(cd ProjectEuler && stack build && stack exec -- pet run_all)"
