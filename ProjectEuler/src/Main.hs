@@ -35,7 +35,7 @@ evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
-  catch @SomeException (problemRun []) $ \e ->
+  catch @SomeException problemRun $ \e ->
     putStrLn (displayException e)
   tEnd <- getCPUTime
   let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
@@ -51,10 +51,6 @@ evalProblem Problem {problemId, problemRun} = do
 
 
   TODO:
-
-  - problem args are not being respected - but do we really need that?
-    if we want to setup tests or run it against some dynamic inputs,
-    we can just export module internals.
 
   - plan for migrating old problems into new infra, we should still
     be able to see time reports in travis-ci.
