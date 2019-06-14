@@ -44,15 +44,19 @@ evalProblem Problem {problemId, problemRun} = do
 {-
   main program is named "pet" for ProjectEuler Toolkit.
 
-  TODO:
-
   - `pet run <problem id>` executes solution for a program.
-  - `pet new <problem id>` sets up templates for a new problem.
-    (TODO) this should be templater's job.
+  - (TODO) `pet new <problem id>` sets up templates for a new problem.
+    this should be templater's job.
   - `pet run_all` for running all programs in sequence.
 
-  TODO: problem args are not being respected
-  TODO: plan for migrating old problems into new infra, we should still
+
+  TODO:
+
+  - problem args are not being respected - but do we really need that?
+    if we want to setup tests or run it against some dynamic inputs,
+    we can just export module internals.
+
+  - plan for migrating old problems into new infra, we should still
     be able to see time reports in travis-ci.
 
  -}
