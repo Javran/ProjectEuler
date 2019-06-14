@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PROJECT_EULER_HOME=/path/to/project/home
+
+stack build ProjectEuler:exe:pet && stack exec -- pet "$@"
