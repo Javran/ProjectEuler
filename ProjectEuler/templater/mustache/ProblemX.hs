@@ -5,6 +5,7 @@ module ProjectEuler.Problem{{{problem_id}}}
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem {{{problem_id}}} Unsolved result
+problem = pureProblem {{{problem_id}}} {{{solve_state}}} result
 
 result = ()
+{{{extra_content}}}

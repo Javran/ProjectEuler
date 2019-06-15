@@ -34,6 +34,10 @@ import qualified System.IO.Strict
   problem modules with template.
 
   - `templater <num>`: create Problem<num> using template (implies `sync`)
+  - `templater migrate <number>`: migrate a old solution code.
+    Note that this is by no means a correct migration - this only move
+    the file with proper naming and program backbone, which will in turn
+    result in less repetitive work.
   - `templater sync`:
     + scan through problems and re-generate AllProblems.hs.
     + upate package.yaml and update the list of problem modules
@@ -44,7 +48,7 @@ scanProblems :: FP.FilePath -> IO [Int]
 scanProblems projectHome = do
     moduleFiles <-
       reduce Foldl.list $
-        ls $ projectHome FP.</> "src" FP.</> "ProjectEuler"
+        ls $ projectHome </> "src" </> "ProjectEuler"
     let moduleNames = either id id . FP.toText . FP.filename <$> moduleFiles
     pure $
       Data.List.sort
