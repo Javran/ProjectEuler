@@ -1,4 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE
+    OverloadedStrings
+  , LambdaCase
+  #-}
 module Main where
 
 import Control.Applicative
@@ -6,16 +9,18 @@ import Data.Aeson
 import Data.List
 import Data.Maybe
 import Filesystem.Path.CurrentOS ((</>))
+import System.Environment
+import System.Exit
 import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
 import Turtle.Shell
-import System.Environment
 
 import qualified Control.Foldl as Foldl
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
+import qualified Data.Map.Strict as M
 import qualified Data.Vector as V
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
@@ -120,12 +125,29 @@ updatePackageYaml projectHome pIds = do
         in x : problemModules <> secAfter
       _ -> x : updatePackageYamlContent xs
 
-main :: IO ()
-main = do
-  args <- getArgs
-  putStrLn "Args:"
-  mapM_ (putStrLn . ("- " <>)) args
+templaterSync :: IO ()
+templaterSync = do
   curEnv <- env
   let Just projectHome = FP.fromText <$> lookup "PROJECT_EULER_HOME" curEnv
   pIds <- updateAllProblems projectHome
   updatePackageYaml projectHome pIds
+
+-- succeed as long as the given key matches exactly one result (by prefix)
+uniqueLookup :: Eq ke => [ke] -> M.Map [ke] v -> Maybe v
+uniqueLookup k m = case filter ((k `isPrefixOf`) . fst) $ M.toList m of
+  [(_,v)] -> Just v
+  _ -> Nothing
+
+subCmds :: M.Map String (IO ())
+subCmds = M.fromList
+  [ ("migrate", pure ()) -- TODO
+  , ("create", pure ()) -- TODO
+  , ("sync", templaterSync)
+  ]
+
+main :: IO ()
+main = getArgs >>= \case
+  [cmd] | Just action <- uniqueLookup cmd subCmds -> action
+  _ -> do
+    putStrLn $ "templater <" <> intercalate "|" (M.keys subCmds) <> ">"
+    exitFailure
