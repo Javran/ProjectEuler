@@ -1,4 +1,6 @@
-module ProjectEuler.Problem3 (problem) where
+module ProjectEuler.Problem3
+  ( problem
+  ) where
 
 import ProjectEuler.Types
 import Math.NumberTheory.Powers.Squares

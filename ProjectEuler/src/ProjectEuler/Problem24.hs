@@ -1,4 +1,6 @@
-module ProjectEuler.Problem24 (problem) where
+module ProjectEuler.Problem24
+  ( problem
+  ) where
 
 import ProjectEuler.Types
 

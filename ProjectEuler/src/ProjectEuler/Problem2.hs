@@ -1,4 +1,6 @@
-module ProjectEuler.Problem2 (problem) where
+module ProjectEuler.Problem2
+  ( problem
+  ) where
 
 import Data.List
 
