@@ -36,6 +36,7 @@ executables:
     - PSQueue
     - lens
     - MonadRandom
+    - arithmoi
 
     ghc-options:
     - -threaded
