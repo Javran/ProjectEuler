@@ -1,8 +1,6 @@
 module ProjectEuler.Problem2 (problem) where
 
 import Data.List
-import Data.List.Split
-import Data.Monoid
 
 import ProjectEuler.Types
 
@@ -12,8 +10,20 @@ problem = pureProblem 2 Solved result
 fibs :: [Int]
 fibs = 0:1:zipWith (+) fibs (tail fibs)
 
--- result :: Int
+{-
+  Note that the parity pattern of Fibonacci sequence is obvious:
+  if we begin with 0, then the squence's parity will be: cycle [even, odd, odd],
+  this allows us to create the Fibnoacci sequence with only even numbers
+  by simply "take one and skip next two" over and over again.
+ -}
+fibEvens :: [Int]
+fibEvens = unfoldr (Just . onlyEvens) fibs
+  where
+    onlyEvens (a:_:_:b) = (a,b)
+    onlyEvens _ = error "unreachable"
+
+result :: Int
 result =
-  sum . filter even      -- sum of evens
-  . takeWhile (<=4000000)  -- do not exceed four million
-  $ drop 2 fibs 
+  sum
+  . takeWhile (<= 4000000)
+  $ fibEvens
