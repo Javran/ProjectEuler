@@ -33,8 +33,8 @@ import qualified System.IO.Strict
   TODO: plan to bring up "sync" functionality first and continue to allow creating
   problem modules with template.
 
-  - `templater <num>`: create Problem<num> using template (implies `sync`)
-  - `templater migrate <number>`: migrate a old solution code.
+  - `templater create <num>`: create Problem<num> using template. (implies `sync`)
+  - `templater migrate <num>`: migrate a old solution code. (implies `sync`)
     Note that this is by no means a correct migration - this only move
     the file with proper naming and program backbone, which will in turn
     result in less repetitive work.
