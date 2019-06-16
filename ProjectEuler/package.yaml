@@ -37,6 +37,9 @@ executables:
     - lens
     - MonadRandom
     - arithmoi
+    - text
+    - text-show
+    - dlist
 
     ghc-options:
     - -threaded

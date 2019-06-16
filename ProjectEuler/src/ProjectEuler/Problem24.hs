@@ -27,7 +27,7 @@ pidToPermutation pid arr = h : pidToPermutation subPid t
 
 -- get the n-th element, also return the list after removing that element
 breakList :: Int -> [a] -> (a, [a])
-breakList n xs = (z,ys<>zs)
+breakList n xs = (z, ys<>zs)
   where
     (ys,z:zs) = splitAt n xs
 

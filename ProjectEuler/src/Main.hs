@@ -14,6 +14,7 @@ import System.Environment
 import System.Exit
 import Text.Printf
 
+import qualified Data.Text.IO as T
 import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.AllProblems
@@ -35,7 +36,11 @@ evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
-  catch @SomeException problemRun $ \e ->
+  let problemAction = do
+        ((), outs) <- runPEM problemRun
+        putStrLn "Output:"
+        mapM_ T.putStrLn outs
+  catch @SomeException problemAction $ \e ->
     putStrLn (displayException e)
   tEnd <- getCPUTime
   let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
