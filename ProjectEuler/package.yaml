@@ -40,6 +40,9 @@ executables:
     - text
     - text-show
     - dlist
+    - lifted-base
+    - monad-control
+    - transformers-base
 
     ghc-options:
     - -threaded

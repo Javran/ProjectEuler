@@ -41,7 +41,9 @@ evalProblem Problem {problemId, problemRun} = do
         putStrLn "Output:"
         mapM_ T.putStrLn outs
   catch @SomeException problemAction $ \e ->
-    putStrLn (displayException e)
+    -- note that if exception is uncaught, we will lose track of logs
+    -- so it's recommended to make sure all lifted IO action are safe.
+    putStrLn $ "Uncaught exception: " <> displayException e
   tEnd <- getCPUTime
   let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
   printf "Time elapsed: %0.4f ms\n" (diff :: Double)

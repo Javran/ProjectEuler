@@ -1,4 +1,7 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE
+    GeneralizedNewtypeDeriving
+  , UndecidableInstances
+  #-}
 module ProjectEuler.Types
   ( ProblemStatus(..)
   , Problem(..)
@@ -8,13 +11,17 @@ module ProjectEuler.Types
   , runPEM
   , logT
   , logText
+  , io
   ) where
 
 import Control.Arrow
-import qualified Data.Text as T
-import qualified Data.DList as DL
+import Control.Monad.Base
+import Control.Monad.Trans.Control
 import Control.Monad.Writer
 import TextShow
+
+import qualified Data.DList as DL
+import qualified Data.Text as T
 
 data ProblemStatus = Solved | Unsolved
 
@@ -38,6 +45,9 @@ data Problem
 pureProblem :: TextShow r => Int -> ProblemStatus -> r -> Problem
 pureProblem pId pSt result =
   Problem pId pSt (logT result)
+
+io :: IO a -> PEM a
+io = liftIO
 
 logT :: TextShow v => v -> PEM ()
 logT v = tell (DL.singleton (showt v))
@@ -65,5 +75,8 @@ newtype PEM a
     , Applicative
     , Monad
     , MonadWriter (DL.DList T.Text)
+    , MonadIO
+    , MonadBase IO
+    , MonadBaseControl IO
     )
 
