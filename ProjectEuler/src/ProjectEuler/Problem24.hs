@@ -31,5 +31,7 @@ breakList n xs = (z, ys<>zs)
   where
     (ys,z:zs) = splitAt n xs
 
-result :: String
-result = (['0'..] !!) <$> pidToPermutation 999999 [0..9]
+result :: Integer
+result =
+  foldl (\a i -> a*10 + fromIntegral i) 0
+  $ pidToPermutation 999999 [0..9]
