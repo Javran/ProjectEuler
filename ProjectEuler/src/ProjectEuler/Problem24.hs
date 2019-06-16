@@ -32,4 +32,4 @@ breakList n xs = (z,ys<>zs)
     (ys,z:zs) = splitAt n xs
 
 result :: String
-result = (\x -> ['0'..] !! x) <$> pidToPermutation 999999 [0..9]
+result = (['0'..] !!) <$> pidToPermutation 999999 [0..9]
