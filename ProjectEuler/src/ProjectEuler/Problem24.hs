@@ -13,7 +13,7 @@ factorials = scanl (*) 1 [1..]
 factorial :: Int -> Int
 factorial = (factorials !!)
 
--- define `permutation id` x to be the identity of the (x+1)-th permutaion
+-- define `permutation id` x to be the identity of the (x+1)-th permutation
 -- e.g. 0,1,2, pid 0 => 0,1,2, pid 1 => 0,2,1, ... etc.
 -- the problem is to find the (999999+1)-th permutation for [0..9], pid = 999999
 pidToPermutation :: Int -> [Int] -> [Int]
@@ -25,14 +25,11 @@ pidToPermutation pid arr = h : pidToPermutation subPid t
     (headInd, subPid) = pid `quotRem` subCycle
     (h,t) = breakList headInd arr
 
--- TODO: break list
-
--- get the x-indexed element, return the list after removing that element
-breakList :: (Eq a) => Int -> [a] -> (a,[a])
-breakList 0 (x:xs) = (x,xs)
-breakList n (x:xs) = (x1,x:xs1)
+-- get the n-th element, also return the list after removing that element
+breakList :: Int -> [a] -> (a, [a])
+breakList n xs = (z,ys<>zs)
   where
-    (x1,xs1) = breakList (n-1) xs
+    (ys,z:zs) = splitAt n xs
 
 result :: String
 result = (\x -> ['0'..] !! x) <$> pidToPermutation 999999 [0..9]
