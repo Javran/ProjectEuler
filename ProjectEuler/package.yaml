@@ -85,3 +85,7 @@ executables:
     - -O2
     - -rtsopts
     - -with-rtsopts=-N
+
+    other-modules:
+    - Common
+    - CmdSync
