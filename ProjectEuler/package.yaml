@@ -73,6 +73,7 @@ executables:
     - system-filepath
     - aeson
     - text
+    - text-show
     - unordered-containers
     - foldl
     - vector
@@ -89,3 +90,4 @@ executables:
     other-modules:
     - Common
     - CmdSync
+    - CmdMigrate

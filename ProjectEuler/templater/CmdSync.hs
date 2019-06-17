@@ -101,8 +101,8 @@ updatePackageYaml projectHome pIds = do
         in x : problemModules <> secAfter
       _ -> x : updatePackageYamlContent xs
 
-cmdSync :: IO ()
-cmdSync = do
+cmdSync :: [String] -> IO ()
+cmdSync _ = do
   prjHome <- getProjectHome
   pIds <- updateAllProblems prjHome
   updatePackageYaml prjHome pIds

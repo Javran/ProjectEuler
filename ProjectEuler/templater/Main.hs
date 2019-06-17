@@ -11,6 +11,7 @@ import System.Exit
 import qualified Data.Map.Strict as M
 
 import CmdSync
+import CmdMigrate
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -42,16 +43,16 @@ uniqueLookup k m = case filter ((k `isPrefixOf`) . fst) $ M.toList m of
   [(_,v)] -> Just v
   _ -> Nothing
 
-subCmds :: M.Map String (IO ())
+subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
-  [ ("migrate", pure ()) -- TODO
-  , ("create", pure ()) -- TODO
+  [ ("migrate", cmdMigrate)
+  , ("create", const $ pure ()) -- TODO
   , ("sync", cmdSync)
   ]
 
 main :: IO ()
 main = getArgs >>= \case
-  [cmd] | Just action <- uniqueLookup cmd subCmds -> action
+  cmd:args' | Just action <- uniqueLookup cmd subCmds -> action args'
   _ -> do
     putStrLn $ "templater <" <> intercalate "|" (M.keys subCmds) <> ">"
     exitFailure
