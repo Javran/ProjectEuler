@@ -14,6 +14,7 @@ import TextShow
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import qualified Data.Text.Lazy as TL
 import qualified Filesystem.Path.CurrentOS as FP
 
@@ -31,9 +32,10 @@ cmdMigrate xs
           newProblemPath =
             prjHome </> "src" </> "ProjectEuler"
             </> FP.fromText ("Problem" <> showt pId <> ".hs")
-      putStrLn "From: "
-      print oldProblemPath
-      putStrLn "To: "
+      putStrLn "Content: "
+      oldProblemContents <- T.readFile (FP.encodeString oldProblemPath)
+      contents <- renderProblem pId True oldProblemContents
+      T.putStrLn (TL.toStrict contents)
       print newProblemPath
       -- TODO: fill template here
   | otherwise = do
