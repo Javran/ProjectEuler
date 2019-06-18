@@ -6,16 +6,13 @@ module CmdMigrate
   ( cmdMigrate
   ) where
 
-import Data.Aeson
 import Filesystem.Path.CurrentOS ((</>))
 import System.Exit
-import Text.Microstache
 import TextShow
+import Turtle.Prelude
 
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.IO as TL
 import qualified Filesystem.Path.CurrentOS as FP
 
 import Common
@@ -32,12 +29,14 @@ cmdMigrate xs
           newProblemPath =
             prjHome </> "src" </> "ProjectEuler"
             </> FP.fromText ("Problem" <> showt pId <> ".hs")
-      putStrLn "Content: "
       oldProblemContents <- T.readFile (FP.encodeString oldProblemPath)
       contents <- renderProblem pId True oldProblemContents
-      T.putStrLn (TL.toStrict contents)
-      print newProblemPath
-      -- TODO: fill template here
+      TL.writeFile (FP.encodeString newProblemPath) contents
+      putStrLn "Problem migrated from:"
+      putStrLn $ "  " <> FP.encodeString oldProblemPath
+      putStrLn "To:"
+      putStrLn $ "  " <> FP.encodeString newProblemPath
+      rm oldProblemPath
   | otherwise = do
       putStrLn "templater migrate <problem id>"
       exitFailure
