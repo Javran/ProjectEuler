@@ -1,3 +1,14 @@
+module ProjectEuler.Problem4
+  ( problem
+  ) where
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 4 Solved result
+
+result = ()
+
 isPalindromic :: (Show a, Integral a) => a -> Bool
 isPalindromic x = xs == reverse xs
   where
@@ -11,3 +22,4 @@ main = print
               | x <-[999,998..100 :: Int]
               , y <-[x,(x-1)..100]
               ]
+
