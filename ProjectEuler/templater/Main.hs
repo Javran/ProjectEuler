@@ -45,7 +45,7 @@ uniqueLookup k m = case filter ((k `isPrefixOf`) . fst) $ M.toList m of
 
 subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
-  [ ("migrate", cmdMigrate)
+  [ ("migrate", \x -> cmdMigrate x >> cmdSync [])
   , ("create", const $ pure ()) -- TODO
   , ("sync", cmdSync)
   ]
