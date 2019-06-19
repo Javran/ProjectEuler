@@ -16,6 +16,7 @@ import qualified Data.Text.Lazy.IO as TL
 import qualified Filesystem.Path.CurrentOS as FP
 
 import Common
+import CmdSync
 
 cmdMigrate :: [String] -> IO ()
 cmdMigrate xs
@@ -37,6 +38,7 @@ cmdMigrate xs
       putStrLn "To:"
       putStrLn $ "  " <> FP.encodeString newProblemPath
       rm oldProblemPath
+      cmdSync []
   | otherwise = do
       putStrLn "templater migrate <problem id>"
       exitFailure
