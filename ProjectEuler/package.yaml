@@ -92,3 +92,4 @@ executables:
     - Common
     - CmdSync
     - CmdMigrate
+    - CmdCreate

@@ -11,6 +11,7 @@ import System.Exit
 import qualified Data.Map.Strict as M
 
 import CmdSync
+import CmdCreate
 import CmdMigrate
 
 {-
@@ -23,17 +24,18 @@ import CmdMigrate
 
   Usage: require environment variable "PROJECT_EULER_HOME" to point to project home directory.
 
-  TODO: plan to bring up "sync" functionality first and continue to allow creating
-  problem modules with template.
+  - `templater sync`:
+
+    + scan through problems and re-generate AllProblems.hs.
+    + update package.yaml and update the list of problem modules
 
   - `templater create <num>`: create Problem<num> using template. (implies `sync`)
+
   - `templater migrate <num>`: migrate a old solution code. (implies `sync`)
+
     Note that this is by no means a correct migration - this only move
     the file with proper naming and program backbone, which will in turn
     result in less repetitive work.
-  - `templater sync`:
-    + scan through problems and re-generate AllProblems.hs.
-    + upate package.yaml and update the list of problem modules
 
  -}
 
@@ -46,7 +48,7 @@ uniqueLookup k m = case filter ((k `isPrefixOf`) . fst) $ M.toList m of
 subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
   [ ("migrate", cmdMigrate)
-  , ("create", const $ pure ()) -- TODO
+  , ("create", cmdCreate)
   , ("sync", cmdSync)
   ]
 
