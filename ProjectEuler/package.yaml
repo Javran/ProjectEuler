@@ -93,3 +93,4 @@ executables:
     - CmdSync
     - CmdMigrate
     - CmdCreate
+    - CmdStat

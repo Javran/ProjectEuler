@@ -13,6 +13,7 @@ import qualified Data.Map.Strict as M
 import CmdSync
 import CmdCreate
 import CmdMigrate
+import CmdStat
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -37,6 +38,8 @@ import CmdMigrate
     the file with proper naming and program backbone, which will in turn
     result in less repetitive work.
 
+  - `templater stat`: show the list of not-yet-migrated solutions.
+
  -}
 
 -- succeed as long as the given key matches exactly one result (by prefix)
@@ -50,6 +53,7 @@ subCmds = M.fromList
   [ ("migrate", cmdMigrate)
   , ("create", cmdCreate)
   , ("sync", cmdSync)
+  , ("stat", cmdStat)
   ]
 
 main :: IO ()
