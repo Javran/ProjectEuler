@@ -1,7 +1,19 @@
-import ProjectEuler.Javran
-import Data.Array
+module ProjectEuler.Problem11
+  ( problem
+  ) where
+
 import Control.Applicative
 import Control.Arrow
+import Data.Array
+
+import ProjectEuler.GetData
+import ProjectEuler.Types
+
+-- TODO: pureProblemWithData?
+problem :: Problem
+problem = Problem 11 Solved compute
+
+-- TODO: optimization opportunity
 
 type Index = (Int, Int)
 
@@ -36,6 +48,7 @@ allWindows = concatMap (slidingWindows 4)
                        ++ dg2Coordinates
                        )
 
+-- TODO: factor this out?
 slidingWindows :: Int -> [a] -> [[a]]
 slidingWindows n xs = take (l-n+1)
                     . map (take n)
@@ -47,7 +60,8 @@ slidingWindows n xs = take (l-n+1)
 getProduct :: Array Index Integer -> [Index] -> Integer
 getProduct ar = product . map (ar !)
 
-main :: IO ()
-main = do
-    grid <- getGrid
-    print (maximum (map (getProduct grid) allWindows))
+compute :: PEM ()
+compute = do
+  grid <- io getGrid
+  logT (maximum (map (getProduct grid) allWindows))
+
