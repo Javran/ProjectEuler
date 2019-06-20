@@ -1,6 +1,14 @@
+module ProjectEuler.Problem8
+  ( problem
+  ) where
+
+import ProjectEuler.Types
 import Control.Applicative
-import ProjectEuler.Javran
+import ProjectEuler.GetData
 import qualified System.IO.Strict as SIO
+
+problem :: Problem
+problem = Problem 8 Solved compute
 
 rawData :: IO String
 rawData = concat . lines <$> getDataFile "p8.txt"
@@ -19,5 +27,5 @@ solve n raw = maximum (map product (slidingWindows n parsed))
     parsed :: [Integer]
     parsed = map (read . (:[])) raw
 
-main :: IO ()
-main = rawData >>= print . solve 13
+compute :: PEM ()
+compute = io rawData >>= logT . solve 13
