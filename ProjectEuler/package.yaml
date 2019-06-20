@@ -1,12 +1,11 @@
-name:                ProjectEuler
-version:             0.1.0.0
-github:              "Javran/ProjectEuler"
-license:             MIT
-author:              "Javran Cheng"
-maintainer:          "Javran.C@gmail.com"
-copyright:           "Copyright: (c) 2019 Javran Cheng"
-
-description:         "Javran's ProjectEuler Workspace"
+name: ProjectEuler
+version: 0.1.0.0
+github: "Javran/ProjectEuler"
+license: MIT
+author: "Javran Cheng"
+maintainer: "Javran.C@gmail.com"
+copyright: "Copyright: (c) 2019 Javran Cheng"
+description: "Javran's ProjectEuler Workspace"
 
 extra-source-files:
 - README.md
@@ -15,46 +14,51 @@ data-files:
 - data/*.txt
 
 dependencies:
+- aeson
+- arithmoi
+- array
 - base
+- containers
+- data-ordlist
+- dlist
+- filepath
+- foldl
+- lens
+- lifted-base
+- microstache
+- monad-control
+- MonadRandom
+- mtl
+- parsec
+- petbox
+- primes
+- PSQueue
+- split
+- strict
+- system-filepath
+- text
+- text-show
+- time
+- transformers-base
+- turtle
+- unordered-containers
+- vector
 
-executables:
-  pet:
-    main:                Main.hs
-    source-dirs:         src
+_exec-ghc-options: &exe-ghc-options
+  - -threaded
+  - -O2
+  - -rtsopts
+  - -with-rtsopts=-N
 
-    dependencies:
-    - petbox
-    - primes
-    - data-ordlist
-    - strict
-    - array
-    - containers
-    - split
-    - filepath
-    - mtl
-    - parsec
-    - PSQueue
-    - lens
-    - MonadRandom
-    - arithmoi
-    - text
-    - text-show
-    - dlist
-    - lifted-base
-    - monad-control
-    - transformers-base
+library:
+  source-dirs: src
 
-    ghc-options:
-    - -threaded
-    - -O2
-    - -rtsopts
-    - -with-rtsopts=-N
-
-    other-modules: 
+  exposed-modules:
     - Paths_ProjectEuler
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.AllProblems
+    - ProjectEuler.Main
     # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN
     - ProjectEuler.Problem1
@@ -71,29 +75,19 @@ executables:
     - ProjectEuler.Problem24
     # ==== PROBLEM_MODULE_LIST_END
 
+executables:
+  pet:
+    main: Main.hs
+    source-dirs: src
+
+    dependencies:
+      - ProjectEuler
+
+    ghc-options: *exe-ghc-options
+
   templater:
     main: Main.hs
     source-dirs: templater
-
-    dependencies:
-    - microstache
-    - turtle
-    - system-filepath
-    - aeson
-    - text
-    - text-show
-    - unordered-containers
-    - foldl
-    - vector
-    - containers
-    - time
-    - strict
-
-    ghc-options:
-    - -threaded
-    - -O2
-    - -rtsopts
-    - -with-rtsopts=-N
 
     other-modules:
     - Common
@@ -101,3 +95,5 @@ executables:
     - CmdMigrate
     - CmdCreate
     - CmdStat
+
+    ghc-options: *exe-ghc-options

@@ -2,7 +2,6 @@ module ProjectEuler.Problem11
   ( problem
   ) where
 
-import Control.Applicative
 import Control.Arrow
 import Data.Array
 
