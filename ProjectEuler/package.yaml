@@ -63,6 +63,7 @@ executables:
     - ProjectEuler.Problem4
     - ProjectEuler.Problem5
     - ProjectEuler.Problem6
+    - ProjectEuler.Problem7
     - ProjectEuler.Problem24
     # ==== PROBLEM_MODULE_LIST_END
 
