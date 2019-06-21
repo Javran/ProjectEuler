@@ -33,4 +33,4 @@ install:
 script:
   - "./build.sh"
   - "cat _build/report.txt"
-  - "(cd ProjectEuler && stack build && stack test)"
+  - "(cd ProjectEuler && stack test)"
