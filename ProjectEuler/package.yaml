@@ -98,3 +98,19 @@ executables:
     - CmdStat
 
     ghc-options: *exe-ghc-options
+
+tests:
+  hspec:
+    main: Spec.hs
+
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - hspec
+    ghc-options:
+      - -threaded
+      - -O2
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -main-is Spec
