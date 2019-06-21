@@ -5,24 +5,22 @@ module ProjectEuler.Problem11
 import Control.Arrow
 import Data.Array
 
-import ProjectEuler.GetData
 import ProjectEuler.Types
 
--- TODO: pureProblemWithData?
 problem :: Problem
-problem = Problem 11 Solved compute
+problem = pureProblemWithData "p11-grid.txt" 11 Solved compute
 
 -- TODO: optimization opportunity
 
 type Index = (Int, Int)
 
-getGrid :: IO (Array Index Integer)
-getGrid = do
-    grid <- map (map read . words) . lines <$> getDataFile "p11-grid.txt"
-    let rows = length grid
-        cols = length (head grid)
-        size = (rows,cols)
-    return (listArray ((1,1), size) (concat grid))
+getGrid :: String -> Array Index Integer
+getGrid raw = listArray ((1,1), size) (concat grid)
+  where
+    grid = map (map read . words) . lines $ raw
+    rows = length grid
+    cols = length (head grid)
+    size = (rows,cols)
 
 inGrid :: Index -> Bool
 inGrid = inRange ((1,1), (20,20))
@@ -59,8 +57,8 @@ slidingWindows n xs = take (l-n+1)
 getProduct :: Array Index Integer -> [Index] -> Integer
 getProduct ar = product . map (ar !)
 
-compute :: PEM ()
-compute = do
-  grid <- io getGrid
-  logT (maximum (map (getProduct grid) allWindows))
+compute :: String -> Integer
+compute raw =  maximum (map (getProduct grid) allWindows)
+  where
+    grid = getGrid raw
 

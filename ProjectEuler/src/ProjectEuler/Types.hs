@@ -6,6 +6,7 @@ module ProjectEuler.Types
   ( ProblemStatus(..)
   , Problem(..)
   , pureProblem
+  , pureProblemWithData
   , PEM
   , getPEM
   , runPEM
@@ -22,6 +23,8 @@ import TextShow
 
 import qualified Data.DList as DL
 import qualified Data.Text as T
+
+import ProjectEuler.GetData
 
 data ProblemStatus = Solved | Unsolved
 
@@ -45,6 +48,14 @@ data Problem
 pureProblem :: TextShow r => Int -> ProblemStatus -> r -> Problem
 pureProblem pId pSt result =
   Problem pId pSt (logT result)
+
+-- Like pureProblem but in addition allows specifying a data file,
+-- which will be loaded as argument to the function that computes the solution.
+-- TODO: use of this function should be preferred over using GetData directly.
+pureProblemWithData :: TextShow r
+                    => String -> Int -> ProblemStatus -> (String -> r) -> Problem
+pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
+  io (getDataFile dFile) >>= logT . runWithData
 
 io :: IO a -> PEM a
 io = liftIO
