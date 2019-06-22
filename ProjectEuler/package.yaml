@@ -37,6 +37,7 @@ dependencies:
 - split
 - strict
 - system-filepath
+- bytestring
 - text
 - text-show
 - time
@@ -44,6 +45,7 @@ dependencies:
 - turtle
 - unordered-containers
 - vector
+- file-embed
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
