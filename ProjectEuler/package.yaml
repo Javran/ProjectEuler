@@ -87,6 +87,7 @@ library:
     - ProjectEuler.Problem22
     - ProjectEuler.Problem23
     - ProjectEuler.Problem24
+    - ProjectEuler.Problem26
     # ==== PROBLEM_MODULE_LIST_END
 
 executables:
