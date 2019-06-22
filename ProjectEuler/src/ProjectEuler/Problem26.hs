@@ -2,16 +2,16 @@ module ProjectEuler.Problem26
   ( problem
   ) where
 
+import Control.Arrow
 import Data.List
 import Data.Maybe
-import Data.Function (on)
+import Data.Ord
 
 import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 26 Solved result
 
--- TODO
 -- 1/n = 0.???? ...
 -- this function finds ???? for n
 --   by emulating how we do division on draft
@@ -27,10 +27,10 @@ fracPartList n = unfoldr doDiv 10
           -- shortcutting allows better speed.
           -- try to keep the first digit
           --   by assigning next state to be a dummy value(0)
-        Just ((q,r), 0)
-      | otherwise = Just ((q,r),r*10)
+        Just (p, 0)
+      | otherwise = Just (p, r*10)
       where
-        (q,r) = x `quotRem` n
+        p@(_,r) = x `quotRem` n
 
 cycleLen :: [Int] -> Int
 cycleLen = cycleLenAux []
@@ -45,5 +45,6 @@ fracCycleLen :: Int -> Int
 fracCycleLen n = cycleLen $ snd <$> fracPartList n
 
 result :: Int
-result = maximumBy (compare `on` fracCycleLen) [2..999]
+result =
+  fst $ maximumBy (comparing snd) $ (id &&& fracCycleLen) <$> [2..999]
 
