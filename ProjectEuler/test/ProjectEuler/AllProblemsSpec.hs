@@ -13,15 +13,14 @@ import qualified Data.Text as T
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Yaml as Yaml
 
-import System.FilePath
 import Data.Aeson
-import Data.Maybe
 import Data.Aeson.Types
 import Data.Foldable
 import Control.Monad.IO.Class
 import Control.Applicative
 import Data.Coerce
 import TextShow
+import Control.Exception
 
 import ProjectEuler.AllProblems
 import ProjectEuler.GetData
@@ -41,16 +40,32 @@ instance FromJSON Answers where
           let convertAnswerOuts :: Array -> Parser [T.Text]
               convertAnswerOuts = mapM convertLine . toList
                 where
+                  {-
+                    First interpret the field as Text,
+                    in case of failure, try Integer and convert it to Text.
+
+                    this allows writing:
+
+                    > - 12345
+
+                    instead of the verbose version:
+
+                    > - "12345"
+
+                   -}
                   convertLine v' =
                     withText "OutputLine" pure v'
-                    <|> withScientific "OutputLine" (pure . showt @Integer . round) v'
+                    <|> withScientific
+                          "OutputLine"
+                          (pure . showt @Integer . round)
+                          v'
           ys <- withArray "AnswerList" convertAnswerOuts xs
           pure (v, ys)
 
-getExpectedAnswers :: IO Answers
-getExpectedAnswers = do
-  dir <- getDataDir
-  fromJust <$> Yaml.decodeFileThrow (dir </> "data" </> "answers.yaml")
+expectedAnswers :: Answers
+expectedAnswers = case Yaml.decodeEither' $ getDataRawContent "answers.yaml" of
+  Left e -> error (displayException e)
+  Right a -> a
 
 spec :: Spec
 spec =
@@ -61,11 +76,8 @@ spec =
           case pSt of
             Unsolved ->
               pendingWith "This problem is not yet solved."
-            Solved -> do
-              -- TODO: it is wasteful to do "getExpectedAnswers" every time,
-              -- consider file-embed to get rid of runtime loading.
-              r :: Maybe [T.Text] <- IM.lookup pId . coerce <$> liftIO getExpectedAnswers
-              case r of
+            Solved ->
+              case IM.lookup pId . coerce $ expectedAnswers of
                 Nothing ->
                   pendingWith "Missing test case."
                 Just expectedOuts -> do
