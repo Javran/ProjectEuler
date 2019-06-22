@@ -4,6 +4,7 @@ module ProjectEuler.Problem11
 
 import Control.Arrow
 import Data.Array
+import qualified Data.Text as T
 
 import ProjectEuler.Types
 
@@ -57,8 +58,7 @@ slidingWindows n xs = take (l-n+1)
 getProduct :: Array Index Integer -> [Index] -> Integer
 getProduct ar = product . map (ar !)
 
-compute :: String -> Integer
+compute :: T.Text -> Integer
 compute raw =  maximum (map (getProduct grid) allWindows)
   where
-    grid = getGrid raw
-
+    grid = getGrid (T.unpack raw)
