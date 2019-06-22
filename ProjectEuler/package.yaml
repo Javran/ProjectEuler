@@ -46,6 +46,7 @@ dependencies:
 - unordered-containers
 - vector
 - file-embed
+- scientific
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded

@@ -21,6 +21,7 @@ import Control.Applicative
 import Data.Coerce
 import TextShow
 import Control.Exception
+import Data.Scientific
 
 import ProjectEuler.AllProblems
 import ProjectEuler.GetData
@@ -40,6 +41,11 @@ instance FromJSON Answers where
           let convertAnswerOuts :: Array -> Parser [T.Text]
               convertAnswerOuts = mapM convertLine . toList
                 where
+                  scientificToInteger :: Scientific -> Parser Integer
+                  scientificToInteger s = do
+                    Right i <- pure (floatingOrInteger @Double s)
+                    pure i
+
                   {-
                     First interpret the field as Text,
                     in case of failure, try Integer and convert it to Text.
@@ -57,7 +63,7 @@ instance FromJSON Answers where
                     withText "OutputLine" pure v'
                     <|> withScientific
                           "OutputLine"
-                          (pure . showt @Integer . round)
+                          ((showt @Integer <$>) . scientificToInteger)
                           v'
           ys <- withArray "AnswerList" convertAnswerOuts xs
           pure (v, ys)
