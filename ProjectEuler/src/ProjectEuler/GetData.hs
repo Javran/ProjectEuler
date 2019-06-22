@@ -1,8 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module ProjectEuler.GetData
-  ( getDataFile
-  , getDataDir
-  , getDataRawContent
+  ( getDataRawContent
   , getDataContent
   ) where
 
@@ -10,21 +8,10 @@ import Control.Arrow
 import Data.FileEmbed
 import Data.Maybe
 import Data.Text.Encoding (decodeUtf8)
-import Paths_ProjectEuler
-import System.FilePath
 
 import qualified Data.ByteString as BS
 import qualified Data.Map.Strict as M
 import qualified Data.Text as T
-import qualified System.IO.Strict as SIO
-
--- TODO: can we use file-embed here to completely get rid of
--- runtime IO overhead?
-
-getDataFile :: String -> IO String
-getDataFile fName = do
-    dir <- getDataDir
-    SIO.readFile (dir </> "data" </> fName)
 
 {-
   Data files are constructed at compile time to reduce runtime overhead.

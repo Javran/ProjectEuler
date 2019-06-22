@@ -51,7 +51,6 @@ pureProblem pId pSt result =
 
 -- Like pureProblem but in addition allows specifying a data file,
 -- which will be loaded as argument to the function that computes the solution.
--- TODO: use of this function should be preferred over using GetData directly.
 pureProblemWithData :: TextShow r
                     => String -> Int -> ProblemStatus -> (T.Text -> r) -> Problem
 pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $

@@ -58,7 +58,6 @@ library:
   source-dirs: src
 
   exposed-modules:
-    - Paths_ProjectEuler
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.AllProblems

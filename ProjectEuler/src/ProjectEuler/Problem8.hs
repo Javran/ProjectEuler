@@ -2,22 +2,21 @@ module ProjectEuler.Problem8
   ( problem
   ) where
 
+import Data.Char
+import qualified Data.Text as T
+
 import ProjectEuler.Types
-import Control.Applicative
-import ProjectEuler.GetData
-import qualified System.IO.Strict as SIO
 
 problem :: Problem
-problem = Problem 8 Solved compute
+problem = pureProblemWithData "p8.txt" 8 Solved compute
 
-rawData :: IO String
-rawData = concat . lines <$> getDataFile "p8.txt"
 
 slidingWindows :: Int -> [a] -> [[a]]
-slidingWindows n xs = take (l-n+1)
-                    . map (take n)
-                    . iterate tail
-                    $ xs
+slidingWindows n xs =
+    take (l-n+1)
+    . map (take n)
+    . iterate tail
+    $ xs
   where
     l = length xs
 
@@ -25,7 +24,9 @@ solve :: Int -> String -> Integer
 solve n raw = maximum (map product (slidingWindows n parsed))
   where
     parsed :: [Integer]
-    parsed = map (read . (:[])) raw
+    parsed = map (\c -> fromIntegral $ ord c - ord '0') raw
 
-compute :: PEM ()
-compute = io rawData >>= logT . solve 13
+compute :: T.Text -> Integer
+compute raw = solve 13 rawData
+  where
+    rawData = filter (not . isSpace) . T.unpack $ raw
