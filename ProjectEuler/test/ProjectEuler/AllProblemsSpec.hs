@@ -5,23 +5,22 @@
   #-}
 module ProjectEuler.AllProblemsSpec where
 
-import Test.Hspec
+import Control.Applicative
+import Control.Exception
 import Control.Monad
-
-import qualified Data.IntMap.Strict as IM
-import qualified Data.Text as T
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Yaml as Yaml
-
+import Control.Monad.IO.Class
 import Data.Aeson
 import Data.Aeson.Types
-import Data.Foldable
-import Control.Monad.IO.Class
-import Control.Applicative
 import Data.Coerce
-import TextShow
-import Control.Exception
+import Data.Foldable
 import Data.Scientific
+import Test.Hspec
+import TextShow
+
+import qualified Data.HashMap.Strict as HM
+import qualified Data.IntMap.Strict as IM
+import qualified Data.Text as T
+import qualified Data.Yaml as Yaml
 
 import ProjectEuler.AllProblems
 import ProjectEuler.GetData
