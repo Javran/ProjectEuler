@@ -32,7 +32,6 @@ dependencies:
 - mtl
 - parsec
 - petbox
-- primes
 - PSQueue
 - split
 - strict
