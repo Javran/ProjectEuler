@@ -79,6 +79,14 @@ library:
     - ProjectEuler.Problem13
     - ProjectEuler.Problem14
     - ProjectEuler.Problem15
+    - ProjectEuler.Problem16
+    - ProjectEuler.Problem17
+    - ProjectEuler.Problem18
+    - ProjectEuler.Problem19
+    - ProjectEuler.Problem20
+    - ProjectEuler.Problem21
+    - ProjectEuler.Problem22
+    - ProjectEuler.Problem23
     - ProjectEuler.Problem24
     # ==== PROBLEM_MODULE_LIST_END
 

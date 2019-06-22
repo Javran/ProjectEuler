@@ -24,6 +24,14 @@ import ProjectEuler.Problem12
 import ProjectEuler.Problem13
 import ProjectEuler.Problem14
 import ProjectEuler.Problem15
+import ProjectEuler.Problem16
+import ProjectEuler.Problem17
+import ProjectEuler.Problem18
+import ProjectEuler.Problem19
+import ProjectEuler.Problem20
+import ProjectEuler.Problem21
+import ProjectEuler.Problem22
+import ProjectEuler.Problem23
 import ProjectEuler.Problem24
 
 allProblems :: IM.IntMap Problem
@@ -44,5 +52,13 @@ allProblems =
     , (13, ProjectEuler.Problem13.problem)
     , (14, ProjectEuler.Problem14.problem)
     , (15, ProjectEuler.Problem15.problem)
+    , (16, ProjectEuler.Problem16.problem)
+    , (17, ProjectEuler.Problem17.problem)
+    , (18, ProjectEuler.Problem18.problem)
+    , (19, ProjectEuler.Problem19.problem)
+    , (20, ProjectEuler.Problem20.problem)
+    , (21, ProjectEuler.Problem21.problem)
+    , (22, ProjectEuler.Problem22.problem)
+    , (23, ProjectEuler.Problem23.problem)
     , (24, ProjectEuler.Problem24.problem)
     ]

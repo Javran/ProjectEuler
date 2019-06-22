@@ -1,5 +1,12 @@
-import qualified System.IO.Strict as SIO
-import ProjectEuler.Javran
+module ProjectEuler.Problem18
+  ( problem
+  ) where
+
+import qualified Data.Text as T
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblemWithData "p18.txt" 18 Solved compute
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]
@@ -19,8 +26,8 @@ solveMax (t:ts) = foldl max 0 bottomLine
                         possibleVal = map (curLine !!) possiblePos
                         valid x = x >= 0 && x < length curLine
 
-main :: IO ()
-main = do
-    content <- getDataFile "p18.txt"
-    let table = map (map read . words) $ lines content :: [[Int]]
-    print $ solveMax table
+compute :: T.Text -> Int
+compute raw = solveMax table
+  where
+    table = map read . words . T.unpack <$> T.lines raw
+

@@ -1,3 +1,12 @@
+module ProjectEuler.Problem17
+  ( problem
+  ) where
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 17 Solved result
+
 numLetter :: Int -> String
 numLetter x
     | x <= 0  = undefined
@@ -18,8 +27,9 @@ numLetter x
     | x == 1000 = "onethousand"
     | otherwise = undefined
 
-main :: IO ()
-main = print
-     . length
-     . concatMap numLetter
-     $ [1..1000]
+result :: Int
+result =
+  length
+  . concatMap numLetter
+  $ [1..1000]
+
