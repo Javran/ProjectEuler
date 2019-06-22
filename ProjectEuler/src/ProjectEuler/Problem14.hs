@@ -1,8 +1,16 @@
-import Control.Applicative
+module ProjectEuler.Problem14
+  ( problem
+  ) where
+
 import Data.Array
 import Data.Array.ST
 import Data.Function
 import Data.List
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 14 Solved result
 
 collatz :: Integral a => a -> a
 collatz n = if odd n
@@ -28,7 +36,7 @@ collatzArray = runSTArray $ do
                  writeArray ar n v'
                  return v'
     mapM_ calc [1..limit]
-    return ar
+    pure ar
 
-main :: IO ()
-main = print $ maximumBy (compare `on` snd) (assocs collatzArray)
+result :: Int
+result = fst $ maximumBy (compare `on` snd) (assocs collatzArray)
