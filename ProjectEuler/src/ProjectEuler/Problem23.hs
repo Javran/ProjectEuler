@@ -13,20 +13,19 @@ problem = pureProblem 23 Solved result
 
 -- see: http://mathschallenge.net/library/number/sum_of_divisors
 divisorSum :: Int -> Int
-divisorSum = sum . divisorsList
+divisorSum = sum . IS.toList . divisorsSmall
 
 isAbundant :: Int -> Bool
 isAbundant n = n < divisorSum n - n
 
 result :: Int
 result =
-    getSum $ foldMap (\x -> if IS.member x reachables then 0 else Sum x) range
+    getSum $ foldMap (\x -> if IS.member x reachables then 0 else Sum x) [1..maxAbun]
   where
-    range = [1..maxAbun]
-    possibleAbuns = filter isAbundant range
+    possibleAbuns = filter isAbundant [1..maxAbun]
     maxAbun = 28123
     reachables =
-      IS.fromList [ x+y
-                  | x <- possibleAbuns
-                  , y <- takeWhile (<= maxAbun - x) possibleAbuns
-                  ]
+      IS.fromList $ do
+        x <- possibleAbuns
+        y <- takeWhile (<= maxAbun - x) possibleAbuns
+        pure (x+y)
