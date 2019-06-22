@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeApplications #-}
 module ProjectEuler.Problem13
   ( problem
   ) where
@@ -10,5 +11,5 @@ problem = pureProblemWithData "p13-numbers.txt" 13 Solved compute
 compute :: String -> Integer
 compute =
   read . take 10 . show . sum
-  . map (read :: String -> Integer)  . lines
+  . map (read @Integer) . lines
 
