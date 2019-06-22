@@ -31,8 +31,6 @@ or involve more complexity to surface problems related to this migration.
 
 Listing (TODO):
 
-- 26
-- 27
 - 35
 - 36
 - 38
