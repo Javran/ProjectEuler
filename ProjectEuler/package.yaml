@@ -99,6 +99,7 @@ library:
     - ProjectEuler.Problem44
     - ProjectEuler.Problem47
     - ProjectEuler.Problem60
+    - ProjectEuler.Problem70
     - ProjectEuler.Problem206
     # ==== PROBLEM_MODULE_LIST_END
 

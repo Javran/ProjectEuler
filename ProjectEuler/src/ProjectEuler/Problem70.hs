@@ -1,10 +1,20 @@
 {-# LANGUAGE RankNTypes #-}
+module ProjectEuler.Problem70
+  ( problem
+  ) where
+
 
 import Math.NumberTheory.Primes
 import Data.Ratio
 import Data.Function
 import Data.List
 import Petbox hiding (primes)
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 70 Solved result
+
 
 {-
   we know previously that:
@@ -52,14 +62,11 @@ isPermutationOf :: Eq a => [a] -> [a] -> Bool
 _ `isPermutationOf` _ = False
 
 isNumPermOf :: Int -> Int -> Bool
-a `isNumPermOf` b = isPermutationOf sa sb
+isNumPermOf a b = isPermutationOf sa sb
   where
     sb = show b
     l = length sb
     sa = reverse . take l $ (reverse (show a) ++ repeat '0')
-
-limit :: Integral a => a
-limit = 10000000
 
 solution :: ((Int, Int), Ratio Int)
 solution = minimumBy (compare `on` snd)
@@ -71,10 +78,12 @@ solution = minimumBy (compare `on` snd)
           . iterate tail
           $ primes'
   where
+    limit = 10000000
     isValid :: (Int,Int) -> Bool
     isValid (p,q) = ((p-1)*(q-1)) `isNumPermOf` (p*q)
     primes' = takeWhile (<= limit) primes
 
-main :: IO ()
-main = print . uncurry (*) . fst $ solution
-
+result :: Int
+result = a*b
+  where
+    ((a,b), _) = solution
