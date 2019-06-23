@@ -95,30 +95,29 @@ oneStep = do
                         else doubleCount .~ 0)
     dc <- gets (view doubleCount)
     if dc == 3
-       then modify ( (doubleCount .~ 0)
-                   . (currentPos .~ pJail) )
+       then modify $ (doubleCount .~ 0) . (currentPos .~ pJail)
        else do
          -- advance
          modify (currentPos %~ (\cp -> (cp+d1+d2) `mod` 40))
-         let toFixpoint = do
-                 curPos <- gets (view currentPos)
-                 let curCell = posToName curPos
-                 case curCell of
-                     "G2J" -> modify (currentPos .~ pJail)
-                     'C':'C':_ -> do
-                         card <- nextCC
-                         case card of
-                             CCTo v -> modify (currentPos .~ v)
-                             CCNone -> return ()
-                     'C':'H':_ -> do
-                         card <- nextCM
-                         case card of
-                             CMTo v -> modify (currentPos .~ v)
-                             CMBack v -> modify (currentPos %~ subtract v) >> toFixpoint
-                             CMNext v -> modify (currentPos %~ (`cmNext` v))
-                             CMNone -> return ()
-                     _ -> return ()
-         toFixpoint
+         fix $ \loop -> do
+           curPos <- gets (view currentPos)
+           let curCell = posToName curPos
+           case curCell of
+             "G2J" -> modify (currentPos .~ pJail)
+             'C':'C':_ -> do
+               card <- nextCC
+               case card of
+                 CCTo v -> modify (currentPos .~ v)
+                 CCNone -> pure ()
+             'C':'H':_ -> do
+               card <- nextCM
+               case card of
+                 CMTo v -> modify (currentPos .~ v)
+                 CMBack v -> modify (currentPos %~ subtract v) >> loop
+                 CMNext v -> modify (currentPos %~ (`cmNext` v))
+                 CMNone -> pure ()
+             _ -> pure ()
+
     -- assume current position changed
     finPos <- gets (view currentPos)
     modify (stat %~ IM.insertWith (+) finPos 1)
@@ -127,19 +126,20 @@ oneStep = do
     nextCC = do
         c <- gets (head . view ccPile)
         modify (ccPile %~ tail)
-        return c
+        pure c
     nextCM = do
         c <- gets (head . view cmPile)
         modify (cmPile %~ tail)
-        return c
+        pure c
 
 run :: PEM ()
 run = do
     st <- view stat <$> execStateT (replicateM simulateN oneStep) initState
-    let simulateResult = sortBy (flip compare `on` snd)
-                       . map (\(pos,cnt) -> ((pos, posToName pos), cnt))
-                       . IM.toList
-                       $ st
+    let simulateResult =
+          sortBy (flip compare `on` snd)
+          . map (\(pos,cnt) -> ((pos, posToName pos), cnt))
+          . IM.toList
+          $ st
         ans :: Int
         ans =
           read $ concatMap (\((pos,_name),_freq) -> show pos)  $ take 3 simulateResult
