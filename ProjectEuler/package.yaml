@@ -91,6 +91,7 @@ library:
     - ProjectEuler.Problem26
     - ProjectEuler.Problem27
     - ProjectEuler.Problem35
+    - ProjectEuler.Problem36
     # ==== PROBLEM_MODULE_LIST_END
 
 executables:
