@@ -7,6 +7,8 @@ module ProjectEuler.Problem35
 import Math.NumberTheory.Primes
 import Data.List
 import Data.Bits
+
+import qualified Data.IntSet as IS
 import qualified Data.List.Match as LMatch
 
 import ProjectEuler.Types
@@ -28,15 +30,16 @@ circularNums n = takeL $ digitsToInt . takeL <$> tails (cycle ds)
     takeL = LMatch.take ds
     ds = intToDigits n
 
-findCirculars :: [Int] -> [Int] -> [Int]
-findCirculars curSpace foundPrimes
-  | null curSpaceValid = foundPrimes
-  | all (`elem` curSpaceValid) cirH = findCirculars tl (nub (foundPrimes ++ cirH))
-  | otherwise = findCirculars (tl \\ cirH) foundPrimes
+findCirculars :: IS.IntSet -> IS.IntSet -> IS.IntSet
+findCirculars curSpace foundPrimes = case IS.minView curSpaceValid of
+  Nothing -> foundPrimes
+  Just (hd,tl) ->
+    let cirH = IS.fromList $ circularNums hd
+    in if cirH `IS.isSubsetOf` curSpaceValid
+      then findCirculars tl (foundPrimes `IS.union` cirH)
+      else findCirculars (tl IS.\\ cirH) foundPrimes
   where
-    curSpaceValid = curSpace \\ foundPrimes
-    (hd:tl) = curSpaceValid
-    cirH = circularNums hd
+    curSpaceValid = curSpace IS.\\ foundPrimes
 
 intToDigits :: Int -> [Int]
 intToDigits x = ($ []) . foldr (.) id $ unfoldr f x
@@ -48,6 +51,5 @@ digitsToInt :: [Int] -> Int
 digitsToInt = foldl (\a b -> a*10+b) 0
 
 result :: Int
-result =
-  length $ findCirculars searchSpace []
+result = IS.size $ findCirculars (IS.fromDistinctAscList searchSpace) IS.empty
 
