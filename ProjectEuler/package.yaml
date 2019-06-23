@@ -47,6 +47,7 @@ dependencies:
 - file-embed
 - scientific
 - utility-ht
+- yaml
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
@@ -126,7 +127,6 @@ tests:
       - src
     dependencies:
       - hspec
-      - yaml
     ghc-options:
       - -threaded
       - -O2
