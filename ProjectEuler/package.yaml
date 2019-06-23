@@ -48,6 +48,7 @@ dependencies:
 - scientific
 - utility-ht
 - yaml
+- deepseq
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
