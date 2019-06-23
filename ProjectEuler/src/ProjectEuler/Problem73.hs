@@ -1,23 +1,31 @@
-import Petbox
-import Data.Ratio
-import Math.NumberTheory.Primes.Testing
-import Math.NumberTheory.Primes.Factorisation
+{-# LANGUAGE MultiWayIf #-}
+module ProjectEuler.Problem73
+  ( problem
+  ) where
 
-import Data.Int
-import Data.List
+import Data.Ratio
+import Math.NumberTheory.Primes.Factorisation
+import Math.NumberTheory.Primes.Testing
+import Petbox
+
 import qualified Data.List.Ordered as LO
 
+import ProjectEuler.Types
 
-uniqPrimes = LO.nub . sort . map (fromIntegral . fst)  . factorise
+problem :: Problem
+problem = pureProblem 73 Solved result
 
 phi :: Int -> Int
-phi n
-    | n == 1 = 1
-    | isPrime (fromIntegral n) = n - 1
-    | otherwise = let uprimes = uniqPrimes $ fromIntegral n
-                      numer = product . map (subtract 1) $ uprimes
-                      denom = product uprimes
-                  in (n `div` denom) * numer
+phi 1 = 1
+phi n =
+  if isPrime (fromIntegral n)
+    then n-1
+    else (n `div` denom) * numer
+ where
+   nFactorised = factorise' . fromIntegral $ n
+   uprimes =  LO.sort . map (fromIntegral . fst) $ nFactorised
+   numer = product . map (subtract 1) $ uprimes
+   denom = product uprimes
 
 fareySum :: Int -> Int
 fareySum n = subtract 1 . sum
@@ -29,8 +37,8 @@ fareyPartial :: Int -> Int
 fareyPartial 1 = 0
 fareyPartial n = fareyPartial (n-1) + length candidates
   where
-    candidates = map (% n)
-               $ filter ((== 1) . gcd n) [1 .. n `div` 3]
+    candidates =
+      (% n) <$> filter ((== 1) . gcd n) [1 .. n `div` 3]
 
 {-
   notice that the Farey sequence is symmetric,
@@ -46,7 +54,7 @@ fareyPartial n = fareyPartial (n-1) + length candidates
     (1) - (2) does the trick
 -}
 
-main :: IO ()
-main = do
-    let k = halve $ fareySum 12000 - 1
-    print $ k - fareyPartial 12000
+result :: Int
+result = k - fareyPartial 12000
+  where
+    k = halve $ fareySum 12000 - 1
