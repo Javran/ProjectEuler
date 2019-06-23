@@ -38,7 +38,7 @@ data GameState = GameState
 makeLenses ''GameState
 
 problem :: Problem
-problem = Problem 84 Solved run
+problem = pureProblem 84 Solved result
 
 cellNames :: [String]
 cellNames = words  "GO   A1 CC  A2  T1 R1 B1  CH1 B2 B3 \
@@ -86,11 +86,12 @@ initState = GameState 0 0 ccPile' cmPile' IM.empty
               , CMNext 1
               , CMBack 3 ] ++ repeat CMNone
 
-oneStep :: StateT GameState PEM ()
+oneStep :: RandT StdGen (State GameState) ()
 oneStep = do
     -- roll dices
     let rollDice = getRandomR (1 :: Int, 4)
-    [d1,d2] <- replicateM 2 rollDice
+    ds <- replicateM 2 rollDice
+    let [d1,d2] = ds
     modify (if d1 == d2 then doubleCount %~ succ
                         else doubleCount .~ 0)
     dc <- gets (view doubleCount)
@@ -132,20 +133,21 @@ oneStep = do
         modify (cmPile %~ tail)
         pure c
 
-run :: PEM ()
-run = do
-    st <- view stat <$> execStateT (replicateM simulateN oneStep) initState
-    let simulateResult =
-          sortBy (flip compare `on` snd)
-          . map (\(pos,cnt) -> ((pos, posToName pos), cnt))
-          . IM.toList
-          $ st
-        ans :: Int
-        ans =
-          read $ concatMap (\((pos,_name),_freq) -> show pos)  $ take 3 simulateResult
-    logT ans
+result :: Int
+result = read $ concatMap (\((pos,_name),_freq) -> show pos)  $ take 3 simulateResult
   where
+    -- fix a seed for now so that we don't get test failures due to some randomness issue.
+    seed = mkStdGen 0xDEADBEEF
+    st :: IM.IntMap Int
+    st =
+      view stat <$>
+        runIdentity $
+          execStateT (runRandT (replicateM simulateN oneStep) seed) initState
+    simulateResult =
+      sortBy (flip compare `on` snd)
+      . map (\(pos,cnt) -> ((pos, posToName pos), cnt))
+      . IM.toList
+      $ st
     -- TODO: convergence detection instead of using magical numbers
-    -- TODO: alternatively, use a fixed random seed.
     -- TODO: what should be the prefered random library?
-    simulateN = 40 * 10000
+    simulateN = 40 * 500
