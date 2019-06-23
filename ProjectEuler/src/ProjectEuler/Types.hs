@@ -19,6 +19,8 @@ import Control.Arrow
 import Control.Monad.Base
 import Control.Monad.Trans.Control
 import Control.Monad.Writer
+import Control.Monad.Fail
+import Control.Monad.Random
 import TextShow
 
 import qualified Data.DList as DL
@@ -88,5 +90,7 @@ newtype PEM a
     , MonadIO
     , MonadBase IO
     , MonadBaseControl IO
+    , MonadFail
+    , MonadRandom
     )
 

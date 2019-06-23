@@ -1,17 +1,22 @@
 {-# LANGUAGE TemplateHaskell, BangPatterns #-}
+module ProjectEuler.Problem84
+  ( problem
+  ) where
+
 import Control.Lens
-import Data.Maybe
-import Data.List
-import Control.Applicative
 import Control.Monad
-import Control.Monad.State
 import Control.Monad.Random
+import Control.Monad.State
+import Data.Function
+import Data.List
+import Data.Maybe
+import Petbox
+
 import qualified Data.Map.Strict as M
 import qualified Data.IntMap as IM
 import qualified Data.Array as A
-import Data.Function
-import Text.Printf
-import Petbox
+
+import ProjectEuler.Types
 
 data CCCard
   = CCTo Int
@@ -22,6 +27,18 @@ data CMCard
   | CMNext Int -- 0 for R, 1 for U
   | CMBack Int
   | CMNone
+
+data GameState = GameState
+  { _currentPos :: Int
+  , _doubleCount :: Int
+  , _ccPile :: [CCCard]
+  , _cmPile :: [CMCard]
+  , _stat :: IM.IntMap Int
+  }
+makeLenses ''GameState
+
+problem :: Problem
+problem = Problem 84 Solved run
 
 cellNames :: [String]
 cellNames = words  "GO   A1 CC  A2  T1 R1 B1  CH1 B2 B3 \
@@ -48,15 +65,6 @@ cmNext curPos eitherRU = nameToPos $ firstSuchThat isTarget squares
     isTarget = (== (if eitherRU == 0 then 'R' else 'U')) . head
     squares = drop (succ curPos) $ cycle cellNames
 
-data GameState = GameState
-  { _currentPos :: Int
-  , _doubleCount :: Int
-  , _ccPile :: [CCCard]
-  , _cmPile :: [CMCard]
-  , _stat :: IM.IntMap Int
-  }
-makeLenses ''GameState
-
 initState :: GameState
 initState = GameState 0 0 ccPile' cmPile' IM.empty
   where
@@ -78,7 +86,7 @@ initState = GameState 0 0 ccPile' cmPile' IM.empty
               , CMNext 1
               , CMBack 3 ] ++ repeat CMNone
 
-oneStep :: StateT GameState IO ()
+oneStep :: StateT GameState PEM ()
 oneStep = do
     -- roll dices
     let rollDice = getRandomR (1 :: Int, 4)
@@ -115,7 +123,6 @@ oneStep = do
     finPos <- gets (view currentPos)
     modify (stat %~ IM.insertWith (+) finPos 1)
   where
-
     pJail = nameToPos "JAIL"
     nextCC = do
         c <- gets (head . view ccPile)
@@ -126,16 +133,19 @@ oneStep = do
         modify (cmPile %~ tail)
         return c
 
-main :: IO ()
-main = do
+run :: PEM ()
+run = do
     st <- view stat <$> execStateT (replicateM simulateN oneStep) initState
     let simulateResult = sortBy (flip compare `on` snd)
-                       . map (\(pos,cnt) -> ((pos, posToName pos), toFreq cnt))
+                       . map (\(pos,cnt) -> ((pos, posToName pos), cnt))
                        . IM.toList
                        $ st
-    mapM_ prettyPrint simulateResult
+        ans :: Int
+        ans =
+          read $ concatMap (\((pos,_name),_freq) -> show pos)  $ take 3 simulateResult
+    logT ans
   where
-    prettyPrint ((pos,name),freq) = printf "%02d\t%s\t%.8f\n" pos name freq
-    toFreq :: Int -> Double
-    toFreq = (flip (/) `on` fromIntegral) simulateN
-    simulateN = 1000000
+    -- TODO: convergence detection instead of using magical numbers
+    -- TODO: alternatively, use a fixed random seed.
+    -- TODO: what should be the prefered random library?
+    simulateN = 40 * 10000
