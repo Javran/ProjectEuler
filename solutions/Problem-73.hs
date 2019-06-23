@@ -1,16 +1,20 @@
 import Petbox
-import Data.Numbers.Primes
 import Data.Ratio
+import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Primes.Factorisation
+
+import Data.Int
+import Data.List
 import qualified Data.List.Ordered as LO
 
-uniqPrimes :: Integral a => a -> [a]
-uniqPrimes = LO.nub . primeFactors
+
+uniqPrimes = LO.nub . sort . map (fromIntegral . fst)  . factorise
 
 phi :: Int -> Int
 phi n
     | n == 1 = 1
-    | isPrime n = n - 1
-    | otherwise = let uprimes = uniqPrimes n
+    | isPrime (fromIntegral n) = n - 1
+    | otherwise = let uprimes = uniqPrimes $ fromIntegral n
                       numer = product . map (subtract 1) $ uprimes
                       denom = product uprimes
                   in (n `div` denom) * numer

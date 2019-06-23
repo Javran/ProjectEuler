@@ -1,4 +1,4 @@
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes
 
 odds :: [Int]
 odds = 3 : map (+2) odds

@@ -1,5 +1,6 @@
 import qualified Data.Set as S
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes hiding (isPrime)
+import Math.NumberTheory.Primes.Testing
 
 isTruncatable :: Int -> Bool
 isTruncatable x = all isPrime $ possibleNumLeft ++ possibleNumRight

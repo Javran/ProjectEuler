@@ -1,10 +1,10 @@
 {-# LANGUAGE RankNTypes #-}
 
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes
 import Data.Ratio
 import Data.Function
 import Data.List
-import Petbox
+import Petbox hiding (primes)
 
 {-
   we know previously that:

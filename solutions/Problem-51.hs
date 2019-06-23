@@ -1,5 +1,5 @@
-import Control.Monad 
-import Data.Numbers.Primes
+import Control.Monad
+import Math.NumberTheory.Primes
 import Data.Char
 
 -- generate a list that every element contains `1`
@@ -41,7 +41,7 @@ answers = do
     -- pick up one of the possible mask
     mask <- oneNumToMask nStr
     -- apply the mask to obtain the prime number family
-    let family = filter isPrime $ applyMask nStr mask
+    let family = filter (isPrime . fromIntegral) $ applyMask nStr mask
     guard $ length family == 8
     return (family,mask)
 

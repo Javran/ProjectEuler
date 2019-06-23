@@ -1,5 +1,6 @@
-import Data.Numbers.Primes
-import Petbox
+import Math.NumberTheory.Primes
+import Petbox hiding (primes)
+
 {-
   according to: http://en.wikipedia.org/wiki/Euler%27s_totient_function
 

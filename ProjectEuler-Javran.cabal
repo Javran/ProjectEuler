@@ -18,7 +18,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     ProjectEuler.Javran
   build-depends:       base,
-                       primes,
+                       arithmoi,
                        data-ordlist,
                        strict,
                        array,

@@ -1,4 +1,4 @@
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes.Testing
 import Data.Function
 import Data.List
 
@@ -14,7 +14,7 @@ lineNE = zipWith (-) lineNW [0,2..]
 primeCount :: [Int]
 primeCount = map countPrimes $ transpose [lineSE, lineSW, lineNW, lineNE]
     where
-        countPrimes = length . filter isPrime
+        countPrimes = length . filter (isPrime . fromIntegral)
 
 primeRatios :: [Double]
 primeRatios = zipWith ((/) `on` fromIntegral) primeCountAcc [1,1+4..]

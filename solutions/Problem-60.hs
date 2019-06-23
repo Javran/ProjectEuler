@@ -1,5 +1,5 @@
 {-# LANGUAGE TupleSections #-}
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes
 import Data.Function
 import Data.List
 import Control.Monad
@@ -44,7 +44,7 @@ validPrimePairs = filter hasConcatProperty primePairs
 -- | concat property: if we use <+> as num "concat",
 -- then concat property says that A<+>B is a prime, and B<+>A is also a prime.
 hasConcatProperty :: (Int,Int) -> Bool
-hasConcatProperty = ((&&) `on` isPrime) <$> cn <*> (cn . swap)
+hasConcatProperty = ((&&) `on` (isPrime . fromIntegral)) <$> cn <*> (cn . swap)
     where
         cn = uncurry concatNum
 

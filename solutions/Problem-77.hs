@@ -1,10 +1,11 @@
 import Petbox
+import Math.NumberTheory.Primes.Testing
 
 numParts :: Int -> Int -> [ [Int] ]
 numParts m n
     | n > m = []
-    | n == m = [ [n] | isPrime m]
-    | not (isPrime n) = []
+    | n == m = [ [n] | isPrime (fromIntegral m)]
+    | not (isPrime (fromIntegral n)) = []
     | otherwise = do
         n' <- takeWhile (<= n) primes
         xs <- numParts (m-n) n'

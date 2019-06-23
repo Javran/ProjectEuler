@@ -1,4 +1,5 @@
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Primes hiding (isPrime)
 import Control.Monad
 
 -- calculate sum of primes

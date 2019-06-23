@@ -1,4 +1,4 @@
-import Data.Numbers.Primes
+import Math.NumberTheory.Primes
 import Data.Char
 import Data.List
 import Data.Maybe
