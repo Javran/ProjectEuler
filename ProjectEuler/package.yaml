@@ -46,6 +46,7 @@ dependencies:
 - vector
 - file-embed
 - scientific
+- utility-ht
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
@@ -89,6 +90,7 @@ library:
     - ProjectEuler.Problem24
     - ProjectEuler.Problem26
     - ProjectEuler.Problem27
+    - ProjectEuler.Problem35
     # ==== PROBLEM_MODULE_LIST_END
 
 executables:
