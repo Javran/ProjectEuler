@@ -1,9 +1,18 @@
 {-# LANGUAGE FlexibleContexts  #-}
+module ProjectEuler.Problem88
+  ( problem
+  ) where
+
 import Control.Monad
 import Petbox
 import qualified Data.IntSet as IS
 import qualified Data.Array.Unboxed as A
 import qualified Data.Array.ST as A
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 88 Solved result
 
 -- let's do it this way:
 -- figure out all the ways to divide one number to a product-sum number
@@ -45,30 +54,31 @@ numSplitN maxN num1 num2 =
 
 getMinProductNums :: [(Int, [Int])] -> A.UArray Int Int
 getMinProductNums partLens = A.runSTUArray $ do
-        -- "0" is the uninitialized value,
-        -- not in range, nor a solution thus safe
-        let bd = (2,12000 :: Int)
-            remaining1 = IS.fromList [2..12000]
-        mary <- A.newArray bd (0 :: Int)
-        let update i _ | not (A.inRange bd i) = return ()
-            update i vNew = A.writeArray mary i vNew
-
-            work rmn ((num,ls):xs)
-                | IS.null rmn = return ()
-                | otherwise = do
-                    mapM_ (`update` num) . filter (`IS.member` rmn) $ ls
-                    work (foldr IS.delete rmn ls) xs
-        work remaining1 partLens
-        return mary
+  -- "0" is the uninitialized value,
+  -- not in range, nor a solution thus safe
+  let bd = (2,12000 :: Int)
+      remaining1 = IS.fromList [2..12000]
+  mary <- A.newArray bd (0 :: Int)
+  let update i _ | not (A.inRange bd i) = return ()
+      update i vNew = A.writeArray mary i vNew
+      work rmn ((num,ls):xs)
+        | IS.null rmn = pure ()
+        | otherwise = do
+            mapM_ (`update` num) . filter (`IS.member` rmn) $ ls
+            work (foldr IS.delete rmn ls) xs
+      work _ _ = pure ()
+  work remaining1 partLens
+  pure mary
 
 -- TODO: try DP, would be faster
 
-main :: IO ()
-main = print
-     $ sum
-     $ IS.toList
-     $ IS.fromList
-     $ A.elems
-     $ getMinProductNums partititionLengths
+result :: Int
+result =
+    sum
+   . IS.toList
+   . IS.fromList
+   . A.elems
+   $ getMinProductNums partititionLengths
   where
     partititionLengths = map (keepInput $ \x -> numSplitN x x x) [1..]
+
