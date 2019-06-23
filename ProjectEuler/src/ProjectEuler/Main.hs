@@ -17,6 +17,7 @@ import Text.Printf
 import qualified Data.Text.IO as T
 import qualified Data.IntMap.Strict as IM
 
+import ProjectEuler.GetData
 import ProjectEuler.AllProblems
 import ProjectEuler.Types
 
@@ -36,17 +37,29 @@ evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
-  let problemAction = do
-        ((), outs) <- runPEM problemRun
-        putStrLn "Output:"
-        mapM_ T.putStrLn outs
-  catch @SomeException problemAction $ \e ->
-    -- note that if exception is uncaught, we will lose track of logs
-    -- so it's recommended to make sure all lifted IO action are safe.
-    putStrLn $ "Uncaught exception: " <> displayException e
+  r <- try @SomeException (snd <$> runPEM problemRun)
   tEnd <- getCPUTime
-  let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
-  printf "Time elapsed: %0.4f ms\n" (diff :: Double)
+  case r of
+    Left e -> do
+      -- note that if exception is uncaught, we will lose track of logs
+      -- so it's recommended to make sure all lifted IO action are safe.
+      putStrLn $ "Uncaught exception: " <> displayException e
+      exitFailure
+    Right outs -> do
+      putStrLn "Output:"
+      mapM_ T.putStrLn outs
+      let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
+      printf "Time elapsed: %0.4f ms\n" (diff :: Double)
+      case getExpectedAnswers problemId of
+        Nothing -> pure ()
+        Just expectedOuts ->
+          if expectedOuts == outs
+            then putStrLn "The output matches the expected answer."
+            else do
+              putStrLn "The output does not match the expected answer."
+              putStrLn "Expected:"
+              mapM_ T.putStrLn expectedOuts
+              exitFailure
 
 {-
   main program is named "pet" for ProjectEuler Toolkit.
