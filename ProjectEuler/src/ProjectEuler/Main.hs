@@ -38,7 +38,8 @@ evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
-  r <- try @SomeException (snd <$> runPEM problemRun)
+  r <- try @SomeException (runPEM problemRun >>= \((), outs) -> pure $!! outs)
+  tEnd <- getCPUTime
   case r of
     Left e -> do
       -- note that if exception is uncaught, we will lose track of logs
@@ -46,7 +47,6 @@ evalProblem Problem {problemId, problemRun} = do
       putStrLn $ "Uncaught exception: " <> displayException e
       exitFailure
     Right outs -> do
-      tEnd <- outs `deepseq` getCPUTime
       putStrLn "Output:"
       mapM_ T.putStrLn outs
       let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))

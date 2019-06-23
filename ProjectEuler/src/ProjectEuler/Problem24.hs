@@ -1,5 +1,8 @@
 module ProjectEuler.Problem24
   ( problem
+  , getPermutation
+  , breakList
+  , factorial
   ) where
 
 import ProjectEuler.Types
