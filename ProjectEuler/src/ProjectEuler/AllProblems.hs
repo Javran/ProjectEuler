@@ -37,6 +37,7 @@ import ProjectEuler.Problem26
 import ProjectEuler.Problem27
 import ProjectEuler.Problem35
 import ProjectEuler.Problem36
+import ProjectEuler.Problem38
 
 allProblems :: IM.IntMap Problem
 allProblems =
@@ -69,4 +70,5 @@ allProblems =
     , (27, ProjectEuler.Problem27.problem)
     , (35, ProjectEuler.Problem35.problem)
     , (36, ProjectEuler.Problem36.problem)
+    , (38, ProjectEuler.Problem38.problem)
     ]
