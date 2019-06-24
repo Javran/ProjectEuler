@@ -36,6 +36,12 @@ import ProjectEuler.Problem24
 import ProjectEuler.Problem25
 import ProjectEuler.Problem26
 import ProjectEuler.Problem27
+import ProjectEuler.Problem28
+import ProjectEuler.Problem29
+import ProjectEuler.Problem30
+import ProjectEuler.Problem31
+import ProjectEuler.Problem32
+import ProjectEuler.Problem33
 import ProjectEuler.Problem35
 import ProjectEuler.Problem36
 import ProjectEuler.Problem38
@@ -84,6 +90,12 @@ allProblems =
     , (25, ProjectEuler.Problem25.problem)
     , (26, ProjectEuler.Problem26.problem)
     , (27, ProjectEuler.Problem27.problem)
+    , (28, ProjectEuler.Problem28.problem)
+    , (29, ProjectEuler.Problem29.problem)
+    , (30, ProjectEuler.Problem30.problem)
+    , (31, ProjectEuler.Problem31.problem)
+    , (32, ProjectEuler.Problem32.problem)
+    , (33, ProjectEuler.Problem33.problem)
     , (35, ProjectEuler.Problem35.problem)
     , (36, ProjectEuler.Problem36.problem)
     , (38, ProjectEuler.Problem38.problem)

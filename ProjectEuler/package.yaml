@@ -93,6 +93,12 @@ library:
     - ProjectEuler.Problem25
     - ProjectEuler.Problem26
     - ProjectEuler.Problem27
+    - ProjectEuler.Problem28
+    - ProjectEuler.Problem29
+    - ProjectEuler.Problem30
+    - ProjectEuler.Problem31
+    - ProjectEuler.Problem32
+    - ProjectEuler.Problem33
     - ProjectEuler.Problem35
     - ProjectEuler.Problem36
     - ProjectEuler.Problem38
