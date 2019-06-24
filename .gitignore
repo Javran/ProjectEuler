@@ -27,3 +27,4 @@ cabal.project.local~
 
 /_shake/
 /_build/
+/stack.yaml.lock

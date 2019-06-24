@@ -2,4 +2,4 @@
 
 export PROJECT_EULER_HOME=/path/to/project/home
 
-stack build ProjectEuler:exe:templater && stack exec -- templater "$@"
+stack --verbosity warn build ProjectEuler:exe:templater && stack exec -- templater "$@"
