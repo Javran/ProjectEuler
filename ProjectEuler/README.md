@@ -23,3 +23,12 @@ This directory is supposed to be the new project home for the migration.
 ## Migration
 
 Current in the process of migrating old codes.
+
+Noticed there are 5 problems that I do have answered
+without collecting the problem, will add them retroactively:
+
+- 66
+- 90
+- 91
+- 93
+- 99
