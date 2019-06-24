@@ -99,6 +99,7 @@ library:
     - ProjectEuler.Problem31
     - ProjectEuler.Problem32
     - ProjectEuler.Problem33
+    - ProjectEuler.Problem34
     - ProjectEuler.Problem35
     - ProjectEuler.Problem36
     - ProjectEuler.Problem38
