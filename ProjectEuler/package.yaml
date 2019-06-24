@@ -90,6 +90,7 @@ library:
     - ProjectEuler.Problem22
     - ProjectEuler.Problem23
     - ProjectEuler.Problem24
+    - ProjectEuler.Problem25
     - ProjectEuler.Problem26
     - ProjectEuler.Problem27
     - ProjectEuler.Problem35
