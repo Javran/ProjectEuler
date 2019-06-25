@@ -1,6 +1,7 @@
 module ProjectEuler.Problem35
   ( problem
   , intToDigits
+  , digitsToInt
   , circularNums
   ) where
 
