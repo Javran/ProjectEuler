@@ -1,9 +1,19 @@
+module ProjectEuler.Problem49
+  ( problem
+  ) where
+
+import Data.Int
 import Math.NumberTheory.Primes
 import Data.Char
 import Data.List
 import Data.Maybe
 import Control.Monad
 import qualified Data.Map as M
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 49 Solved result
 
 -- step 1: get primes
 -- step 2: group by permutation closure
@@ -56,11 +66,15 @@ arithSeq arr = do
 -- only interested in long seq
 longArithSeq arr = filter ((>2).length) $ arithSeq arr
 
-main = do
-    let permuPrimeList = map (Permu . numToDigitList) limitedPrimes
-    let m = map snd $ M.toList $ foldl updateMap M.empty permuPrimeList
+result :: Int64
+result = read $ show x <> show y <> show z
+  where
+    permuPrimeList = map (Permu . numToDigitList) limitedPrimes
+    m = map snd $ M.toList $ foldl updateMap M.empty permuPrimeList
     -- for each group, we want every elements in it converted back to a num
     --   we only need closures with size >= 3
-    let permClosures = map sort $ filter ((>= 3).length) $ map (liftM digitListToNum) m
+    permClosures = map sort $ filter ((>= 3).length) $ map (liftM digitListToNum) m
 
-    mapM_ print $ filter (not.null) $ map longArithSeq permClosures
+
+    [[[x,y,z]]] = filter (\ xs -> (not . null) xs && not (any (1487 `elem`) xs))
+      $ map longArithSeq permClosures
