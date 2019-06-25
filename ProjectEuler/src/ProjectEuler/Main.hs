@@ -66,16 +66,18 @@ evalProblem Problem {problemId, problemRun} = do
   main program is named "pet" for ProjectEuler Toolkit.
 
   - `pet run <problem id>` executes solution for a program.
-  - (TODO) `pet new <problem id>` sets up templates for a new problem.
-    this should be templater's job.
   - `pet run_all` for running all programs in sequence.
 
-
-  TODO:
-
-  - plan for migrating old problems into new infra, we should still
-    be able to see time reports in travis-ci.
-
+  to be implemented:
+  - `pet new <problem id>` sets up templates for a new problem.
+    TODO: after migration is done, we'll remove templater and
+      move its useful functions over here.
+  - `pet good <problem id>` marks the solution to that problem as
+    Solved, and record its output to answers.yaml
+  - `pet stat` statistics (# of solved, # of unsolved, total, etc.)
+  - `pet report` this one will eventualy replace `pet run_all`, to generate
+    report for all existing solutions (mainly time report).
+  - allow smart completion like templater does.
  -}
 
 main :: IO ()
