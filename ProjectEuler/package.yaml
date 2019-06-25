@@ -111,6 +111,7 @@ library:
     - ProjectEuler.Problem43
     - ProjectEuler.Problem44
     - ProjectEuler.Problem45
+    - ProjectEuler.Problem46
     - ProjectEuler.Problem47
     - ProjectEuler.Problem59
     - ProjectEuler.Problem60
