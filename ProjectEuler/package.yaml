@@ -106,6 +106,7 @@ library:
     - ProjectEuler.Problem38
     - ProjectEuler.Problem39
     - ProjectEuler.Problem40
+    - ProjectEuler.Problem41
     - ProjectEuler.Problem43
     - ProjectEuler.Problem44
     - ProjectEuler.Problem47
