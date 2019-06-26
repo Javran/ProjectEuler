@@ -1,6 +1,15 @@
+module ProjectEuler.Problem51
+  ( problem
+  ) where
+
 import Control.Monad
 import Math.NumberTheory.Primes
 import Data.Char
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 51 Solved result
 
 -- generate a list that every element contains `1`
 --   to save some conversion time, just keep it as Strings
@@ -10,7 +19,7 @@ contain1Nums = filter contains1 $ map show [0..]
         contains1 = elem '1'
 
 -- search space, we are finding primes,
---   so the last digit must be one of: 
+--   so the last digit must be one of:
 --   [1,3,7,9]
 searchSpace :: [String]
 searchSpace = filter possiblePrime contain1Nums
@@ -46,16 +55,16 @@ answers = do
     return (family,mask)
 
 -- apply the mask, get the family of 10 numbers
-applyMask nStr mask = map doAll transRange 
+applyMask nStr mask = map doAll transRange
     where
               -- 3. convert them back into integers
-        doAll = read 
+        doAll = read
               -- 2. apply transformers so we get the family in their string form
               . (\t -> t indexedNStr)
               -- 1. make transformers from numbers
               . transformTo
 
-        indexedNStr = zip [0..] nStr 
+        indexedNStr = zip [0..] nStr
         transRange = if 0 `elem` mask
                         then [1..9]
                         else [0..9]
@@ -73,4 +82,4 @@ applyMask nStr mask = map doAll transRange
                     then chr $ n + ord '0'
                     else snd x)
 
-main = print $ head answers
+result = head . fst . head $ answers
