@@ -1,12 +1,19 @@
--- hGetContents is too lazy
-import System.IO hiding (hGetContents)
-import qualified System.IO.Strict as S
-import Control.Monad
-import Control.DeepSeq
+module ProjectEuler.Problem54
+  ( problem
+  ) where
+
 import Data.List
 import Data.Char
 import Data.Function
-import ProjectEuler.Javran
+
+import qualified Data.Text as T
+
+import ProjectEuler.Types
+
+-- TODO: cleanup needed
+
+problem :: Problem
+problem = pureProblemWithData "p54-poker.txt" 54 Solved compute
 
 data Suit = C | S | H | D
     deriving (Eq, Show, Read)
@@ -123,10 +130,10 @@ handRank cs = fst $ head $ dropWhile (\(_, p) -> not $ p cs) $ zip [0..] ranking
         -- Ten, Jack, Queen, King, Ace, in same suit.
         isRoyalFlush    cs = isStraightFlush cs && any ((== 14) . cValue) cs
 
-handleFile :: String -> IO Int
-handleFile contents = do
-    let handPairs = map lineToHand $ lines contents
-    return $ length $ filter (uncurry firstWins) handPairs
+handleFile :: String -> Int
+handleFile contents =
+  let handPairs = map lineToHand $ lines contents
+  in length $ filter (uncurry firstWins) handPairs
 
-main = getDataFile "p54-poker.txt" >>= handleFile
-   >>= print
+compute raw = handleFile (T.unpack raw)
+
