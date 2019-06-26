@@ -61,6 +61,7 @@ import ProjectEuler.Problem49
 import ProjectEuler.Problem50
 import ProjectEuler.Problem51
 import ProjectEuler.Problem52
+import ProjectEuler.Problem53
 import ProjectEuler.Problem59
 import ProjectEuler.Problem60
 import ProjectEuler.Problem70
@@ -129,6 +130,7 @@ allProblems =
     , (50, ProjectEuler.Problem50.problem)
     , (51, ProjectEuler.Problem51.problem)
     , (52, ProjectEuler.Problem52.problem)
+    , (53, ProjectEuler.Problem53.problem)
     , (59, ProjectEuler.Problem59.problem)
     , (60, ProjectEuler.Problem60.problem)
     , (70, ProjectEuler.Problem70.problem)
