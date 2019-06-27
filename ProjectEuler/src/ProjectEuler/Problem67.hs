@@ -1,5 +1,15 @@
+module ProjectEuler.Problem67
+  ( problem
+  ) where
+
 import Data.Ix
-import ProjectEuler.Javran
+
+import qualified Data.Text as T
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblemWithData "p67-triangle.txt" 67 Solved compute
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]
@@ -17,9 +27,10 @@ solveMax (t:ts) = foldl max 0 bottomLine
                         possiblePos = filter valid [pos - 1, pos]
                         possibleVal = map (curLine !!) possiblePos
                         valid = inRange (0, length curLine -1)
+solveMax [] = error "unreachable"
 
-main :: IO ()
-main = do
-    content <- getDataFile "p67-triangle.txt"
-    let table = map (map read . words) $ lines content :: [[Int]]
-    print $ solveMax table
+compute :: T.Text -> Int
+compute raw = solveMax table
+  where
+    table = map (map read . words) $ lines (T.unpack raw)
+
