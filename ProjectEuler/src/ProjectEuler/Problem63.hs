@@ -1,9 +1,22 @@
--- it's a pity that we can't use the formula l = 1 + floor( log10( n ) ) here
--- because of the precision error. try n = 1000 to find out
--- but I think this approach is good enough,
--- since it's really just a property about a "string"
-digitLength :: (Show i, Integral i) => i -> Int
-digitLength = length . show
+module ProjectEuler.Problem63
+  ( problem
+  ) where
+
+import Data.List
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 63 Solved result
+
+digitLength :: Integer -> Int
+digitLength = length . intToDigitsRev
+
+intToDigitsRev :: Integer -> [Int]
+intToDigitsRev = unfoldr f
+  where
+    f 0 = Nothing
+    f n = let (q,r) = n `quotRem` 10 in Just (fromIntegral r, q)
 
 -- the problem is, how many pairs of (a,n) satisfies that
 --   digitLength (a^n) == n
@@ -20,12 +33,12 @@ solutions :: [ (Int, Integer) ]
 solutions = concat . takeWhile (not . null) . map solve $ [1..]
     where
       solve :: Int -> [ (Int, Integer) ]
-      solve n = takeWhile ((== n) . digitLength . snd)
-              . dropWhile ((<  n) . digitLength . snd)
-              . map (\x -> (x,fromIntegral x^n))
-              $ [1..9]
+      solve n =
+        takeWhile ((== n) . digitLength . snd)
+        . dropWhile ((< n) . digitLength . snd)
+        . map (\x -> (x, fromIntegral x^n))
+        $ [1..9]
 
-main :: IO ()
-main = do
-    print solutions
-    print . length $ solutions
+result :: Int
+result = length solutions
+
