@@ -1,10 +1,19 @@
 {-# LANGUAGE FlexibleContexts #-}
+module ProjectEuler.Problem68
+  ( problem
+  ) where
+
+
 import Control.Monad
 import Control.Monad.State
-import Data.List
 import Data.Function
-
+import Data.List
 import Petbox
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 68 Solved result
 
 {-
   5-gon encoding:
@@ -57,11 +66,13 @@ solutions = do
                              , all ((> head firstArm) . head) restArms
                              ]
 
-main :: IO ()
-main = print
-     . maximumBy (compare `on` snd)
-     . map (keepInput concatInt)
-     $ evalStateT solutions [1..10]
+result :: Int
+result =
+    snd
+    . maximumBy (compare `on` snd)
+    . map (keepInput concatInt)
+    $ evalStateT solutions [1..10]
   where
     concatInt :: [Int] -> Int
     concatInt = read . concatMap show
+
