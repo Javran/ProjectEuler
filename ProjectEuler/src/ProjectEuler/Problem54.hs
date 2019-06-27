@@ -10,8 +10,6 @@ import qualified Data.Text as T
 
 import ProjectEuler.Types
 
--- TODO: cleanup needed
-
 problem :: Problem
 problem = pureProblemWithData "p54-poker.txt" 54 Solved compute
 
