@@ -1,5 +1,14 @@
+module ProjectEuler.Problem69
+  ( problem
+  ) where
+
 import Math.NumberTheory.Primes
 import Petbox hiding (primes)
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 69 Solved result
 
 {-
   according to: http://en.wikipedia.org/wiki/Euler%27s_totient_function
@@ -17,5 +26,5 @@ import Petbox hiding (primes)
 
 -}
 
-main :: IO ()
-main = print . lastSuchThat (<= 1000000) . scanl1 (*) $ (primes :: [Int])
+result :: Int
+result = lastSuchThat (<= 1000000) . scanl1 (*) $ (primes :: [Int])

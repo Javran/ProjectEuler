@@ -133,6 +133,7 @@ library:
     - ProjectEuler.Problem65
     - ProjectEuler.Problem67
     - ProjectEuler.Problem68
+    - ProjectEuler.Problem69
     - ProjectEuler.Problem70
     - ProjectEuler.Problem72
     - ProjectEuler.Problem73
@@ -141,6 +142,7 @@ library:
     - ProjectEuler.Problem87
     - ProjectEuler.Problem88
     - ProjectEuler.Problem92
+    - ProjectEuler.Problem97
     - ProjectEuler.Problem104
     - ProjectEuler.Problem206
     # ==== PROBLEM_MODULE_LIST_END

@@ -76,6 +76,7 @@ import ProjectEuler.Problem64
 import ProjectEuler.Problem65
 import ProjectEuler.Problem67
 import ProjectEuler.Problem68
+import ProjectEuler.Problem69
 import ProjectEuler.Problem70
 import ProjectEuler.Problem72
 import ProjectEuler.Problem73
@@ -84,6 +85,7 @@ import ProjectEuler.Problem84
 import ProjectEuler.Problem87
 import ProjectEuler.Problem88
 import ProjectEuler.Problem92
+import ProjectEuler.Problem97
 import ProjectEuler.Problem104
 import ProjectEuler.Problem206
 
@@ -157,6 +159,7 @@ allProblems =
     , (65, ProjectEuler.Problem65.problem)
     , (67, ProjectEuler.Problem67.problem)
     , (68, ProjectEuler.Problem68.problem)
+    , (69, ProjectEuler.Problem69.problem)
     , (70, ProjectEuler.Problem70.problem)
     , (72, ProjectEuler.Problem72.problem)
     , (73, ProjectEuler.Problem73.problem)
@@ -165,6 +168,7 @@ allProblems =
     , (87, ProjectEuler.Problem87.problem)
     , (88, ProjectEuler.Problem88.problem)
     , (92, ProjectEuler.Problem92.problem)
+    , (97, ProjectEuler.Problem97.problem)
     , (104, ProjectEuler.Problem104.problem)
     , (206, ProjectEuler.Problem206.problem)
     ]
