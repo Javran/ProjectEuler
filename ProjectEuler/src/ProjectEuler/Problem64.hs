@@ -1,5 +1,15 @@
+module ProjectEuler.Problem64
+  ( problem
+  ) where
+
+
 import Data.List
 import Data.Maybe
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 64 Solved result
 
 floorDb :: Double -> Int
 floorDb = floor
@@ -65,9 +75,12 @@ getPeriod xs = getPeriod' xs []
         | y `elem` s = Just (dropWhile (/= y). reverse $ s)
         | otherwise  = getPeriod' ys (y:s)
 
-main :: IO ()
-main = print                      -- count & print
-     . length
-     . filter (odd . length)      -- collect those whose periods are odds
-     . mapMaybe (getPeriod . gen) -- collect those that have periods
-     $ [1..10000]
+result :: Int
+result =
+  length
+  -- collect those whose periods are odds
+  . filter (odd . length)
+  -- collect those that have periods
+  . mapMaybe (getPeriod . gen)
+  $ [1..10000]
+
