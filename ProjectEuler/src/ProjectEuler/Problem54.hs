@@ -15,34 +15,39 @@ import ProjectEuler.Types
 problem :: Problem
 problem = pureProblemWithData "p54-poker.txt" 54 Solved compute
 
-data Suit = C | S | H | D
-    deriving (Eq, Show, Read)
+data Suit
+  = C | S | H | D
+  deriving (Eq, Show, Read)
 
-data Card = Card
+data Card
+  = Card
     { cValue :: Int
     , cSuit  :: Suit
-    } deriving (Eq, Show)
+    }
+  deriving (Eq, Show)
 
 allEqual :: (Eq e) => [e] -> Bool
 allEqual (x:xs) = all (== x) xs
-allEqual []     = True
+allEqual [] = True
 
 wordToCard :: String -> Card
+wordToCard [] = error "unreachable"
 wordToCard (v:s) = Card val (read s)
     where
-        -- make 'A' being 14, so that:
-        --  card1 >= card2 iff. v1 >= v2
-        val = case v of
-            'T' -> 10
-            'J' -> 11
-            'Q' -> 12
-            'K' -> 13
-            'A' -> 14
-            _   -> ord v - ord '0'
+      -- if we assign value 14 to 'A',
+      -- we'll have:
+      --  card1 >= card2 iff. v1 >= v2
+      val = case v of
+              'T' -> 10
+              'J' -> 11
+              'Q' -> 12
+              'K' -> 13
+              'A' -> 14
+              _   -> ord v - ord '0'
 
 -- a raw string line to a hand
 lineToHand :: String -> ([Card],[Card])
-lineToHand l = splitAt 5 $ map wordToCard $ words l
+lineToHand l = splitAt 5 $ wordToCard <$> words l
 
 -- the situation when the first player wins
 firstWins :: [Card] -> [Card] -> Bool
@@ -70,70 +75,62 @@ firstWins p1Cards p2Cards = case (compare `on` handRank) p1Cards p2Cards of
 -- the list given is increasing and consecutive
 isIncConsecutive :: [Int] -> Bool
 isIncConsecutive l@(x:_) = and $ zipWith (==) l [x..]
+isIncConsecutive [] = error "unreachable"
 
 -- rank a hand
 handRank :: [Card] -> Int
-handRank cs = fst $ head $ dropWhile (\(_, p) -> not $ p cs) $ zip [0..] rankingPredicates
-    where
-        -- search through predicates,
-        --   find first predicate that returns True
-        --   and use its index as rank
-        rankingPredicates :: [[Card] -> Bool]
-        -- note: the lowest number stands for the highest rank
-        rankingPredicates =
-            [ isRoyalFlush
-            , isStraightFlush
-            , isFourOfAKind
-            , isFullHouse
-            , isFlush
-            , isStraight
-            , isThreeOfAKind
-            , isTwoPairs
-            , isOnePair
-            , isHighCard
-            ]
+handRank cs = fst $ head $ dropWhile (\(_, p) -> not p) $ zip [0..] rankingPredicates
+  where
+    -- search through predicates,
+    --   find first true value,
+    --   and use its index as rank
+    -- note: the lowest number stands for the highest rank
+    rankingPredicates =
+      [ isRoyalFlush
+      , isStraightFlush
+      , isFourOfAKind
+      , isFullHouse
+      , isFlush
+      , isStraight
+      , isThreeOfAKind
+      , isTwoPairs
+      , isOnePair
+      , isHighCard
+      ]
 
-        -- get the card values
-        --   and group cards of the same value
-        --   return the size of each group, the return value is already sorted
-        --   e.g. [1,2,3,4,4] => [1,1,1,2]
-        --        [5,5,6,5,6] => [2,3]
-        cardValueCount  cs = sort $ map length $ group $ sort $ map cValue cs
+    -- get the card values
+    --   and group cards of the same value
+    --   return the size of each group, the return value is already sorted
+    --   e.g. [1,2,3,4,4] => [1,1,1,2]
+    --        [5,5,6,5,6] => [2,3]
+    cardValueCount  = sort . map length . group . sort $ map cValue cs
 
-        -- Highest value card.
-        isHighCard      cs = True
+    -- Ten, Jack, Queen, King, Ace, in same suit.
+    isRoyalFlush = isStraightFlush && any ((== 14) . cValue) cs
+    -- All cards are consecutive values of same suit.
+    isStraightFlush = isStraight && isFlush
+    -- Four cards of the same value.
+    isFourOfAKind  = cardValueCount == [1,4]
+    -- Three of a kind and a pair.
+    isFullHouse = cardValueCount == [2,3]
+    -- All cards of the same suit.
+    isFlush = allEqual $ map cSuit cs
+    -- All cards are consecutive values.
+    isStraight = isIncConsecutive $ sort $ map cValue cs
+    -- Three cards of the same value.
+    isThreeOfAKind = cardValueCount == [1,1,3]
+    -- Two different pairs.
+    isTwoPairs = cardValueCount == [1,2,2]
+    -- Two cards of the same value.
+    isOnePair = cardValueCount == [1,1,1,2]
+    -- Highest value card.
+    -- note: this is the fallback case, meaning it has to capture
+    --   all cases that doesn't match any of above, therefore just `True`.
+    isHighCard = True
 
-        -- Two cards of the same value.
-        isOnePair       cs = cardValueCount cs == [1,1,1,2]
+compute :: T.Text -> Int
+compute raw = length $ filter (uncurry firstWins) handPairs
+  where
+    handPairs = map lineToHand $ lines (T.unpack raw)
 
-        -- Two different pairs.
-        isTwoPairs      cs = cardValueCount cs == [1,2,2]
-
-        -- Three cards of the same value.
-        isThreeOfAKind  cs = cardValueCount cs == [1,1,3]
-
-        -- All cards are consecutive values.
-        isStraight      cs = isIncConsecutive $ sort $ map cValue cs
-
-        -- All cards of the same suit.
-        isFlush         cs = allEqual $ map cSuit cs
-
-        -- Three of a kind and a pair.
-        isFullHouse     cs = cardValueCount cs == [2,3]
-
-        -- Four cards of the same value.
-        isFourOfAKind   cs = cardValueCount cs == [1,4]
-
-        -- All cards are consecutive values of same suit.
-        isStraightFlush cs = isStraight cs && isFlush cs
-
-        -- Ten, Jack, Queen, King, Ace, in same suit.
-        isRoyalFlush    cs = isStraightFlush cs && any ((== 14) . cValue) cs
-
-handleFile :: String -> Int
-handleFile contents =
-  let handPairs = map lineToHand $ lines contents
-  in length $ filter (uncurry firstWins) handPairs
-
-compute raw = handleFile (T.unpack raw)
 
