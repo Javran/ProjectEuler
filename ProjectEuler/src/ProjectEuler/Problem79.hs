@@ -1,11 +1,17 @@
-import Petbox
-import ProjectEuler.Javran
-import Control.Applicative
+module ProjectEuler.Problem79
+  ( problem
+  ) where
+
 import Data.List
 import Data.Ord
+import Petbox
 
-keyLog :: IO [String]
-keyLog = lines <$> getDataFile "p79-keylog.txt"
+import qualified Data.Text as T
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblemWithData "p79-keylog.txt" 79 Solved compute
 
 hasConsecutiveChar :: String -> Bool
 hasConsecutiveChar s = or $ zipWith (==) s (tail s)
@@ -50,11 +56,13 @@ solveAll kl solutions (e:es) =
           pc <- solutions
           solve pc e
 
-main :: IO ()
-main = do
-    kl <- keyLog
-    -- we are lucky, since the keys does not have consecutive
-    -- digits, we can simplify the algoritm a lot
-    if all (not . hasConsecutiveChar . show) kl
-        then print $ keepInput length $ head $ simplify $ solveAll kl [""] kl
-        else putStrLn "Cannot solve"
+compute :: T.Text -> Int
+compute raw = read result
+  where
+    kl = lines $ T.unpack raw
+    (result,_) =
+      -- we are lucky, since the keys does not have consecutive
+      -- digits, we can simplify the algoritm a lot
+      if all (not . hasConsecutiveChar . show) kl
+        then keepInput length $ head $ simplify $ solveAll kl [""] kl
+        else error "Cannot solve"
