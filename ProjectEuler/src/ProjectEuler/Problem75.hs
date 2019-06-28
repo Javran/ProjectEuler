@@ -1,6 +1,16 @@
 {-# LANGUAGE TupleSections #-}
+module ProjectEuler.Problem75
+  ( problem
+  ) where
+
 import Control.Monad
+
 import qualified Data.Array.Unboxed as A
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 75 Solved result
 
 -- see: http://en.wikipedia.org/wiki/Pythagorean_triple
 -- when m,n are coprimes and (m-n) is odd,
@@ -21,8 +31,9 @@ searchSpace = do
     let n = mpn - m
         halfPeri = m * mpn
     guard $ m > n
-         && 1 == gcd m n
-         && odd mpn -- if m + n is odd, then so does m - n
+    guard $ gcd m n == 1
+    -- if m + n is odd, then so does m - n
+    guard $ odd mpn
     [halfPeri,halfPeri+halfPeri..limit]
 
 solutions :: [Int]
@@ -31,5 +42,7 @@ solutions = filter (== 1) $ A.elems countTable
     countTable :: A.UArray Int Int
     countTable = A.accumArray (+) 0 (1,limit) . map (,1) $ searchSpace
 
-main :: IO ()
-main = print $ length solutions
+result :: Int
+result = length solutions
+
+
