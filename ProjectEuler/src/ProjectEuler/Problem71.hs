@@ -1,4 +1,13 @@
+module ProjectEuler.Problem71
+  ( problem
+  ) where
+
 import Data.Ratio
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 71 Solved result
 
 {-
   see: http://en.wikipedia.org/wiki/Farey_sequence
@@ -22,11 +31,12 @@ import Data.Ratio
 -}
 
 solutions :: [Ratio Int]
-solutions = map (\d -> (3*d-1) `div` 7 % d)
-          . filter (\d -> (3*d-1) `mod` 7 == 0)
-          $ [1..1000000]
+solutions = do
+  d <- [1..1000000]
+  let n = 3*d-1
+  (q,0) <- [n `quotRem` 7]
+  pure (q % d)
 
-main :: IO ()
-main = print
-     . maximum
-     $ solutions
+result :: Int
+result = numerator $ maximum solutions
+
