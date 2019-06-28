@@ -83,6 +83,7 @@ import ProjectEuler.Problem72
 import ProjectEuler.Problem73
 import ProjectEuler.Problem74
 import ProjectEuler.Problem75
+import ProjectEuler.Problem76
 import ProjectEuler.Problem84
 import ProjectEuler.Problem87
 import ProjectEuler.Problem88
@@ -168,6 +169,7 @@ allProblems =
     , (73, ProjectEuler.Problem73.problem)
     , (74, ProjectEuler.Problem74.problem)
     , (75, ProjectEuler.Problem75.problem)
+    , (76, ProjectEuler.Problem76.problem)
     , (84, ProjectEuler.Problem84.problem)
     , (87, ProjectEuler.Problem87.problem)
     , (88, ProjectEuler.Problem88.problem)

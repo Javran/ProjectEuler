@@ -1,6 +1,16 @@
+module ProjectEuler.Problem76
+  ( problem
+  ) where
+
 import qualified Data.Array.Unboxed as A
 import Data.Array.ST
 import Control.Monad
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 76 Solved result
+
 
 {-
 -- this is the original version
@@ -25,7 +35,7 @@ limit = 100
 
 numParts :: Int -> Int -> Int
 numParts a b
-    | a <  b = 0
+    | a < b = 0
     | a == b = 1
     | otherwise = numPartsArray A.! (a,b)
   where
@@ -33,14 +43,15 @@ numParts a b
     numPartsArray = runSTUArray $ do
         mary <- newArray ((1,1),(limit,limit)) 0
         mapM_ (\x -> writeArray mary (x,x) 1) [1..limit]
-        forM_ [1..limit] $ \ m ->
+        forM_ [1..limit] $ \m ->
             forM_ [1..m-1] $ \n -> do
                 xs <- mapM (\x -> readArray mary (m-n,x)) [1..n]
                 writeArray mary (m,n) (sum xs)
-        return mary
+        pure mary
 
 solve :: Int -> Int
 solve x = sum (map (numParts x) [1..x]) - 1
 
-main :: IO ()
-main = print $ solve 100
+result :: Int
+result = solve 100
+
