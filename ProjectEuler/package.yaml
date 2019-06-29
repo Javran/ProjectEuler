@@ -19,9 +19,12 @@ dependencies:
 - arithmoi
 - array
 - base
+- bytestring
 - containers
 - data-ordlist
+- deepseq
 - dlist
+- file-embed
 - filepath
 - foldl
 - lens
@@ -33,22 +36,19 @@ dependencies:
 - parsec
 - petbox
 - PSQueue
+- scientific
 - split
 - strict
 - system-filepath
-- bytestring
 - text
 - text-show
 - time
 - transformers-base
 - turtle
 - unordered-containers
-- vector
-- file-embed
-- scientific
 - utility-ht
+- vector
 - yaml
-- deepseq
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
