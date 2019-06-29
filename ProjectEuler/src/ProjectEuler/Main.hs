@@ -78,6 +78,12 @@ evalProblem Problem {problemId, problemRun} = do
   - `pet report` this one will eventualy replace `pet run_all`, to generate
     report for all existing solutions (mainly time report).
   - allow smart completion like templater does.
+  - we need a custom test runner to surface slow solutions rather than
+    using hspec. (`pet report` could do this, but I feel we need one
+    specific for travis-ci to run)
+  - merge templater's logic into this one,
+    as the first step, perhaps we'll need to have a seperated submodule
+    for command lines
  -}
 
 main :: IO ()
