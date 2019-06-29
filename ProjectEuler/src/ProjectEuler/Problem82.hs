@@ -1,21 +1,29 @@
 {-# LANGUAGE TupleSections #-}
-import ProjectEuler.Javran
-import Petbox
-import Control.Applicative
+module ProjectEuler.Problem82
+  ( problem
+  ) where
+
 import Control.Monad
+import Petbox
+
 import qualified Data.Array.ST as A
 import qualified Data.Array.Unboxed as A
+import qualified Data.Text as T
 
-getMat :: IO (A.UArray (Int,Int) Int)
-getMat = do
-    raws <- getRaws
-    let colN = length (head raws)
-        rowN = length raws
-        genPairs = concat $ add2DCoords 1 1 raws
-    return $ A.array ((1,1), (rowN,colN)) genPairs
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblemWithData "p82-matrix.txt" 82 Solved compute
+
+getMat :: T.Text -> A.UArray (Int,Int) Int
+getMat raw = A.array ((1,1), (rowN,colN)) genPairs
   where
-    getRaws = map parseLine . lines <$> getDataFile "p82-matrix.txt"
+    raws = map parseLine . lines . T.unpack $ raw
     parseLine s = read ("[" ++ s ++ "]") :: [Int]
+    colN = length (head raws)
+    rowN = length raws
+    genPairs = concat $ add2DCoords 1 1 raws
+
 
 pathSum :: A.UArray (Int,Int) Int -> A.UArray (Int,Int) Int
 pathSum mat = A.runSTUArray $ do
@@ -42,13 +50,14 @@ pathSum mat = A.runSTUArray $ do
     forM_ [1..rowN] $ \row ->
         ((mat A.! (row,colN) +) <$> A.readArray mary (row,colN-1))
         >>= A.writeArray mary (row,colN)
-    return mary
+    pure mary
   where
     bd@(_,(rowN,colN)) = A.bounds mat
 
-main :: IO ()
-main = getMat >>= print . getResult . pathSum
+compute :: T.Text -> Int
+compute = getResult . pathSum . getMat
   where
     getResult arr = minimum (map ((arr A.!). (,colN) ) [1..rowN])
       where
         (_,(rowN,colN)) = A.bounds arr
+
