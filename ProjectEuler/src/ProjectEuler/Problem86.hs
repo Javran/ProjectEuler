@@ -2,15 +2,13 @@ module ProjectEuler.Problem86
   ( problem
   ) where
 
+import Petbox
+import Control.Monad
+
 import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 86 Solved result
-
-result = ()
-
-import Petbox
-import Control.Monad
 
 -- generate pythagorean triples
 -- we only need the first two sides
@@ -43,8 +41,8 @@ possiblePartitiions m (x,y) = count x y + count y x
                    r = plusBC-1
                in max 0 ((min a r - l) + 1)
 
-main :: IO ()
-main = print (binSearch 1500 2000)
+result :: Int
+result = binSearch 1500 2000
   where
     -- 1500 and 2000 are magic numbers, we need to find an approximated range to search
     limitedPyth = genTwoSides 2000
