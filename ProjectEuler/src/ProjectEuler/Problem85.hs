@@ -1,7 +1,16 @@
-import Petbox
+module ProjectEuler.Problem85
+  ( problem
+  ) where
+
 import Control.Monad
-import Data.Ord
 import Data.List
+import Data.Ord
+import Petbox
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 85 Solved result
 
 {-
   consider the function "countRect 1 n" with stands for
@@ -36,8 +45,8 @@ countRect m n = halve (n * (n+1)) * halve (m * (m+1))
   a little bit in case some number greater turns out to be closer
 -}
 
-main :: IO ()
-main = print $ minimumBy (comparing snd) solutions
+result :: Int
+result = fst $ minimumBy (comparing snd) solutions
   where
     targetMul4 = 8000000 :: Int
     -- "100" is a magic number
@@ -49,3 +58,4 @@ main = print $ minimumBy (comparing snd) solutions
             diff = abs (prods-targetMul4)
         guard $ diff <= 1000
         return (m*n, diff)
+
