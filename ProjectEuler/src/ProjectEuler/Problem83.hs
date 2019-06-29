@@ -1,14 +1,26 @@
-{-# LANGUAGE TupleSections, RankNTypes, ScopedTypeVariables, FlexibleContexts #-}
-import ProjectEuler.Javran
-import Petbox
-import Control.Applicative
+{-# LANGUAGE
+    ScopedTypeVariables
+  , FlexibleContexts
+  #-}
+module ProjectEuler.Problem83
+  ( problem
+  ) where
+
 import Control.Monad
 import Control.Monad.ST
 import Control.Monad.State
-import qualified Data.PSQueue as PS
+import Petbox
+
 import qualified Data.Array.ST as A
 import qualified Data.Array.Unboxed as A
+import qualified Data.PSQueue as PS
 import qualified Data.Set as S
+import qualified Data.Text as T
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblemWithData "p83-matrix.txt" 83 Solved compute
 
 {-
   let's convert the problem into a one source shortest path problem:
@@ -28,16 +40,15 @@ import qualified Data.Set as S
 type Vertex = (Int,Int)
 type Graph = A.UArray (Int,Int) Int
 
-getMat :: IO Graph
-getMat = do
-    raws <- getRaws
-    let colN = length (head raws)
-        rowN = length raws
-        genPairs = concat $ add2DCoords 1 1 raws
-    return $ A.array ((1,1), (rowN,colN)) genPairs
+getMat :: T.Text -> Graph
+getMat raw = A.array ((1,1), (rowN,colN)) genPairs
   where
-    getRaws = map parseLine . lines <$> getDataFile "p83-matrix.txt"
+    raws = map parseLine . lines . T.unpack $ raw
     parseLine s = read ("[" ++ s ++ "]") :: [Int]
+    colN = length (head raws)
+    rowN = length raws
+    genPairs = concat $ add2DCoords 1 1 raws
+
 
 getEdges :: Graph -> Vertex -> [(Vertex, Int)]
 getEdges ary v1 = case v1 of
@@ -82,7 +93,7 @@ findShortestPath ary = A.runSTUArray build
                     -> ST s ()
            dijkstra pq visited = case PS.minView pq of
                -- when nothing's in the queue
-               Nothing -> return ()
+               Nothing -> pure ()
                -- otherwise delete (view) min
                Just (u PS.:-> w,pq1) -> do
                    -- mark as visited, construct search space
@@ -101,11 +112,12 @@ findShortestPath ary = A.runSTUArray build
                    pq2 <- getNewPriQueue
                    dijkstra pq2 newVisited
        dijkstra initPQ S.empty
-       return mdist
+       pure mdist
 
-main :: IO ()
-main = do
-    g <- getMat
-    let dist = findShortestPath g
-        bd@(_,vm) = A.bounds g
-    print $ dist A.! (1+A.index bd vm)
+compute :: T.Text -> Int
+compute raw = dist A.! (1+A.index bd vm)
+  where
+    g = getMat raw
+    dist = findShortestPath g
+    bd@(_,vm) = A.bounds g
+
