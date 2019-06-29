@@ -1,3 +1,14 @@
+module ProjectEuler.Problem86
+  ( problem
+  ) where
+
+import ProjectEuler.Types
+
+problem :: Problem
+problem = pureProblem 86 Solved result
+
+result = ()
+
 import Petbox
 import Control.Monad
 
@@ -49,3 +60,4 @@ main = print (binSearch 1500 2000)
         | otherwise = binSearch (mid+1) r
       where
         mid = halve (l+r)
+
