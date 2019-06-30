@@ -12,8 +12,6 @@ import qualified Data.Map.Strict as M
 
 import CmdSync
 import CmdCreate
-import CmdMigrate
-import CmdStat
 
 {-
   The purpose of templater is to ... well, apply templates.
@@ -50,10 +48,8 @@ uniqueLookup k m = case filter ((k `isPrefixOf`) . fst) $ M.toList m of
 
 subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
-  [ ("migrate", cmdMigrate)
-  , ("create", cmdCreate)
+  [ ("create", cmdCreate)
   , ("sync", cmdSync)
-  , ("stat", cmdStat)
   ]
 
 main :: IO ()

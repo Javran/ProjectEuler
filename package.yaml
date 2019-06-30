@@ -177,9 +177,7 @@ executables:
     other-modules:
     - Common
     - CmdSync
-    - CmdMigrate
     - CmdCreate
-    - CmdStat
 
     ghc-options: *exe-ghc-options
 
