@@ -26,7 +26,7 @@ before_install:
 - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
 install:
-- "(cd ProjectEuler && stack --no-interleaved-output build --no-run-tests ProjectEuler:test:hspec)"
+- stack --no-interleaved-output build --no-run-tests ProjectEuler:test:hspec
 
 script:
-- "(cd ProjectEuler && stack test ProjectEuler:test:hspec)"
+- stack test ProjectEuler:test:hspec

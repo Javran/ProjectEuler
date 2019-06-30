@@ -22,9 +22,16 @@ cabal.sandbox.config
 .stack-work/
 cabal.project.local
 cabal.project.local~
+stack.yaml.lock
 .HTF/
 .ghc.environment.*
 
 /_shake/
 /_build/
 /stack.yaml.lock
+
+# project specific
+ProjectEuler.cabal
+
+tp
+pet
