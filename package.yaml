@@ -157,6 +157,7 @@ library:
     - ProjectEuler.Problem90
     - ProjectEuler.Problem91
     - ProjectEuler.Problem92
+    - ProjectEuler.Problem93
     - ProjectEuler.Problem97
     - ProjectEuler.Problem104
     - ProjectEuler.Problem206
