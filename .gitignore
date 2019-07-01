@@ -1,6 +1,3 @@
-# temp workspace
-/working/
-
 # haskell gitignore
 dist
 dist-*
