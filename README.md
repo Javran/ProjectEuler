@@ -39,8 +39,6 @@ But there are 5 problems that I do have answered
 without collecting the problem, will add them retroactively:
 
 - 66
-- 93
-- 99
 
 ## Some more ideas about the "workspace" bit
 
