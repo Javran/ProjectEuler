@@ -35,10 +35,7 @@ Feel free to use them & contribution welcomed.
 
 Current state: most of the ancient solutions have been migrated.
 
-But there are 5 problems that I do have answered
-without collecting the problem, will add them retroactively:
-
-- 66
+Missing solution for Problem 66.
 
 ## Some more ideas about the "workspace" bit
 
