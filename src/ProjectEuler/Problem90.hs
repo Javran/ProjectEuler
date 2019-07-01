@@ -10,7 +10,7 @@ import Data.List
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 90 Unsolved result
+problem = pureProblem 90 Solved result
 
 type Cube = (IS.IntSet,[Int])
 

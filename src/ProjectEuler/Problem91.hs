@@ -8,7 +8,7 @@ import Data.List
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 91 Unsolved result
+problem = pureProblem 91 Solved result
 
 maxN :: Int
 maxN = 50

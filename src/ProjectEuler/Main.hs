@@ -33,6 +33,9 @@ import ProjectEuler.Types
   However, this still helps in detecting solutions that
   takes a long time to run and therefore surface potential points
   of improvement.
+
+  TODO: when a problem marked as Unsolved but has a matching output,
+  perhaps note about this in the output.
  -}
 evalProblem :: Problem -> IO ()
 evalProblem Problem {problemId, problemRun} = do
