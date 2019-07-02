@@ -63,6 +63,8 @@ library:
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.AllProblems
+    - ProjectEuler.CommandLine.CmdRun
+    - ProjectEuler.CommandLine.CmdRunAll
     - ProjectEuler.CommandLine
     # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN

@@ -26,6 +26,8 @@ getProjectHome = do
 renderProblem :: Int -> Bool -> T.Text -> IO TL.Text
 renderProblem pId solved extraContent = do
   prjHome <- getProjectHome
+  -- TODO: perhaps we should have a more standard dir structure
+  -- so that all templates can be loaded at once.
   let tmplFP = prjHome </> "templater" </> "mustache" </> "ProblemX.hs"
       ctxt = Object $ HM.fromList
         [ ("problem_id", Number $ fromIntegral pId)
