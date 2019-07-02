@@ -1,29 +1,18 @@
 {-# LANGUAGE
     LambdaCase
   , NamedFieldPuns
-  , TypeApplications
   #-}
 module ProjectEuler.CommandLine
   ( main
   ) where
 
-import Control.Exception
-import Control.Monad
-import System.CPUTime
-import System.Environment
-import System.Exit
-import Text.Printf
-import Control.DeepSeq
 import Control.Applicative
 import Data.List
+import System.Environment
+import System.Exit
 
-import qualified Data.Text.IO as T
-import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 
-import ProjectEuler.GetData
-import ProjectEuler.AllProblems
-import ProjectEuler.Types
 import ProjectEuler.CommandLine.CmdRun
 import ProjectEuler.CommandLine.CmdRunAll
 
@@ -41,7 +30,6 @@ subCmds = M.fromList
   [ ("run", cmdRun)
   , ("run_all", cmdRunAll)
   ]
-
 
 {-
   main program is named "pet" for ProjectEuler Toolkit.
