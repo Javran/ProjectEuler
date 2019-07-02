@@ -28,7 +28,7 @@ import qualified Data.Text as T
 
 import ProjectEuler.GetData
 
-data ProblemStatus = Solved | Unsolved
+data ProblemStatus = Solved | Unsolved deriving (Eq)
 
 {-
   problemRun performs some arbitrary action,

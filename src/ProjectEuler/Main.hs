@@ -33,12 +33,9 @@ import ProjectEuler.Types
   However, this still helps in detecting solutions that
   takes a long time to run and therefore surface potential points
   of improvement.
-
-  TODO: when a problem marked as Unsolved but has a matching output,
-  perhaps note about this in the output.
  -}
 evalProblem :: Problem -> IO ()
-evalProblem Problem {problemId, problemRun} = do
+evalProblem Problem {problemId, problemRun, problemStatus} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
   tStart <- getCPUTime
   r <- try @SomeException (runPEM problemRun >>= \((), outs) -> pure $!! outs)
@@ -58,7 +55,10 @@ evalProblem Problem {problemId, problemRun} = do
         Nothing -> pure ()
         Just expectedOuts ->
           if expectedOuts == outs
-            then putStrLn "The output matches the expected answer."
+            then do
+              putStrLn "The output matches the expected answer."
+              when (problemStatus == Unsolved) $
+                putStrLn "Note: This problem is still marked as `Unsolved`."
             else do
               putStrLn "The output does not match the expected answer."
               putStrLn "Expected:"
