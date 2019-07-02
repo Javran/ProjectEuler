@@ -48,3 +48,6 @@ Missing solution for Problem 66.
 
 - Also note that the data does not need to be there - we can have a caching
   mechanism that fetches data on the fly and put it locally for future uses.
+
+- `ProjectEuler.GetData` works fine except when a new data file is added,
+  we need to somehow force this module to recompile when it is the case.
