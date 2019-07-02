@@ -1,3 +1,3 @@
 module Main (main) where
 
-import ProjectEuler.Main
+import ProjectEuler.CommandLine

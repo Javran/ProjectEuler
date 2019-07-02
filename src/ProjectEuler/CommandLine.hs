@@ -3,7 +3,7 @@
   , NamedFieldPuns
   , TypeApplications
   #-}
-module ProjectEuler.Main
+module ProjectEuler.CommandLine
   ( main
   ) where
 
