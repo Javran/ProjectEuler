@@ -1,7 +1,7 @@
 {-# LANGUAGE
     OverloadedStrings
   #-}
-module Common
+module ProjectEuler.CommandLine.Common
   ( getProjectHome
   , renderProblem
   ) where

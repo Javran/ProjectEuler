@@ -15,6 +15,9 @@ import qualified Data.Map.Strict as M
 
 import ProjectEuler.CommandLine.CmdRun
 import ProjectEuler.CommandLine.CmdRunAll
+import ProjectEuler.CommandLine.CmdCreate
+import ProjectEuler.CommandLine.CmdSync
+
 
 -- first do a regular lookup, fallback to
 -- succeed as long as the given key matches exactly one result (by prefix)
@@ -29,6 +32,8 @@ subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
   [ ("run", cmdRun)
   , ("run_all", cmdRunAll)
+  , ("create", cmdCreate)
+  , ("sync", cmdSync)
   ]
 
 {-
@@ -59,3 +64,35 @@ main = getArgs >>= \case
   _ -> do
     putStrLn $ "pet <" <> intercalate "|" (M.keys subCmds) <> ">"
     exitFailure
+
+{-
+  TODO: the following stuff is migrated from templater, and might not make
+  sense anymore, we need to revisit them in future.
+ -}
+
+{-
+  The purpose of templater is to ... well, apply templates.
+  Having a standalone program to scan through files and generate modules
+  accordingly for us will give us more control than using TemplateHaskell.
+ -}
+
+{-
+
+  Usage: require environment variable "PROJECT_EULER_HOME" to point to project home directory.
+
+  - `templater sync`:
+
+    + scan through problems and re-generate AllProblems.hs.
+    + update package.yaml and update the list of problem modules
+
+  - `templater create <num>`: create Problem<num> using template. (implies `sync`)
+
+  - `templater migrate <num>`: migrate a old solution code. (implies `sync`)
+
+    Note that this is by no means a correct migration - this only move
+    the file with proper naming and program backbone, which will in turn
+    result in less repetitive work.
+
+  - `templater stat`: show the list of not-yet-migrated solutions.
+
+ -}

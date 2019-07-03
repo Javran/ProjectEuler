@@ -2,7 +2,7 @@
     OverloadedStrings
   , TypeApplications
   #-}
-module CmdCreate
+module ProjectEuler.CommandLine.CmdCreate
   ( cmdCreate
   ) where
 
@@ -13,8 +13,8 @@ import TextShow
 import qualified Data.Text.Lazy.IO as TL
 import qualified Filesystem.Path.CurrentOS as FP
 
-import Common
-import CmdSync
+import ProjectEuler.CommandLine.Common
+import ProjectEuler.CommandLine.CmdSync
 
 cmdCreate :: [String] -> IO ()
 cmdCreate xs

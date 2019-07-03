@@ -1,7 +1,7 @@
 {-# LANGUAGE
     OverloadedStrings
   #-}
-module CmdSync
+module ProjectEuler.CommandLine.CmdSync
   ( cmdSync
   ) where
 
@@ -23,7 +23,7 @@ import qualified Data.Vector as V
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
 
-import Common
+import ProjectEuler.CommandLine.Common
 
 scanProblems :: FP.FilePath -> IO [Int]
 scanProblems projectHome = do

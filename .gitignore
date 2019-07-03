@@ -30,5 +30,4 @@ stack.yaml.lock
 # project specific
 ProjectEuler.cabal
 
-tp
 pet

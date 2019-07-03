@@ -1,5 +1,0 @@
-#!/bin/bash
-
-export PROJECT_EULER_HOME=/path/to/project/home
-
-stack --verbosity warn build ProjectEuler:exe:templater && stack exec -- templater "$@"

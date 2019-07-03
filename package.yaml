@@ -64,8 +64,11 @@ library:
     - ProjectEuler.Types
     - ProjectEuler.GetData
     - ProjectEuler.AllProblems
+    - ProjectEuler.CommandLine.Common
     - ProjectEuler.CommandLine.CmdRun
     - ProjectEuler.CommandLine.CmdRunAll
+    - ProjectEuler.CommandLine.CmdCreate
+    - ProjectEuler.CommandLine.CmdSync
     - ProjectEuler.CommandLine
     # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN
@@ -174,17 +177,6 @@ executables:
 
     dependencies:
       - ProjectEuler
-
-    ghc-options: *exe-ghc-options
-
-  templater:
-    main: Main.hs
-    source-dirs: templater
-
-    other-modules:
-    - Common
-    - CmdSync
-    - CmdCreate
 
     ghc-options: *exe-ghc-options
 
