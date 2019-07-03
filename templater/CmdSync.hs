@@ -57,7 +57,7 @@ renderAllProblemsContent tmpl pIds = renderMustache tmpl ctxt
 updateAllProblems :: FP.FilePath -> IO [Int]
 updateAllProblems projectHome = do
   let allProblemsTmplPath =
-        projectHome </> "templater" </> "mustache" </> "AllProblems.hs"
+        projectHome </> "data" </> "AllProblems.hs.mustache"
       allProblemsFilePath =
         projectHome </> "src" </> "ProjectEuler" </> "AllProblems.hs"
   template <- compileMustacheFile (FP.encodeString allProblemsTmplPath)
