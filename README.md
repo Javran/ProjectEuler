@@ -33,9 +33,7 @@ Feel free to use them & contribution welcomed.
 
 ## Migration
 
-Current state: most of the ancient solutions have been migrated.
-
-Missing solution for Problem 66.
+Current state: All ancient solutions have been migrated.
 
 ## Some more ideas about the "workspace" bit
 
