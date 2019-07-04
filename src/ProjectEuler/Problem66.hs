@@ -11,14 +11,15 @@ problem :: Problem
 problem = pureProblem 66 Unsolved result
 
 approx :: [Integer] -> [Rational -> Rational]
-approx = tail . scanl (\acc i t -> acc (1 / (i % 1 + t))) id
+approx (x:xs) = scanl (\acc i t -> acc (1 / (i % 1 + t))) (x%1 +) xs
+approx [] = error "unreachable"
 
 {-
   Some leads:
   - https://en.wikipedia.org/wiki/Pell's_equation
   - Problem64
  -}
-result :: [Double]
+result :: [Rational]
 result =
-  take 10 . map (fromRational . (1 /) . ($ 0))
+  take 10 . map ($ 0)
   . approx . map (toInteger . fst) $ gen 7
