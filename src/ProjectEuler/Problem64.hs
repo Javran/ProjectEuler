@@ -1,5 +1,7 @@
 module ProjectEuler.Problem64
   ( problem
+  , gen
+  , getPeriod
   ) where
 
 
