@@ -8,7 +8,7 @@ import Math.NumberTheory.Powers.Squares
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 94 Unsolved result
+problem = pureProblem 94 Solved result
 
 {-
   Idea:
