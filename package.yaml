@@ -30,6 +30,7 @@ dependencies:
 - foldl
 - lens
 - lifted-base
+- math-functions
 - microstache
 - monad-control
 - MonadRandom
