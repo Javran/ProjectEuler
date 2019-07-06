@@ -6,20 +6,19 @@ module ProjectEuler.CommandLine.CmdReport
   ( cmdReport
   ) where
 
+import Control.Exception
 import Control.Monad
-import Data.Maybe
 import Numeric.Sum
 import System.Exit
 import Text.Printf
-import Control.Exception
 
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 
 import ProjectEuler.AllProblems
+import ProjectEuler.CommandLine.Common
 import ProjectEuler.GetData
 import ProjectEuler.Types
-import ProjectEuler.CommandLine.Common
 
 -- Result type for generating final reports
 {-
@@ -83,9 +82,8 @@ cmdReport _ = do
   let totalTime = kbn $ foldr (\(t,_) -> (`add` t)) zero results
       counts :: M.Map Result Int
       counts = M.fromListWith (+) $  (,1) . snd <$> results
-      failedCount = fromMaybe 0 $
-        (+) <$> M.lookup Wrong counts
-            <*> M.lookup Crashed counts
+      failedCount =
+        M.findWithDefault 0 Wrong counts + M.findWithDefault 0 Crashed counts
   printf "Evaluated %d problems in %.4f ms.\n"
     (IM.size allProblems)
     totalTime
