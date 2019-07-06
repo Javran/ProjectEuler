@@ -39,29 +39,34 @@ uniqueLookup k m =
 
 subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
-  [ ( "run",
+  [ ( "run"
       {- `pet run <problem id>` executes solution for a program. -}
-      cmdRun
+    , cmdRun
+    )
+  , ( "exec"
+      {- same as `pet run` -}
+    , cmdRun
     )
   , ( "run_all"
       {- `pet run_all` for running all programs in sequence. -}
     , cmdRunAll
     )
-  , ( "new",
+  , ( "new"
      {-
        `pet new <problem id>` sets up templates for a new problem.
       -}
-     cmdCreate
+    , cmdCreate
     )
-  , ( "create",
-      cmdCreate
+  , ( "create"
+      {- same as `pet new` -}
+    , cmdCreate
     )
-  , ( "sync",
+  , ( "sync"
       {- `pet sync` scans the directory to collect the list of problems
          and update related file accordingly.
          You shouldn't need to manually use this command.
        -}
-      cmdSync
+    , cmdSync
     )
   ]
 
