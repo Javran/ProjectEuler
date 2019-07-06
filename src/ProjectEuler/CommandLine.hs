@@ -18,9 +18,18 @@ import ProjectEuler.CommandLine.CmdRunAll
 import ProjectEuler.CommandLine.CmdCreate
 import ProjectEuler.CommandLine.CmdSync
 
+{-
+  Main binary is named "pet" for ProjectEuler Toolkit.
+  Note that some sub commands would require
+  environment variable "PROJECT_EULER_HOME" to point to project home directory.
+ -}
 
--- first do a regular lookup, fallback to
--- succeed as long as the given key matches exactly one result (by prefix)
+{-
+  first do a regular lookup, this allows us to do exact match
+  if one of those sub commands happens to be the prefix of the other.
+  then fallback to succeed as long as the given key
+  matches exactly one result (by prefix)
+ -}
 uniqueLookup :: (Eq ke, Ord ke) => [ke] -> M.Map [ke] v -> Maybe v
 uniqueLookup k m =
   M.lookup k m
@@ -30,22 +39,35 @@ uniqueLookup k m =
 
 subCmds :: M.Map String ([String] -> IO ())
 subCmds = M.fromList
-  [ ("run", cmdRun)
-  , ("run_all", cmdRunAll)
-  , ("create", cmdCreate)
-  , ("sync", cmdSync)
+  [ ( "run",
+      {- `pet run <problem id>` executes solution for a program. -}
+      cmdRun
+    )
+  , ( "run_all"
+      {- `pet run_all` for running all programs in sequence. -}
+    , cmdRunAll
+    )
+  , ( "new",
+     {-
+       `pet new <problem id>` sets up templates for a new problem.
+      -}
+     cmdCreate
+    )
+  , ( "create",
+      cmdCreate
+    )
+  , ( "sync",
+      {- `pet sync` scans the directory to collect the list of problems
+         and update related file accordingly.
+         You shouldn't need to manually use this command.
+       -}
+      cmdSync
+    )
   ]
 
 {-
-  main program is named "pet" for ProjectEuler Toolkit.
+  (TODO):
 
-  - `pet run <problem id>` executes solution for a program.
-  - `pet run_all` for running all programs in sequence.
-
-  to be implemented:
-  - `pet new <problem id>` sets up templates for a new problem.
-    TODO: after migration is done, we'll remove templater and
-      move its useful functions over here.
   - `pet good <problem id>` marks the solution to that problem as
     Solved, and record its output to answers.yaml
   - `pet stat` statistics (# of solved, # of unsolved, total, etc.)
@@ -64,35 +86,3 @@ main = getArgs >>= \case
   _ -> do
     putStrLn $ "pet <" <> intercalate "|" (M.keys subCmds) <> ">"
     exitFailure
-
-{-
-  TODO: the following stuff is migrated from templater, and might not make
-  sense anymore, we need to revisit them in future.
- -}
-
-{-
-  The purpose of templater is to ... well, apply templates.
-  Having a standalone program to scan through files and generate modules
-  accordingly for us will give us more control than using TemplateHaskell.
- -}
-
-{-
-
-  Usage: require environment variable "PROJECT_EULER_HOME" to point to project home directory.
-
-  - `templater sync`:
-
-    + scan through problems and re-generate AllProblems.hs.
-    + update package.yaml and update the list of problem modules
-
-  - `templater create <num>`: create Problem<num> using template. (implies `sync`)
-
-  - `templater migrate <num>`: migrate a old solution code. (implies `sync`)
-
-    Note that this is by no means a correct migration - this only move
-    the file with proper naming and program backbone, which will in turn
-    result in less repetitive work.
-
-  - `templater stat`: show the list of not-yet-migrated solutions.
-
- -}
