@@ -11,7 +11,8 @@ cache:
   directories:
   - $HOME/.stack
 before_cache:
-  - rm -f $HOME/.stack/stack.sqlite3
+  - rm -f $HOME/.stack/stack.sqlite3*
+  - rm -f $HOME/.stack/pantry/pantry.sqlite3*
 
 # Ensure necessary system libraries are present
 addons:
