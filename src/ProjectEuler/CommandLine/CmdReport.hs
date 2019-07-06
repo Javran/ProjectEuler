@@ -11,6 +11,7 @@ import Control.Monad
 import Numeric.Sum
 import System.Exit
 import Text.Printf
+import System.Console.Terminfo
 
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
@@ -42,9 +43,8 @@ data Result
   | Pending -- this problem is marked as unsolved therefore its evaluation is skipped.
     deriving (Show, Ord, Eq)
 
--- TODO: haskeline for better output?
-evalProblem :: Problem -> IO (Double, Result)
-evalProblem p@Problem {problemId, problemStatus}
+evalProblemWithRender :: (Result -> String) -> Problem -> IO (Double, Result)
+evalProblemWithRender renderResult p@Problem{problemId, problemStatus}
   | problemStatus == Unsolved = do
       let t = 0
       fmt t Pending
@@ -74,10 +74,22 @@ evalProblem p@Problem {problemId, problemStatus}
               putStrLn $ "  Actual: " <> show expects
               pure (t, r)
   where
-    fmt t r = printf "Problem #%d: %.4f ms, %s\n" problemId t (show r)
+    fmt t r = printf "Problem #%d: %.4f ms, %s\n" problemId t (renderResult r)
 
 cmdReport :: [String] -> IO ()
 cmdReport _ = do
+  termInfo <- setupTermFromEnv
+  let render = case getCapability termInfo withForegroundColor of
+        Nothing -> show
+        Just renderWithColor -> \s ->
+          let c = case s of
+                Accepted -> Green
+                Unverified -> Yellow
+                Wrong -> Red
+                Crashed -> Red
+                Pending -> Yellow
+          in renderWithColor c (show s)
+      evalProblem = evalProblemWithRender render
   results <- forM (IM.toAscList allProblems) $ \(_,p) -> evalProblem p
   let totalTime = kbn $ foldr (\(t,_) -> (`add` t)) zero results
       counts :: M.Map Result Int
@@ -89,7 +101,7 @@ cmdReport _ = do
     totalTime
   forM_ (M.toAscList counts) $ \(r,count) ->
     when (count > 0) $
-      printf "- %s: %d\n" (show r) count
+      printf "- %s: %d\n" (render r) count
   if failedCount == 0
     then exitSuccess
     else exitFailure

@@ -42,6 +42,7 @@ dependencies:
 - split
 - strict
 - system-filepath
+- terminfo
 - text
 - text-show
 - time
