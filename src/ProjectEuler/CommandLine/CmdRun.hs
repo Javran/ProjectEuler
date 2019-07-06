@@ -1,6 +1,5 @@
 {-# LANGUAGE
     NamedFieldPuns
-  , TypeApplications
   #-}
 module ProjectEuler.CommandLine.CmdRun
   ( evalProblem
@@ -9,10 +8,8 @@ module ProjectEuler.CommandLine.CmdRun
 
 import Control.Exception
 import Control.Monad
-import System.CPUTime
 import System.Exit
 import Text.Printf
-import Control.DeepSeq
 
 import qualified Data.Text.IO as T
 import qualified Data.IntMap.Strict as IM
@@ -20,6 +17,8 @@ import qualified Data.IntMap.Strict as IM
 import ProjectEuler.GetData
 import ProjectEuler.AllProblems
 import ProjectEuler.Types
+
+import ProjectEuler.CommandLine.Common
 
 {-
   Run the program and measure time.
@@ -34,11 +33,9 @@ import ProjectEuler.Types
   of improvement.
  -}
 evalProblem :: Problem -> IO ()
-evalProblem Problem {problemId, problemRun, problemStatus} = do
+evalProblem p@Problem {problemId, problemStatus} = do
   putStrLn $ "Evaluating Problem #" <> show problemId <> " ..."
-  tStart <- getCPUTime
-  r <- try @SomeException (runPEM problemRun >>= \((), outs) -> pure $!! outs)
-  tEnd <- getCPUTime
+  (diff, r) <- runProblem p
   case r of
     Left e -> do
       -- note that if exception is uncaught, we will lose track of logs
@@ -48,7 +45,6 @@ evalProblem Problem {problemId, problemRun, problemStatus} = do
     Right outs -> do
       putStrLn "Output:"
       mapM_ T.putStrLn outs
-      let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
       printf "Time elapsed: %0.4f ms\n" (diff :: Double)
       case getExpectedAnswers problemId of
         Nothing -> pure ()
