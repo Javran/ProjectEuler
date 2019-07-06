@@ -17,6 +17,7 @@ import ProjectEuler.CommandLine.CmdRun
 import ProjectEuler.CommandLine.CmdRunAll
 import ProjectEuler.CommandLine.CmdCreate
 import ProjectEuler.CommandLine.CmdSync
+import ProjectEuler.CommandLine.CmdReport
 
 {-
   Main binary is named "pet" for ProjectEuler Toolkit.
@@ -62,11 +63,20 @@ subCmds = M.fromList
     , cmdCreate
     )
   , ( "sync"
-      {- `pet sync` scans the directory to collect the list of problems
-         and update related file accordingly.
-         You shouldn't need to manually use this command.
+      {-
+        `pet sync` scans the directory to collect the list of problems
+        and update related file accordingly.
+        You shouldn't need to manually use this command.
        -}
     , cmdSync
+    )
+  , ( "report"
+      {-
+        (WIP) `pet report` runs all problems marked as solved,
+        make sure the output is expected, and report about time elapsed
+        for each of the solutions.
+       -}
+    , cmdReport
     )
   ]
 

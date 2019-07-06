@@ -69,6 +69,7 @@ library:
     - ProjectEuler.CommandLine.CmdRunAll
     - ProjectEuler.CommandLine.CmdCreate
     - ProjectEuler.CommandLine.CmdSync
+    - ProjectEuler.CommandLine.CmdReport
     - ProjectEuler.CommandLine
     # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN
