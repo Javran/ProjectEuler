@@ -12,15 +12,15 @@ a bit easier (the "workspace" bit).
 
 ## Executables
 
-- `pet`: main program.
-  `pet run <problem-number>` to run the program for the specific problem.
+`pet` is the binary handles everything:
 
-- `templater`: scripting for automating module list update.
-  (TODO) It is also in plan to support creating new problem program.
+- It creates new solution from template and update related parts of the project automatically.
+- Solutions are all linked into this binary for execution.
+- (TODO) Runs all solutions and generate a report regarding correctness and time elapsed for them.
 
-- `XXX-example`: these are simple scripts just to save some typing time.
-  To use them, edit its environment variables as appropriate and
-  rename droping the `-example` suffix.
+`pet-example` is a simple script just to save some typing time.
+To use them, edit its environment variables as appropriate and
+rename droping the `-example` suffix.
 
 ## petbox
 
@@ -31,9 +31,10 @@ Stands for "ProjectEuler Toolbox".
 Some commonly used functions are extracted as a separated package.
 Feel free to use them & contribution welcomed.
 
-## Migration
-
-Current state: All ancient solutions have been migrated.
+(TODO) Note that there are still some frequently used functions
+that I haven't moved to a common module - I'm still need to give it
+some thoughts about how to have a separated module while easily
+update it to support my own needs.
 
 ## Some more ideas about the "workspace" bit
 
