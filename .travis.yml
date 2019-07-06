@@ -11,7 +11,7 @@ cache:
   directories:
   - $HOME/.stack
 before_cache:
-  - find . -name '*.sqlite3*' -exec rm {} \;
+  - find $HOME/.stack -name '*.sqlite3*' -exec rm {} \;
 
 # Ensure necessary system libraries are present
 addons:
