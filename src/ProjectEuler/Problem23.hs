@@ -13,7 +13,7 @@ problem = pureProblem 23 Solved result
 
 -- see: http://mathschallenge.net/library/number/sum_of_divisors
 divisorSum :: Int -> Int
-divisorSum = sum . IS.toList . divisorsSmall
+divisorSum = IS.foldl' (+) 0 . divisorsSmall
 
 isAbundant :: Int -> Bool
 isAbundant n = n < divisorSum n - n
