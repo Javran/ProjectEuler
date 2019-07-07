@@ -12,6 +12,8 @@ import Numeric.Sum
 import System.Exit
 import Text.Printf
 import System.Console.Terminfo
+import Data.List
+import Data.Ord
 
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
@@ -20,6 +22,8 @@ import ProjectEuler.AllProblems
 import ProjectEuler.CommandLine.Common
 import ProjectEuler.GetData
 import ProjectEuler.Types
+
+{- HLINT ignore "Use uncurry" -}
 
 -- Result type for generating final reports
 {-
@@ -90,18 +94,31 @@ cmdReport _ = do
                 Pending -> Yellow
           in renderWithColor c (show s)
       evalProblem = evalProblemWithRender render
-  results <- forM (IM.toAscList allProblems) $ \(_,p) -> evalProblem p
-  let totalTime = kbn $ foldr (\(t,_) -> (`add` t)) zero results
+  results <- forM (IM.toAscList allProblems) $ \(pId,p) -> (pId,) <$> evalProblem p
+  let totalTime = kbn $ foldr (\(_,(t,_)) -> (`add` t)) zero results
       counts :: M.Map Result Int
-      counts = M.fromListWith (+) $  (,1) . snd <$> results
+      counts = M.fromListWith (+) $  (,1) . snd . snd <$> results
       failedCount =
         M.findWithDefault 0 Wrong counts + M.findWithDefault 0 Crashed counts
+  putStrLn "==== Report ===="
   printf "Evaluated %d problems in %.4f ms.\n"
     (IM.size allProblems)
     totalTime
   forM_ (M.toAscList counts) $ \(r,count) ->
     when (count > 0) $
       printf "- %s: %d\n" (render r) count
+  let acPairs =
+        sortOn (Down . snd)
+        . concatMap (\(pid,(t,r)) ->
+                       case r of
+                         Accepted -> pure (pid,t)
+                         _ -> [])
+        $ results
+  unless (null acPairs) $ do
+    putStrLn ""
+    putStrLn "Most Time-consuming & Accepted solutions are:"
+    forM_ (take 10 acPairs) $ \(pId,t) ->
+      printf "- Problem #%d: %.4f ms.\n" pId t
   if failedCount == 0
     then exitSuccess
     else exitFailure
