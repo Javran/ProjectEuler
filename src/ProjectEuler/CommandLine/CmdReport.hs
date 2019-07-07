@@ -23,8 +23,6 @@ import ProjectEuler.CommandLine.Common
 import ProjectEuler.GetData
 import ProjectEuler.Types
 
-{- HLINT ignore "Use uncurry" -}
-
 -- Result type for generating final reports
 {-
   The final summary line in the report will be looked like:
