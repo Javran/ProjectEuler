@@ -69,7 +69,6 @@ library:
     - ProjectEuler.AllProblems
     - ProjectEuler.CommandLine.Common
     - ProjectEuler.CommandLine.CmdRun
-    - ProjectEuler.CommandLine.CmdRunAll
     - ProjectEuler.CommandLine.CmdCreate
     - ProjectEuler.CommandLine.CmdSync
     - ProjectEuler.CommandLine.CmdReport

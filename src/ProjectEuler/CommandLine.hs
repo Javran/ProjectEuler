@@ -14,7 +14,6 @@ import System.Exit
 import qualified Data.Map.Strict as M
 
 import ProjectEuler.CommandLine.CmdRun
-import ProjectEuler.CommandLine.CmdRunAll
 import ProjectEuler.CommandLine.CmdCreate
 import ProjectEuler.CommandLine.CmdSync
 import ProjectEuler.CommandLine.CmdReport
@@ -48,10 +47,6 @@ subCmds = M.fromList
       {- same as `pet run` -}
     , cmdRun
     )
-  , ( "run_all"
-      {- `pet run_all` for running all programs in sequence. -}
-    , cmdRunAll
-    )
   , ( "new"
      {-
        `pet new <problem id>` sets up templates for a new problem.
@@ -72,7 +67,7 @@ subCmds = M.fromList
     )
   , ( "report"
       {-
-        (WIP) `pet report` runs all problems marked as solved,
+        `pet report` runs all problems marked as solved,
         make sure the output is expected, and report about time elapsed
         for each of the solutions.
        -}
@@ -86,8 +81,6 @@ subCmds = M.fromList
   - `pet good <problem id>` marks the solution to that problem as
     Solved, and record its output to answers.yaml
   - `pet stat` statistics (# of solved, # of unsolved, total, etc.)
-  - `pet report` this one will eventualy replace `pet run_all`, to generate
-    report for all existing solutions (mainly time report).
   - we need a custom test runner to surface slow solutions rather than
     using hspec. (`pet report` could do this, but I feel we need one
     specific for travis-ci to run)
