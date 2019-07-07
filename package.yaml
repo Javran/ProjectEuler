@@ -22,6 +22,7 @@ dependencies:
 - base
 - bytestring
 - containers
+- criterion
 - data-ordlist
 - deepseq
 - dlist
@@ -72,6 +73,7 @@ library:
     - ProjectEuler.CommandLine.CmdCreate
     - ProjectEuler.CommandLine.CmdSync
     - ProjectEuler.CommandLine.CmdReport
+    - ProjectEuler.CommandLine.CmdBenchmark
     - ProjectEuler.CommandLine
     # The following section should be modified automatically by "templater"
     # ==== PROBLEM_MODULE_LIST_BEGIN

@@ -17,6 +17,7 @@ import ProjectEuler.CommandLine.CmdRun
 import ProjectEuler.CommandLine.CmdCreate
 import ProjectEuler.CommandLine.CmdSync
 import ProjectEuler.CommandLine.CmdReport
+import ProjectEuler.CommandLine.CmdBenchmark
 
 {-
   Main binary is named "pet" for ProjectEuler Toolkit.
@@ -72,6 +73,10 @@ subCmds = M.fromList
         for each of the solutions.
        -}
     , cmdReport
+    )
+  , ( "benchmark"
+      {- `pet benchmark <problem id> [...benchmark options...]` -}
+    , cmdBenchmark
     )
   ]
 
