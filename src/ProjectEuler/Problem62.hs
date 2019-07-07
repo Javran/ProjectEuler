@@ -10,7 +10,7 @@ import Data.Tuple
 import qualified Data.Map.Strict as M
 
 import ProjectEuler.Types
-import ProjectEuler.Problem35 (intToDigits)
+import ProjectEuler.SolCommon (intToDigits)
 
 problem :: Problem
 problem = pureProblem 62 Solved result

@@ -6,7 +6,7 @@ import Control.Monad
 import Math.NumberTheory.Primes
 
 import ProjectEuler.Types
-import ProjectEuler.Problem35 (intToDigits, digitsToInt)
+import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 51 Solved result
@@ -17,7 +17,7 @@ type Digits = [Int]
 -- prime numbers that contains '1'.
 searchSpace :: [Digits]
 searchSpace = do
-  n <- primes
+  n <- primes :: [Int]
   let ds = intToDigits n
   guard (1 `elem` ds)
   pure ds

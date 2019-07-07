@@ -2,21 +2,14 @@ module ProjectEuler.Problem63
   ( problem
   ) where
 
-import Data.List
-
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 63 Solved result
 
 digitLength :: Integer -> Int
 digitLength = length . intToDigitsRev
-
-intToDigitsRev :: Integer -> [Int]
-intToDigitsRev = unfoldr f
-  where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 10 in Just (fromIntegral r, q)
 
 -- the problem is, how many pairs of (a,n) satisfies that
 --   digitLength (a^n) == n

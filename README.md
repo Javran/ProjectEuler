@@ -28,13 +28,8 @@ Project home: https://github.com/Javran/petbox
 
 Stands for "ProjectEuler Toolbox".
 
-Some commonly used functions are extracted as a separated package.
+Some commonly used functions are extracted into this standalone package.
 Feel free to use them & contribution welcomed.
-
-(TODO) Note that there are still some frequently used functions
-that I haven't moved to a common module - I'm still need to give it
-some thoughts about how to have a separated module while easily
-update it to support my own needs.
 
 ## Some more ideas about the "workspace" bit
 
@@ -50,3 +45,5 @@ update it to support my own needs.
 
 - `ProjectEuler.GetData` works fine except when a new data file is added,
   we need to somehow force this module to recompile when it is the case.
+
+- TODO: we'd better keep data file names the same as what it appears on the website.

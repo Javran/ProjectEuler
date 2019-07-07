@@ -2,19 +2,13 @@ module ProjectEuler.Problem24
   ( problem
   , getPermutation
   , breakList
-  , factorial
   ) where
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 24 Solved result
-
-factorials :: [Int]
-factorials = scanl (*) 1 [1..]
-
-factorial :: Int -> Int
-factorial = (factorials !!)
 
 {-
   Given a number p in [0 .. (n!-1)], return the corresponding permutation

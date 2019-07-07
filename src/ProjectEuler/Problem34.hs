@@ -6,7 +6,7 @@ module ProjectEuler.Problem34
 import Data.Char
 
 import ProjectEuler.Types
-import ProjectEuler.Problem24 (factorial)
+import ProjectEuler.SolCommon (factorial)
 
 problem :: Problem
 problem = pureProblem 34 Solved result

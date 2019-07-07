@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeApplications #-}
 module ProjectEuler.Problem37
   ( problem
   ) where
@@ -7,7 +8,7 @@ import Math.NumberTheory.Primes.Testing
 import Data.List
 
 import ProjectEuler.Types
-import ProjectEuler.Problem35 (intToDigits, digitsToInt)
+import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 37 Solved result
@@ -21,7 +22,7 @@ problem = pureProblem 37 Solved result
  -}
 isTruncatable :: Int -> Bool
 isTruncatable x =
-    all (isPrime . fromIntegral) $ possibleNumLeft <> possibleNumRight
+    all (isPrime . fromIntegral @Int) $ possibleNumLeft <> possibleNumRight
   where
     digitsX = intToDigits x
     possibleNumLeft =
@@ -37,5 +38,3 @@ result :: Int
 result = sum $ take 11 $ filter isTruncatable searchSpace
   where
     searchSpace = dropWhile (<=7) primes
-
-

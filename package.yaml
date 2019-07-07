@@ -65,6 +65,7 @@ library:
   exposed-modules:
     - ProjectEuler.Types
     - ProjectEuler.GetData
+    - ProjectEuler.SolCommon
     - ProjectEuler.AllProblems
     - ProjectEuler.CommandLine.Common
     - ProjectEuler.CommandLine.CmdRun

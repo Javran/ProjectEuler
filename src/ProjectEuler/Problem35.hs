@@ -1,7 +1,5 @@
 module ProjectEuler.Problem35
   ( problem
-  , intToDigits
-  , digitsToInt
   , circularNums
   ) where
 
@@ -13,6 +11,7 @@ import qualified Data.IntSet as IS
 import qualified Data.List.Match as LMatch
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 35 Solved result
@@ -41,15 +40,6 @@ findCirculars curSpace foundPrimes = case IS.minView curSpaceValid of
       else findCirculars (tl IS.\\ cirH) foundPrimes
   where
     curSpaceValid = curSpace IS.\\ foundPrimes
-
-intToDigits :: Int -> [Int]
-intToDigits x = ($ []) . foldr (.) id $ unfoldr f x
-  where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 10 in Just ((++[r]), q)
-
-digitsToInt :: [Int] -> Int
-digitsToInt = foldl (\a b -> a*10+b) 0
 
 result :: Int
 result = IS.size $ findCirculars (IS.fromDistinctAscList searchSpace) IS.empty

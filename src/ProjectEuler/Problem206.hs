@@ -7,6 +7,7 @@ import Petbox
 import Math.NumberTheory.Powers.Squares
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 206 Solved result
@@ -27,12 +28,6 @@ searchSpaceDiv10 = do
     lBound, uBound :: Int64
     lBound = integerSquareRoot' 10203040506070809 `div` 10
     uBound = integerSquareRoot' 19293949596979899 `div` 10
-
-intToDigitsRev :: Int64 -> [Int]
-intToDigitsRev = unfoldr f
-  where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 10 in Just (fromIntegral r, q)
 
 -- check the pattern
 valid :: Int64 -> Bool

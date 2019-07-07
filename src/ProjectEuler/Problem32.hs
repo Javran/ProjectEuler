@@ -6,7 +6,8 @@ import Control.Monad
 import Data.List
 
 import ProjectEuler.Types
-import ProjectEuler.Problem24 (getPermutation,factorial)
+import ProjectEuler.SolCommon (factorial)
+import ProjectEuler.Problem24 (getPermutation)
 
 problem :: Problem
 problem = pureProblem 32 Solved result
