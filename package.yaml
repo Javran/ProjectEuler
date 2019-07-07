@@ -22,7 +22,6 @@ dependencies:
 - base
 - bytestring
 - containers
-- criterion
 - data-ordlist
 - deepseq
 - dlist
