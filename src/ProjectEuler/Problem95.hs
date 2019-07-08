@@ -4,6 +4,8 @@ module ProjectEuler.Problem95
 
 import Math.NumberTheory.Primes
 import Math.NumberTheory.ArithmeticFunctions
+import Data.List
+import Data.Ord
 
 import qualified Data.List.Ordered as LOrdered
 import qualified Data.IntSet as IS
@@ -12,7 +14,7 @@ import qualified Data.IntMap as IM
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 95 Unsolved result
+problem = pureProblem 95 Solved result
 
 {-
 
@@ -57,9 +59,32 @@ cutClear m =
   where
     m' = cut m
 
-result = show loopMap
+extractLoop :: IM.IntMap Int -> (IS.IntSet, IM.IntMap Int)
+extractLoop m = case IM.minViewWithKey m of
+    Nothing -> (IS.empty, m)
+    Just ((k,_), _) ->
+      let findLoop start cur acc =
+            let next = m IM.! cur
+            in if next == start
+                then acc
+                else findLoop start next (IS.insert cur acc)
+          loop = findLoop k k (IS.singleton k)
+      in (loop, cutClear (IM.withoutKeys m loop))
+
+result :: Int
+result = IS.findMin $ head sortedLoopGroups
   where
-    loopMap = cutClear $ IM.fromDistinctAscList pairs
+    -- sort by descending group size to find the maximum
+    sortedLoopGroups = sortOn (Down . IS.size) loopGroups
+    loopGroups :: [IS.IntSet]
+    loopGroups = unfoldr go loopMapInit
+    go loopMap =
+      if IS.null grp
+        then Nothing
+        else Just (grp, loopMap')
+      where
+        (grp, loopMap') = extractLoop loopMap
+    loopMapInit = cutClear $ IM.fromDistinctAscList pairs
     pairs =
       concatMap
         (\n -> let s = sumOfProperDivisors n in if s <= 1 then [] else [(n,s)])
