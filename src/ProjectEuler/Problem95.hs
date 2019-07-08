@@ -4,8 +4,6 @@ module ProjectEuler.Problem95
 
 import Math.NumberTheory.Primes
 import Math.NumberTheory.ArithmeticFunctions
-import Control.Monad.State
-import Data.Maybe
 
 import qualified Data.List.Ordered as LOrdered
 import qualified Data.IntSet as IS
@@ -22,18 +20,15 @@ problem = pureProblem 95 Unsolved result
   - https://en.wikipedia.org/wiki/Sociable_number
   - https://en.wikipedia.org/wiki/Aliquot_sequence
 
-  1,000,000 numbers could be searchable - but it's still too slow.
+  Since we want to find chains of values formed by Aliquot sequence,
+  we can first compute (x, sumOfProperDivisors x) for all values in the search space,
+  then we restrict keys by collecting all values of `sumOfProperDivisors` (cutting),
+  and doing this repeatly will eventually get us to a point
+  that all remaining values of this map is in some cycle and no more cutting
+  can be made.
 
-  new idea: if aliquot sequence runs into prime, we should never include
-  that as a candidate, that gives us only 13862 to search, but
-  getting this list could be slow.
-
-  explored: if we do only one step (with Maybe to eliminate candidates)
-  at a time, it'll still take a while to get to the 7th interation.
-
-  update: nub through IntSet eliminates more, but is still slow.
-
-  TODO: memoization?
+  Fortunately with 20 seconds, only 117 pairs are remaining,
+  which is far more managable to search through.
 
  -}
 
@@ -49,9 +44,22 @@ sumOfProperDivisors n
   | otherwise =
       IS.foldl' (+) 0 (divisorsSmall n) - n
 
-result = IS.size srcs
+cut :: IM.IntMap Int -> IM.IntMap Int
+cut m = IM.restrictKeys m vals
   where
-    srcs = IS.fromDistinctAscList $ map fst pairs
+    vals = IS.fromList $ IM.elems m
+
+cutClear :: IM.IntMap Int -> IM.IntMap Int
+cutClear m =
+  if IM.size m == IM.size m'
+    then m'
+    else cutClear m'
+  where
+    m' = cut m
+
+result = show loopMap
+  where
+    loopMap = cutClear $ IM.fromDistinctAscList pairs
     pairs =
       concatMap
         (\n -> let s = sumOfProperDivisors n in if s <= 1 then [] else [(n,s)])
