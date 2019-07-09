@@ -85,13 +85,9 @@ subCmds = M.fromList
 
   - `pet good <problem id>` marks the solution to that problem as
     Solved, and record its output to answers.yaml
-  - `pet stat` statistics (# of solved, # of unsolved, total, etc.)
-  - we need a custom test runner to surface slow solutions rather than
-    using hspec. (`pet report` could do this, but I feel we need one
-    specific for travis-ci to run)
-  - merge templater's logic into this one,
-    as the first step, perhaps we'll need to have a seperated submodule
-    for command lines
+  - `pet data` invalidates stuff stored in `data/`.
+    current hack: find all GetData.hi in .stack-work and just delete them.
+
  -}
 main :: IO ()
 main = getArgs >>= \case

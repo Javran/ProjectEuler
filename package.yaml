@@ -40,6 +40,7 @@ dependencies:
 - petbox
 - PSQueue
 - scientific
+- set-cover
 - split
 - strict
 - system-filepath
