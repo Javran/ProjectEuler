@@ -9,7 +9,7 @@ import Control.Monad
 import Control.Monad.ST
 
 import qualified Data.IntSet as IS
-import qualified Data.IntMap as IM
+import qualified Data.IntMap.Strict as IM
 import qualified Data.Vector.Unboxed as V
 import qualified Data.Vector.Unboxed.Mutable as VM
 
@@ -60,11 +60,11 @@ sumOfProperDivisorsVec = runST $ do
 loopMapInit :: IM.IntMap Int
 loopMapInit = cutClear $ IM.fromList pairs
   where
-    pairs = V.ifoldl' go [] sumOfProperDivisorsVec
+    pairs = V.foldl' go [] sumOfProperDivisorsVec
       where
-        go :: [(Int,Int)] -> Int -> Word32 -> [(Int,Int)]
-        go xs i val
-          | i < 2 || val < 2 || val > fromIntegral maxN = xs
+        go :: [(Int,Int)] -> Word32 -> [(Int,Int)]
+        go xs val
+          | val < 2 || val > fromIntegral maxN = xs
           | otherwise =
             let v = fromIntegral val
             in (v, fromIntegral $ V.unsafeIndex sumOfProperDivisorsVec v) : xs
@@ -77,7 +77,7 @@ cut m = IM.restrictKeys m vals
 cutClear :: IM.IntMap Int -> IM.IntMap Int
 cutClear m =
   if IM.size m == IM.size m'
-    then m'
+    then m
     else cutClear m'
   where
     m' = cut m
