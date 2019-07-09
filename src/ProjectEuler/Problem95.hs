@@ -2,14 +2,16 @@ module ProjectEuler.Problem95
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
-import Math.NumberTheory.ArithmeticFunctions
 import Data.List
 import Data.Ord
+import Data.Word
+import Control.Monad
+import Control.Monad.ST
 
-import qualified Data.List.Ordered as LOrdered
 import qualified Data.IntSet as IS
 import qualified Data.IntMap as IM
+import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as VM
 
 import ProjectEuler.Types
 
@@ -32,19 +34,40 @@ problem = pureProblem 95 Solved result
   Fortunately with 20 seconds, only 117 pairs are remaining,
   which is far more managable to search through.
 
+  Update: since we are working with a larget number of values,
+  whose sum of proper divisors are all needed, we can avoid
+  dealing with each individual ones and just work with an vector to
+  sort it out - it's actually way faster.
+
+  TODO: we don't really need multiple rounds of reduction to get to the
+  "cycle nodes only" point - the vector should be fast enough to deal with.
+
  -}
 
 maxN :: Int
 maxN = 1000000
 
-initSearchSpace :: [Int]
-initSearchSpace = [1..maxN] `LOrdered.minus` primes
+sumOfProperDivisorsVec :: V.Vector Word32
+sumOfProperDivisorsVec = runST $ do
+  vec <- VM.replicate (maxN+1) 1
+  VM.write vec 0 0
+  VM.write vec 1 0
+  forM_ [2..fromIntegral maxN] $ \i ->
+    forM_ [i+i,i+i+i..maxN] $ \j ->
+      VM.modify vec (+ fromIntegral i) j
+  V.unsafeFreeze vec
 
-sumOfProperDivisors :: Int -> Int
-sumOfProperDivisors n
-  | n <= 1 = 0
-  | otherwise =
-      IS.foldl' (+) 0 (divisorsSmall n) - n
+loopMapInit :: IM.IntMap Int
+loopMapInit = cutClear $ IM.fromList pairs
+  where
+    pairs = V.ifoldl' go [] sumOfProperDivisorsVec
+      where
+        go :: [(Int,Int)] -> Int -> Word32 -> [(Int,Int)]
+        go xs i val
+          | i < 2 || val < 2 || val > fromIntegral maxN = xs
+          | otherwise =
+            let v = fromIntegral val
+            in (v, fromIntegral $ V.unsafeIndex sumOfProperDivisorsVec v) : xs
 
 cut :: IM.IntMap Int -> IM.IntMap Int
 cut m = IM.restrictKeys m vals
@@ -84,8 +107,3 @@ result = IS.findMin $ head sortedLoopGroups
         else Just (grp, loopMap')
       where
         (grp, loopMap') = extractLoop loopMap
-    loopMapInit = cutClear $ IM.fromDistinctAscList pairs
-    pairs =
-      concatMap
-        (\n -> let s = sumOfProperDivisors n in if s <= 1 then [] else [(n,s)])
-        initSearchSpace
