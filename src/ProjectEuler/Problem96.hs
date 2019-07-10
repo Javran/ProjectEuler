@@ -26,7 +26,7 @@ import ProjectEuler.Types
  -}
 
 problem :: Problem
-problem = pureProblemWithData "p096_sudoku.txt" 96 Unsolved compute
+problem = pureProblemWithData "p096_sudoku.txt" 96 Solved compute
 
 type Puzzle = [[Int]]
 
