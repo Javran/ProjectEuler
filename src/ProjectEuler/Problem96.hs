@@ -3,32 +3,52 @@ module ProjectEuler.Problem96
   ) where
 
 import Control.Monad
-import Data.List (intersperse)
-import Data.List.HT (sliceVertical)
+import Data.List.Split
+import Data.Char
 
 import qualified Math.SetCover.Exact as ESC
 import qualified Data.Text as T
+{-
+  the decision to stick with Set instead of more efficient bit vector,
+  is to make sure that we work with some interface that we are familiar with
+  so we can more easily develop our own version of the solver.
+ -}
 import qualified Data.Set as Set
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import qualified Data.Array as Array
 
 import ProjectEuler.Types
 
 {-
-  plan: Sudoku has been a well-studied problem for a while,
-  I wouldn't mind being fancy and use http://hackage.haskell.org/package/set-cover
+  TODO: the problem is solved with set-cover,
+  but I actually wonder if we can do better than this
+  if we actually write the solving logic ourselves.
  -}
 
 problem :: Problem
-problem = pureProblemWithData "p096_sudoku.txt" 96 Unsolved (const result)
+problem = pureProblemWithData "p096_sudoku.txt" 96 Unsolved compute
 
-compute :: T.Text -> T.Text
-compute = id
+type Puzzle = [[Int]]
 
--- following are copied from set-cover examples.
+parsePuzzles :: T.Text -> [Puzzle]
+parsePuzzles = fmap parsePuzzle . chunksOf 10 . T.lines
+  where
+    parsePuzzle :: [T.Text] -> Puzzle
+    parsePuzzle (_h:xs) = fmap (T.foldr (\c r -> (ord c - ord '0') : r) []) xs
+    parsePuzzle _ = error "Unexpectd extra lines"
 
-data X = Pos Int Int | Row Int Int | Column Int Int | Square Int Int Int
-         deriving (Eq, Ord, Show)
+compute :: T.Text -> Int
+compute =
+  sum
+  . fmap solve
+  . parsePuzzles
+
+data X
+  = Pos Int Int
+  | Row Int Int
+  | Column Int Int
+  | Square Int Int Int
+  deriving (Eq, Ord)
 
 type Assign = ESC.Assign ((Int, Int), Int)
 
@@ -40,40 +60,26 @@ assign k i j =
 assigns :: [Assign (Set.Set X)]
 assigns = liftM3 assign [1..9] [0..8] [0..8]
 
-exampleHawiki1 :: [String]
-exampleHawiki1 =
-   "    6  8 " :
-   " 2       " :
-   "  1      " :
-   " 7    1 2" :
-   "5   3    " :
-   "      4  " :
-   "  42 1   " :
-   "3  7  6  " :
-   "       5 " :
-   []
-
 stateFromString ::
    (ESC.Set set) =>
-   [Assign set] -> [String] -> ESC.State ((Int, Int), Int) set
+   [Assign set] -> Puzzle -> ESC.State ((Int, Int), Int) set
 stateFromString asgns css =
    foldl (flip ESC.updateState) (ESC.initState asgns) $
    do let asnMap = foldMap (\asn -> Map.singleton (ESC.label asn) asn) asgns
       (i,cs) <- zip [0..] css
       (j,c)  <- zip [0..] cs
-      guard $ c/=' '
-      return $
-         Map.findWithDefault
-            (error "coordinates not available")
-            ((i,j), fromEnum c - fromEnum '0') asnMap
+      guard $ c /= 0
+      pure $
+        Map.findWithDefault
+          (error "coordinates not available")
+          ((i,j), c) asnMap
 
-format :: [((Int, Int), Int)] -> String
-format =
-   unlines . map (intersperse ' ') . sliceVertical 9 . Array.elems .
-   fmap (\n -> toEnum $ n + fromEnum '0') .
-   Array.array ((0,0),(8,8))
-
-
-result = unlines $
-  format <$> (ESC.search $
-              stateFromString assigns exampleHawiki1)
+solve :: Puzzle -> Int
+solve inp =
+  (\[a,b,c] -> a*100 + b*10 +c)
+  . take 3
+  . Array.elems
+  . Array.array ((0,0),(8,8))
+  . head
+  . ESC.search
+  $ stateFromString assigns inp
