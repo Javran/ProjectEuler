@@ -4,7 +4,6 @@ module ProjectEuler.Problem98
   ) where
 
 import Data.List
-import Data.Ord
 import Control.Monad
 import qualified Data.List.Ordered as LOrdered
 
@@ -18,7 +17,7 @@ import ProjectEuler.Types
 import ProjectEuler.SolCommon
 
 problem :: Problem
-problem = pureProblemWithData "p098_words.txt" 98 Unsolved compute
+problem = pureProblemWithData "p098_words.txt" 98 Solved compute
 
 -- | non-deterministically picking an element from the given list,
 --   separating the selected element and all other remaining elements
@@ -64,7 +63,7 @@ groupAnagrams =
   with many of them have only 4~6 letters to be assigned,
   I imagine brute forcing this won't take long.
 
-  Also as a pontential optimization, we can choose to ignore Char
+  (TODO) Also as a pontential optimization, we can choose to ignore Char
   and instead just work with sequence of numbers, but we are not going to do that
   until we have a working solution.
 
@@ -93,4 +92,11 @@ search assigns remainedChars remainedDigits curWords
           noLeadingZero (h:_) = M.lookup h assigns' /= Just 0
       search (M.insert rc d assigns) remainedChars' remainedDigits' curWords'
 
-compute = show . LOrdered.nubSort . concatMap startSearch . groupAnagrams . parseWords
+compute :: T.Text -> Int
+compute =
+  maximum
+  . concatMap (\((_,a),(_,b)) -> [a,b])
+  . LOrdered.nubSort
+  . concatMap startSearch
+  . groupAnagrams
+  . parseWords
