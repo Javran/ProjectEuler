@@ -5,6 +5,7 @@ module ProjectEuler.Problem98
 
 import Data.List
 import Data.Ord
+import Control.Monad
 import qualified Data.List.Ordered as LOrdered
 
 import Math.NumberTheory.Powers.Squares
@@ -69,16 +70,19 @@ groupAnagrams =
 
  -}
 
+startSearch :: (S.Set Char, [String]) -> [((String, Int), (String, Int))]
 startSearch (cSet, ws) = search M.empty (S.toList cSet) [0..9] ws
 
-search :: M.Map Char Int -> [] Char -> [] Int -> [String] -> [(String,String)]
+search :: M.Map Char Int -> [] Char -> [] Int -> [String] -> [((String, Int), (String, Int))]
 search assigns remainedChars remainedDigits curWords
   | null curWords = []
   | null remainedChars =
-      let validWords = filter validate curWords
-          validate = isSquare' @Int . digitsToInt . fmap (assigns M.!)
-      -- TODO: verify that assign actually gives square.
-      in [(a,b) | a <- validWords, b <- validWords, a < b]
+      let validWords = concatMap validate curWords
+          validate w = do
+            let val = digitsToInt . fmap (assigns M.!) $ w
+            guard (isSquare' @Int val)
+            pure (w,val)
+      in [(a,b) | a@(wa,_) <- validWords, b@(wb,_) <- validWords, wa < wb]
   | null remainedDigits = []
   | otherwise = do
       let (rc:remainedChars') = remainedChars
