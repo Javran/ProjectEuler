@@ -1,17 +1,33 @@
+{-# LANGUAGE TypeApplications #-}
 module ProjectEuler.Problem98
   ( problem
   ) where
 
 import Data.List
 import Data.Ord
+import qualified Data.List.Ordered as LOrdered
+
+import Math.NumberTheory.Powers.Squares
+
 import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblemWithData "p098_words.txt" 98 Unsolved compute
+
+-- | non-deterministically picking an element from the given list,
+--   separating the selected element and all other remaining elements
+--   the list order is preserved
+--   e.g. pick [1,2,3] == [(1,[2,3]),(2,[1,3]),(3,[1,2])]
+pick :: [a] -> [(a,[a])]
+pick xs = map split (init $ zip (inits xs) (tails xs))
+  where
+    split (ls,v:rs) = (v,ls++rs)
+    split _ = error "cannot split empty list"
 
 parseWords :: T.Text -> [String]
 parseWords raw = read $ "[" <> T.unpack raw <> "]"
@@ -53,4 +69,24 @@ groupAnagrams =
 
  -}
 
-compute = show . groupAnagrams . parseWords
+startSearch (cSet, ws) = search M.empty (S.toList cSet) [0..9] ws
+
+search :: M.Map Char Int -> [] Char -> [] Int -> [String] -> [(String,String)]
+search assigns remainedChars remainedDigits curWords
+  | null curWords = []
+  | null remainedChars =
+      let validWords = filter validate curWords
+          validate = isSquare' @Int . digitsToInt . fmap (assigns M.!)
+      -- TODO: verify that assign actually gives square.
+      in [(a,b) | a <- validWords, b <- validWords, a < b]
+  | null remainedDigits = []
+  | otherwise = do
+      let (rc:remainedChars') = remainedChars
+      (d,remainedDigits') <- pick remainedDigits
+      let assigns' = M.insert rc d assigns
+          curWords' = filter noLeadingZero curWords
+          noLeadingZero [] = True
+          noLeadingZero (h:_) = M.lookup h assigns' /= Just 0
+      search (M.insert rc d assigns) remainedChars' remainedDigits' curWords'
+
+compute = show . LOrdered.nubSort . concatMap startSearch . groupAnagrams . parseWords
