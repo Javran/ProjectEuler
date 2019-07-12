@@ -4,6 +4,7 @@ module ProjectEuler.Problem101
 
 import Data.List
 import Data.Ratio
+import Data.Monoid
 
 import ProjectEuler.Types
 
@@ -11,14 +12,21 @@ fInt :: Int -> Integer
 fInt = fromIntegral
 
 problem :: Problem
-problem = Problem 101 Unsolved result
+problem = pureProblem 101 Solved result
 
 -- 1 - n + n^2 - n^3 + n^4 - n^5 + n^6 - n^7 + n^8 - n^9 + n^10
 u :: Int -> Integer
-u n = sum $ take 11 $ zipWith (*) (cycle [1,-1]) $ iterate (* n') 1
+u n =
+  sum
+  $ zipWith (*)
+      (cycle [1,-1])
+      (take 11 $ iterate (* n') 1)
   where
     n' :: Integer
     n' = fInt n
+
+uValues :: [Integer]
+uValues = u <$> [1..]
 
 -- TODO: potential for SolCommon
 pick :: [a] -> [(a,[a])]
@@ -33,15 +41,19 @@ pick xs = map split (init $ zip (inits xs) (tails xs))
 lagrangePoly :: [(Int,Integer)] -> Int -> Integer
 lagrangePoly xs n = round . sum $ do
   ((i,v),ys) <- pick xs
-  pure $ fromIntegral v * product (fmap (\(i1,_) -> fInt (n - i1) % fInt (i - i1)) ys)
+  pure $
+    fromIntegral v *
+    product ((\(i1,_) -> fInt (n-i1) % fInt (i-i1)) <$> ys)
 
-result = do
-    logT $ sum $ concatMap (fmap fst . findFirstIncorrect) [1..10]
+findFirstIncorrect :: Int -> Sum Integer
+findFirstIncorrect l =
+    Sum
+    . fst . head
+    . filter (\(x,y) -> x /= y)
+    $ zip (f <$> [l+1,l+2..]) ys
   where
-    findFirstIncorrect l = take 1 . filter (\(x,y) -> x /= y) $ zip (f <$> [l+1,l+2..]) ys
-      where
-        (xs,ys) = splitAt l inp
-        f = lagrangePoly (zip [1..] xs)
-    inp = u <$> [1..12] -- [1 :: Integer , 8, 27, 64, 125] -- u <$> [1..11]
+    (xs,ys) = splitAt l uValues
+    f = lagrangePoly (zip [1..] xs)
 
-
+result :: Integer
+result = sum $ foldMap findFirstIncorrect [1..10]
