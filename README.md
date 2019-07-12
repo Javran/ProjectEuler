@@ -16,7 +16,7 @@ a bit easier (the "workspace" bit).
 
 - It creates new solution from template and update related parts of the project automatically.
 - Solutions are all linked into this binary for execution.
-- (TODO) Runs all solutions and generate a report regarding correctness and time elapsed for them.
+- Runs all solutions and generate a report regarding correctness and time elapsed for them.
 
 `pet-example` is a simple script just to save some typing time.
 To use them, edit its environment variables as appropriate and

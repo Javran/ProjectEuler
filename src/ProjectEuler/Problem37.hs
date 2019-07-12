@@ -3,9 +3,9 @@ module ProjectEuler.Problem37
   ( problem
   ) where
 
+import Data.List
 import Math.NumberTheory.Primes hiding (isPrime)
 import Math.NumberTheory.Primes.Testing
-import Data.List
 
 import ProjectEuler.Types
 import ProjectEuler.SolCommon (intToDigits, digitsToInt)
@@ -14,11 +14,12 @@ problem :: Problem
 problem = pureProblem 37 Solved result
 
 {-
+
   TODO: might worth making following functions common:
 
   - factorial, fib
-  - intToDigits, intToDigitsRev, digitsToInt
   - numReverseInBase
+
  -}
 isTruncatable :: Int -> Bool
 isTruncatable x =
