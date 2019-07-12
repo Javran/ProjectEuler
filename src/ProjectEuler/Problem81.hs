@@ -13,7 +13,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p81-matrix.txt" 81 Solved compute
+problem = pureProblemWithData "p081_matrix.txt" 81 Solved compute
 
 getMat :: T.Text -> A.UArray (Int,Int) Int
 getMat raw = A.array ((1,1), (rowN,colN)) genPairs

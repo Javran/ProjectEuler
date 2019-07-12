@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p22-names.txt" 22 Solved compute
+problem = pureProblemWithData "p022_names.txt" 22 Solved compute
 
 nameWorth :: String -> Int
 nameWorth n = getSum $ foldMap toInt n

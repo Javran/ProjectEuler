@@ -11,7 +11,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p54-poker.txt" 54 Solved compute
+problem = pureProblemWithData "p054_poker.txt" 54 Solved compute
 
 data Suit
   = C | S | H | D

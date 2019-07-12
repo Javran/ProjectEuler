@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p42-words.txt" 42 Solved compute
+problem = pureProblemWithData "p042_words.txt" 42 Solved compute
 
 wordValue :: String -> Int
 wordValue word = sum $ toValue <$> word

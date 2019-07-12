@@ -15,7 +15,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p59-cipher.txt" 59 Solved compute
+problem = pureProblemWithData "p059_cipher.txt" 59 Solved compute
 
 getCipherText :: T.Text -> [Word8]
 getCipherText raw =

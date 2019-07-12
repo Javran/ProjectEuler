@@ -9,7 +9,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p67-triangle.txt" 67 Solved compute
+problem = pureProblemWithData "p067_triangle.txt" 67 Solved compute
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]

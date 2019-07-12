@@ -45,5 +45,3 @@ Feel free to use them & contribution welcomed.
 
 - `ProjectEuler.GetData` works fine except when a new data file is added,
   we need to somehow force this module to recompile when it is the case.
-
-- TODO: we'd better keep data file names the same as what it appears on the website.

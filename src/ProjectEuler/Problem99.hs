@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p99-base-exp.txt" 99 Solved compute
+problem = pureProblemWithData "p099_base_exp.txt" 99 Solved compute
 
 compute :: T.Text -> Int
 compute = fst . maximumBy (comparing snd) . getNums

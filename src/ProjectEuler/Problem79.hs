@@ -11,7 +11,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p79-keylog.txt" 79 Solved compute
+problem = pureProblemWithData "p079_keylog.txt" 79 Solved compute
 
 hasConsecutiveChar :: String -> Bool
 hasConsecutiveChar s = or $ zipWith (==) s (tail s)

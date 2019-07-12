@@ -6,7 +6,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p18.txt" 18 Solved compute
+problem = pureProblemWithData "p018_path.txt" 18 Solved compute
 
 -- let's do a line-by-line fold
 --   acc = first line = [a1], i = next line, [a2, a3]

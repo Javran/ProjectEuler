@@ -20,7 +20,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p83-matrix.txt" 83 Solved compute
+problem = pureProblemWithData "p083_matrix.txt" 83 Solved compute
 
 {-
   let's convert the problem into a one source shortest path problem:

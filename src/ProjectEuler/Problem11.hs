@@ -9,7 +9,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p11-grid.txt" 11 Solved compute
+problem = pureProblemWithData "p011_grid.txt" 11 Solved compute
 
 -- TODO: optimization opportunity
 

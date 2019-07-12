@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p8.txt" 8 Solved compute
+problem = pureProblemWithData "p008_product.txt" 8 Solved compute
 
 
 slidingWindows :: Int -> [a] -> [[a]]

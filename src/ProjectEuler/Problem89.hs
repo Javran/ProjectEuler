@@ -13,7 +13,7 @@ import qualified Data.Text as T
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblemWithData "p89-roman.txt" 89 Solved compute
+problem = pureProblemWithData "p089_roman.txt" 89 Solved compute
 
 parseRoman :: Parser Int
 parseRoman = sum <$> many1 parseUnit
