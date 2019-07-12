@@ -7,6 +7,7 @@ import Data.Ratio
 import Data.Monoid
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 fInt :: Int -> Integer
 fInt = fromIntegral
@@ -27,13 +28,6 @@ u n =
 
 uValues :: [Integer]
 uValues = u <$> [1..]
-
--- TODO: potential for SolCommon
-pick :: [a] -> [(a,[a])]
-pick xs = map split (init $ zip (inits xs) (tails xs))
-  where
-    split (ls,v:rs) = (v,ls++rs)
-    split _ = error "cannot split empty list"
 
 {-
   Lagrange polynomial: https://en.wikipedia.org/wiki/Lagrange_polynomial

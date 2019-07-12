@@ -19,16 +19,6 @@ import ProjectEuler.SolCommon
 problem :: Problem
 problem = pureProblemWithData "p098_words.txt" 98 Solved compute
 
--- | non-deterministically picking an element from the given list,
---   separating the selected element and all other remaining elements
---   the list order is preserved
---   e.g. pick [1,2,3] == [(1,[2,3]),(2,[1,3]),(3,[1,2])]
-pick :: [a] -> [(a,[a])]
-pick xs = map split (init $ zip (inits xs) (tails xs))
-  where
-    split (ls,v:rs) = (v,ls++rs)
-    split _ = error "cannot split empty list"
-
 parseWords :: T.Text -> [String]
 parseWords raw = read $ "[" <> T.unpack raw <> "]"
 

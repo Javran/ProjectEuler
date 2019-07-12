@@ -4,6 +4,7 @@ module ProjectEuler.SolCommon
   , intToDigits
   , digitsToInt
   , intToDigitsRev
+  , pick
   ) where
 
 import Data.List
@@ -44,3 +45,14 @@ intToDigitsRev = unfoldr f
 {-# INLINABLE intToDigitsRev #-}
 {-# SPECIALIZE intToDigitsRev :: Int -> [Int] #-}
 {-# SPECIALIZE intToDigitsRev :: Integer -> [Int] #-}
+
+-- | non-deterministically picking an element from the given list,
+--   separating the selected element and all other remaining elements
+--   the list order is preserved
+--   e.g. pick [1,2,3] == [(1,[2,3]),(2,[1,3]),(3,[1,2])]
+pick :: [a] -> [(a,[a])]
+pick xs = map split (init $ zip (inits xs) (tails xs))
+  where
+    split (ls,v:rs) = (v,ls++rs)
+    split _ = error "cannot split empty list"
+{-# INLINABLE pick #-}
