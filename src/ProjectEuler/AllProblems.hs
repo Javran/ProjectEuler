@@ -1,5 +1,5 @@
 {-
-  DO NOT EDIT: this file is generated/edited by templater.
+  DO NOT EDIT: this file is generated/edited by `pet sync`.
  -}
 module ProjectEuler.AllProblems
   ( allProblems

@@ -31,5 +31,5 @@ cmdCreate xs
         "Problem created in " <> FP.encodeString newProblemPath
       cmdSync []
   | otherwise = do
-      putStrLn "templater create <problem id>"
+      putStrLn "pet create <problem id>"
       exitFailure
