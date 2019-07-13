@@ -7,7 +7,7 @@ import Data.Ord
 
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p099_base_exp.txt" 99 Solved compute

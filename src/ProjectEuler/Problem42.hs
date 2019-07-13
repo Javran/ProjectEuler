@@ -5,7 +5,7 @@ module ProjectEuler.Problem42
 import Data.Char
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p042_words.txt" 42 Solved compute

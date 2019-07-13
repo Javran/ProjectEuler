@@ -6,7 +6,7 @@ import Control.Arrow
 import Data.Array
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p011_grid.txt" 11 Solved compute

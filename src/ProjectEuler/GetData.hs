@@ -8,6 +8,12 @@ module ProjectEuler.GetData
   , getDataContent
   , expectedAnswers
   , getExpectedAnswers
+  , pureProblemWithData
+    {-
+      re-export types so that all problems that read data
+      won't need to do 2 module imports.
+     -}
+  , module ProjectEuler.Types
   ) where
 
 import Control.Applicative
@@ -29,6 +35,8 @@ import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 import qualified Data.Text as T
 import qualified Data.Yaml as Yaml
+
+import ProjectEuler.Types
 
 {-
   Data files are constructed at compile time to reduce runtime overhead.
@@ -105,3 +113,10 @@ expectedAnswers = case Yaml.decodeEither' $ getDataRawContent "answers.yaml" of
 
 getExpectedAnswers :: Int -> Maybe [T.Text]
 getExpectedAnswers pId = IM.lookup pId expectedAnswers
+
+-- Like pureProblem but in addition allows specifying a data file,
+-- which will be loaded as argument to the function that computes the solution.
+pureProblemWithData :: TextShow r
+                    => String -> Int -> ProblemStatus -> (T.Text -> r) -> Problem
+pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
+  logT $ runWithData (getDataContent dFile)

@@ -5,7 +5,7 @@ module ProjectEuler.Problem8
 import Data.Char
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p008_product.txt" 8 Solved compute

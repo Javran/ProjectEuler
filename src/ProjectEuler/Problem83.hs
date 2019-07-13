@@ -17,7 +17,7 @@ import qualified Data.PSQueue as PS
 import qualified Data.Set as S
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p083_matrix.txt" 83 Solved compute

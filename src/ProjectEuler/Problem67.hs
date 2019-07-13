@@ -6,7 +6,7 @@ import Data.Ix
 
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p067_triangle.txt" 67 Solved compute

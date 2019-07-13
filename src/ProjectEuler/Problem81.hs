@@ -10,7 +10,7 @@ import qualified Data.Array.ST as A
 import qualified Data.Array.Unboxed as A
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p081_matrix.txt" 81 Solved compute

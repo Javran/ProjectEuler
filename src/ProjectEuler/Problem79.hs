@@ -8,7 +8,7 @@ import Petbox
 
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p079_keylog.txt" 79 Solved compute

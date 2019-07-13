@@ -3,7 +3,8 @@ module ProjectEuler.Problem18
   ) where
 
 import qualified Data.Text as T
-import ProjectEuler.Types
+
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p018_path.txt" 18 Solved compute

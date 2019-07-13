@@ -7,7 +7,7 @@ import Data.List
 import Data.Monoid
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p022_names.txt" 22 Solved compute

@@ -3,8 +3,9 @@ module ProjectEuler.Problem13
   ( problem
   ) where
 
-import ProjectEuler.Types
 import qualified Data.Text as T
+
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p013_numbers.txt" 13 Solved compute

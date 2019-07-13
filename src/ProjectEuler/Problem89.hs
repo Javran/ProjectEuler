@@ -9,8 +9,7 @@ import Text.Parsec hiding ((<|>))
 import Text.Parsec.String (Parser)
 
 import qualified Data.Text as T
-
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p089_roman.txt" 89 Solved compute

@@ -12,7 +12,7 @@ import Data.Bits
 
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p059_cipher.txt" 59 Solved compute

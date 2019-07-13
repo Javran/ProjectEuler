@@ -17,7 +17,7 @@ import qualified Data.Set as Set
 import qualified Data.Map.Strict as Map
 import qualified Data.Array as Array
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 {-
   TODO: the problem is solved with set-cover,

@@ -8,7 +8,7 @@ import Data.Function
 
 import qualified Data.Text as T
 
-import ProjectEuler.Types
+import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p054_poker.txt" 54 Solved compute
