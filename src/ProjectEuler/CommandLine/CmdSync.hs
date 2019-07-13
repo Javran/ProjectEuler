@@ -13,6 +13,7 @@ import Filesystem.Path.CurrentOS ((</>))
 import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
+import Control.Monad
 import Turtle.Shell
 
 import qualified Control.Foldl as Foldl
@@ -66,40 +67,45 @@ updateAllProblems projectHome = do
   TL.writeFile (FP.encodeString allProblemsFilePath) content
   pure pIds
 
-updatePackageYaml :: FP.FilePath -> [Int] -> IO ()
-updatePackageYaml projectHome pIds = do
-    let fp = FP.encodeString $ projectHome </> "package.yaml"
-    raws <- lines <$> System.IO.Strict.readFile fp
-    let newContent = unlines . updatePackageYamlContent $ raws
-    writeFile fp newContent
+updateEditZone :: String -> [String] -> String -> String
+updateEditZone zoneIdent newContents =
+    unlines . updateContentLines . lines
   where
+    zoneBegin = "# ==== " <> zoneIdent <> "_BEGIN"
+    zoneEnd = "# ==== " <> zoneIdent <> "_END"
+
     extractSectionBegin :: String -> Maybe String
     extractSectionBegin line = do
-        "# ==== PROBLEM_MODULE_LIST_BEGIN" <- pure content
+        guard $ content == zoneBegin
         pure sps
       where
         (sps, content) = span (== ' ') line
+
     extractSectionEnd :: String -> Maybe ()
-    extractSectionEnd line = do
-        "# ==== PROBLEM_MODULE_LIST_END" <- pure content
-        pure ()
+    extractSectionEnd line =
+        guard $ content == zoneEnd
       where
         (_sps, content) = span (== ' ') line
 
-    updatePackageYamlContent :: [String] -> [String]
-    updatePackageYamlContent [] =
+    updateContentLines :: [String] -> [String]
+    updateContentLines [] =
       -- we could have return [], but here we want to
       -- make sure that the section for templater is properly recognized.
       -- and if it does, this part is unreachable.
-      error "package.yaml is empty"
-    updatePackageYamlContent (x:xs) = case extractSectionBegin x of
+      error $ "Cannot find edit zone for " <> zoneIdent
+    updateContentLines (x:xs) = case extractSectionBegin x of
       Just spChars ->
         let secAfter = dropWhile (isNothing . extractSectionEnd) xs
-            problemModules =
-              (spChars <>) . ("- ProjectEuler.Problem" <>) . show
-                <$> pIds
+            problemModules = (spChars <>) <$> newContents
         in x : problemModules <> secAfter
-      _ -> x : updatePackageYamlContent xs
+      _ -> x : updateContentLines xs
+
+updatePackageYaml :: FP.FilePath -> [Int] -> IO ()
+updatePackageYaml projectHome pIds = do
+    let fp = FP.encodeString $ projectHome </> "package.yaml"
+    raw <- System.IO.Strict.readFile fp
+    let moduleList = ("- ProjectEuler.Problem" <>) . show <$> pIds
+    writeFile fp (updateEditZone "PROBLEM_MODULE_LIST" moduleList raw)
 
 cmdSync :: [String] -> IO ()
 cmdSync _ = do
