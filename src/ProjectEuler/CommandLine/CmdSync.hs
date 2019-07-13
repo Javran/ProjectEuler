@@ -24,6 +24,7 @@ import qualified Data.Text.Lazy.IO as TL
 import qualified Data.Vector as V
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
+import qualified Data.FileEmbed
 
 import ProjectEuler.CommandLine.Common
 
@@ -138,8 +139,29 @@ updatePackageYaml projectHome pIds = do
     let moduleList = ("- ProjectEuler.Problem" <>) . show <$> pIds
     writeFile fp (updateEditZone "PROBLEM_MODULE_LIST" moduleList raw)
 
+updateGetDataModule :: FP.FilePath -> IO ()
+updateGetDataModule prjHome = do
+  let fpGetData =
+        FP.encodeString $ prjHome </> "src" </> "ProjectEuler" </> "GetData.hs"
+      fpDataDir =
+        FP.encodeString $ prjHome </> "data"
+  -- it's important that the list is sorted - we don't want to rely on
+  -- the order that file system lists files in a directory.
+  fPaths <- Data.List.sort . fmap fst <$> Data.FileEmbed.getDir fpDataDir
+  raw <- System.IO.Strict.readFile fpGetData
+  writeFile fpGetData $
+    updateEditZone
+      "DATA_FILE_LIST"
+      (("- " <> ) <$> fPaths)
+      raw
+
+{-
+  TODO: note that currently `pet sync` updates the files but won't try rebuilding the project,
+  we could consider doing that automatically if possible.
+ -}
 cmdSync :: [String] -> IO ()
 cmdSync _ = do
   prjHome <- getProjectHome
   pIds <- updateAllProblems prjHome
   updatePackageYaml prjHome pIds
+  updateGetDataModule prjHome

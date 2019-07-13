@@ -60,9 +60,17 @@ subCmds = M.fromList
     )
   , ( "sync"
       {-
-        `pet sync` scans the directory to collect the list of problems
-        and update related file accordingly.
-        You shouldn't need to manually use this command.
+        `pet sync` updates some files automatically:
+        - it scans the directory to collect the list of problems
+          and update related file accordingly.
+        - it scans data files and list them in comments of ProjectEuler.GetData.
+
+        Note that this subcommand doesn't try to build the project
+        after updating related files, so your next `pet` run is very likely
+        to rebuild.
+
+        TODO: see if we can somehow rebuild automatically
+        if there are actual file updates.
        -}
     , cmdSync
     )
@@ -84,13 +92,8 @@ subCmds = M.fromList
   planned features:
   - TODO: `pet good <problem id>` marks the solution to that problem as
     Solved, and record its output to answers.yaml
-  - `pet data` invalidates stuff stored in `data/`.
-    TODO: now I have a better plan: let's keep the list of files
-    being loaded written down somewhere in the comment section of GetData file,
-    so that whenever a file gets added, this list will update and should
-    trigger the rebuild. Also in case a data file gets modified,
-    the dependency should already be handled through file-embed internals
-    so we don't need to worry about them.
+  - `pet data` we might use this command to download data files from
+    ProjectEuler's website.
  -}
 main :: IO ()
 main = getArgs >>= \case

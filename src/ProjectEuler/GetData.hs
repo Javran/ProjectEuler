@@ -128,13 +128,31 @@ pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
   Content update to this file, even if it's just update on commented parts,
   is enough to trick the building system into rebuilding this module.
 
-  (TODO) update to this list is not yet supported.
-
   Note that the following section is padded with some spaces ("  #")
   instead of directly starting with "#", this is intentional,
   as some editor might otherwise recognize them as macro-related stuff.
 
   # ==== DATA_FILE_LIST_BEGIN
+  - AllProblems.hs.mustache
+  - ProblemX.hs.mustache
+  - answers.yaml
+  - p008_product.txt
+  - p011_grid.txt
+  - p013_numbers.txt
+  - p018_path.txt
+  - p022_names.txt
+  - p042_words.txt
+  - p054_poker.txt
+  - p059_cipher.txt
+  - p067_triangle.txt
+  - p079_keylog.txt
+  - p081_matrix.txt
+  - p082_matrix.txt
+  - p083_matrix.txt
+  - p089_roman.txt
+  - p096_sudoku.txt
+  - p098_words.txt
+  - p099_base_exp.txt
   # ==== DATA_FILE_LIST_END
 
  -}
