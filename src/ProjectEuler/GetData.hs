@@ -120,3 +120,21 @@ pureProblemWithData :: TextShow r
                     => String -> Int -> ProblemStatus -> (T.Text -> r) -> Problem
 pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
   logT $ runWithData (getDataContent dFile)
+
+{-
+
+  The following part is updated by `pet sync` to describe
+  the full list of data files compiled into the binary.
+  Content update to this file, even if it's just update on commented parts,
+  is enough to trick the building system into rebuilding this module.
+
+  (TODO) update to this list is not yet supported.
+
+  Note that the following section is padded with some spaces ("  #")
+  instead of directly starting with "#", this is intentional,
+  as some editor might otherwise recognize them as macro-related stuff.
+
+  # ==== DATA_FILE_LIST_BEGIN
+  # ==== DATA_FILE_LIST_END
+
+ -}
