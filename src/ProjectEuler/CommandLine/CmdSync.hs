@@ -6,14 +6,15 @@ module ProjectEuler.CommandLine.CmdSync
   ) where
 
 import Control.Applicative
+import Control.Monad
 import Data.Aeson
+import Data.Functor
 import Data.List
 import Data.Maybe
 import Filesystem.Path.CurrentOS ((</>))
 import Text.Microstache
 import Turtle.Pattern
 import Turtle.Prelude
-import Control.Monad
 import Turtle.Shell
 
 import qualified Control.Foldl as Foldl
@@ -67,6 +68,39 @@ updateAllProblems projectHome = do
   TL.writeFile (FP.encodeString allProblemsFilePath) content
   pure pIds
 
+{-
+
+  Recognize exactly one edit zone in a file, and replace
+  the content inside edit zone with a list of text for each line,
+  padded by spaces. The sequence of spaces used for padding is the same
+  as the starting line of the edit zone
+  (hopefully it's also the same padding as the ending line of edit zone,
+  but this function doesn't care about that.)
+
+  For example, a file with content:
+
+  > outside.
+  >     # ==== FOO_BEGIN
+  >     whatever inside
+  >     # ==== FOO_END
+  > outside, after.
+
+  will be updated if the function is called with
+
+  - "FOO" as zoneIdent
+  - ["aaa", "bb", "c"] as newContents
+
+  to be:
+
+  > outside.
+  >     # ==== FOO_BEGIN
+  >     aaa
+  >     bb
+  >     c
+  >     # ==== FOO_END
+  > outside, after.
+
+ -}
 updateEditZone :: String -> [String] -> String -> String
 updateEditZone zoneIdent newContents =
     unlines . updateContentLines . lines
@@ -75,29 +109,26 @@ updateEditZone zoneIdent newContents =
     zoneEnd = "# ==== " <> zoneIdent <> "_END"
 
     extractSectionBegin :: String -> Maybe String
-    extractSectionBegin line = do
-        guard $ content == zoneBegin
-        pure sps
+    extractSectionBegin line = guard (content == zoneBegin) $> sps
       where
         (sps, content) = span (== ' ') line
 
     extractSectionEnd :: String -> Maybe ()
-    extractSectionEnd line =
-        guard $ content == zoneEnd
+    extractSectionEnd line = guard $ content == zoneEnd
       where
         (_sps, content) = span (== ' ') line
 
     updateContentLines :: [String] -> [String]
     updateContentLines [] =
       -- we could have return [], but here we want to
-      -- make sure that the section for templater is properly recognized.
+      -- make sure that the edit zone is properly recognized.
       -- and if it does, this part is unreachable.
       error $ "Cannot find edit zone for " <> zoneIdent
     updateContentLines (x:xs) = case extractSectionBegin x of
       Just spChars ->
         let secAfter = dropWhile (isNothing . extractSectionEnd) xs
-            problemModules = (spChars <>) <$> newContents
-        in x : problemModules <> secAfter
+            updatedLines = (spChars <>) <$> newContents
+        in x : updatedLines <> secAfter
       _ -> x : updateContentLines xs
 
 updatePackageYaml :: FP.FilePath -> [Int] -> IO ()
