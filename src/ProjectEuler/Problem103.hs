@@ -4,6 +4,7 @@ module ProjectEuler.Problem103
 
 import Control.Monad
 import Data.List
+import Data.Bits
 import qualified Data.IntSet as IS
 
 import ProjectEuler.Types
@@ -41,20 +42,34 @@ isIncreasing xs = and $ zipWith (<) xs (tail xs)
     + sumSets !! 2 => set of sum of subsets of size 2
     + etc.
  -}
+solve :: [Int] -> Int -> [Int] -> [IS.IntSet] -> [[Int]]
 solve curList sz candidates sumSets
   | sz == 7 = pure (reverse curList)
   | otherwise = do
       (x,candidates') <- pickInOrder candidates
-      let sumSetsWithX = IS.map (+x) <$> sumSets
+      let sumSetsWithX =
+            -- since we know this map is strictly monotonic,
+            -- we can bypass checks by reconstructing altogether.
+            IS.fromDistinctAscList . fmap (+x) . IS.toAscList <$> sumSets
           sumSets' = zipWith IS.union (sumSets <> [IS.empty]) (IS.empty : sumSetsWithX)
           allSums' = foldl' IS.union IS.empty sumSets'
           getMinMax s
             | IS.null s = []
             | IS.size s == 1 = [IS.findMin s]
             | otherwise = [IS.findMin s, IS.findMax s]
-      -- to make sure that all sums are unique, we can simply verify that the
-      -- # of elements in list is expected.
-      guard $ IS.size allSums' == 2 ^ (sz+1)
+
+      -- a note about a simple trick:
+      -- most of the time it's faster to write down guards
+      -- separately rather than combining them with `&&`.
+      -- I'm not sure why this is the case though,
+      -- for now my theory is that `&&`  does has some extra cost
+      -- of doing pattern matching before return value to `guard`,
+      -- but I'm not convinced by my own theory and believe ghc should
+      -- take care of nested pattern matching (one in `&&` and one in `guard`).
+
+      -- to make sure that all sums are unique, we can simply verify that
+      -- the # of elements in list is expected.
+      guard $ IS.size allSums' == 1 `unsafeShiftL` (sz+1)
       -- for the size vs sum condition to hold, we just want to know
       -- if we were to extra min and max from each element of sumSets'
       -- (of course for singleton sets we only need one element)
