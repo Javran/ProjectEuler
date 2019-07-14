@@ -7,6 +7,7 @@ module ProjectEuler.CommandLine.CmdCreate
   ) where
 
 import Filesystem.Path.CurrentOS ((</>))
+import System.Directory
 import System.Exit
 import TextShow
 
@@ -26,9 +27,16 @@ cmdCreate xs
             prjHome </> "src" </> "ProjectEuler"
             </> FP.fromText ("Problem" <> showt pId <> ".hs")
       contents <- renderProblem pId False ""
-      TL.writeFile (FP.encodeString newProblemPath) contents
-      putStrLn $
-        "Problem created in " <> FP.encodeString newProblemPath
+      let fp = FP.encodeString newProblemPath
+      e <- doesFileExist fp
+      if e
+        then do
+          putStrLn $ "Cannot create " <> fp <> ", file already exists."
+          exitFailure
+        else do
+          TL.writeFile fp contents
+          putStrLn $
+            "Problem created in " <> FP.encodeString newProblemPath
       cmdSync []
   | otherwise = do
       putStrLn "pet create <problem id>"

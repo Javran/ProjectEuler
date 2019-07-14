@@ -25,6 +25,7 @@ dependencies:
 - criterion
 - data-ordlist
 - deepseq
+- directory
 - dlist
 - file-embed
 - filepath
