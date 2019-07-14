@@ -6,10 +6,8 @@ module ProjectEuler.CommandLine.CmdCreate
   ( cmdCreate
   ) where
 
-import Filesystem.Path.CurrentOS ((</>))
 import System.Directory
 import System.Exit
-import TextShow
 
 import qualified Data.Text.Lazy.IO as TL
 import qualified Filesystem.Path.CurrentOS as FP
@@ -23,9 +21,7 @@ cmdCreate xs
   , [(pId,"")] <- reads @Int rawN
   = do
       prjHome <- getProjectHome
-      let newProblemPath =
-            prjHome </> "src" </> "ProjectEuler"
-            </> FP.fromText ("Problem" <> showt pId <> ".hs")
+      let newProblemPath = solutionPath prjHome pId
       contents <- renderProblem pId False ""
       let fp = FP.encodeString newProblemPath
       e <- doesFileExist fp

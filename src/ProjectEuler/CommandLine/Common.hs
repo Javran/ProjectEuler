@@ -7,6 +7,7 @@ module ProjectEuler.CommandLine.Common
   ( getProjectHome
   , renderProblem
   , runProblem
+  , solutionPath
   ) where
 
 import Control.DeepSeq
@@ -14,11 +15,14 @@ import Control.Exception
 import Data.Aeson
 import Filesystem.Path.CurrentOS ((</>))
 import System.CPUTime
+import System.Exit
 import Text.Microstache
+import TextShow
 import Turtle.Prelude
 
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import qualified Data.Text.Lazy as TL
 import qualified Filesystem.Path.CurrentOS as FP
 
@@ -26,9 +30,13 @@ import ProjectEuler.Types
 
 getProjectHome :: IO FP.FilePath
 getProjectHome = do
+  let varName = "PROJECT_EULER_HOME"
   curEnv <- env
-  let Just projectHome = FP.fromText <$> lookup "PROJECT_EULER_HOME" curEnv
-  pure projectHome
+  case FP.fromText <$> lookup varName curEnv of
+    Just projectHome -> pure projectHome
+    Nothing -> do
+      T.putStrLn $ varName <> " is not set."
+      exitFailure
 
 renderProblem :: Int -> Bool -> T.Text -> IO TL.Text
 renderProblem pId solved extraContent = do
@@ -56,3 +64,8 @@ runProblem Problem {problemRun} = do
   diff `deepseq` case r of
     Left e -> pure (diff, Left e)
     Right outs -> pure (diff, Right outs)
+
+solutionPath :: FP.FilePath -> Int -> FP.FilePath
+solutionPath prjHome pId =
+  prjHome </> "src" </> "ProjectEuler"
+    </> FP.fromText ("Problem" <> showt pId <> ".hs")
