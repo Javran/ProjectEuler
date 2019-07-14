@@ -78,6 +78,9 @@ updateAllProblems projectHome = do
   (hopefully it's also the same padding as the ending line of edit zone,
   but this function doesn't care about that.)
 
+  (TODO: in future we'll require all contents in the edit zone
+  to be left-padded by spaces exactly the same way)
+
   For example, a file with content:
 
   > outside.

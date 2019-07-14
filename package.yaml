@@ -76,6 +76,7 @@ library:
     - ProjectEuler.CommandLine.CmdSync
     - ProjectEuler.CommandLine.CmdReport
     - ProjectEuler.CommandLine.CmdBenchmark
+    - ProjectEuler.CommandLine.CmdGood
     - ProjectEuler.CommandLine
     # The following section should be modified automatically by "pet sync"
     # ==== PROBLEM_MODULE_LIST_BEGIN

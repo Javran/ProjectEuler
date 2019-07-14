@@ -18,6 +18,7 @@ import ProjectEuler.CommandLine.CmdCreate
 import ProjectEuler.CommandLine.CmdSync
 import ProjectEuler.CommandLine.CmdReport
 import ProjectEuler.CommandLine.CmdBenchmark
+import ProjectEuler.CommandLine.CmdGood
 
 {-
   Main binary is named "pet" for ProjectEuler Toolkit.
@@ -86,12 +87,14 @@ subCmds = M.fromList
       {- `pet benchmark <problem id> [...benchmark options...]` -}
     , cmdBenchmark
     )
+  , ( "good"
+      {- `pet good <problem id` marks a problem as solved and record its output -}
+    , cmdGood
+    )
   ]
 
 {-
-  planned features:
-  - TODO: `pet good <problem id>` marks the solution to that problem as
-    Solved, and record its output to answers.yaml
+  TODO: planned features:
   - `pet data` we might use this command to download data files from
     ProjectEuler's website.
  -}
