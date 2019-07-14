@@ -110,6 +110,7 @@ import ProjectEuler.Problem98
 import ProjectEuler.Problem99
 import ProjectEuler.Problem100
 import ProjectEuler.Problem101
+import ProjectEuler.Problem103
 import ProjectEuler.Problem104
 import ProjectEuler.Problem206
 
@@ -217,6 +218,7 @@ allProblems =
     , (99, ProjectEuler.Problem99.problem)
     , (100, ProjectEuler.Problem100.problem)
     , (101, ProjectEuler.Problem101.problem)
+    , (103, ProjectEuler.Problem103.problem)
     , (104, ProjectEuler.Problem104.problem)
     , (206, ProjectEuler.Problem206.problem)
     ]
