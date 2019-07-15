@@ -153,6 +153,7 @@ pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
   - p096_sudoku.txt
   - p098_words.txt
   - p099_base_exp.txt
+  - p102_triangles.txt
   # ==== DATA_FILE_LIST_END
 
  -}
