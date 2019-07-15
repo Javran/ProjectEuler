@@ -8,9 +8,19 @@ import qualified Data.Text as T
 
 import ProjectEuler.GetData
 
-
 problem :: Problem
-problem = pureProblemWithData "p102_triangles.txt" 102 Unsolved compute
+problem = pureProblemWithData "p102_triangles.txt" 102 Solved compute
+
+{-
+  Idea: https://en.wikipedia.org/wiki/Cross_product
+
+  For all 3 vertices,
+  we compute cross product for every directed edge and vector that points to origin,
+  if origin always stay at one side of each directed edge, we know origin is inside.
+
+  To see whether they are all at one side, we just need to example non-zero
+  cross products and see if they are all of the same sign.
+ -}
 
 type Coord = (Int, Int)
 type Vec = (Int, Int)
