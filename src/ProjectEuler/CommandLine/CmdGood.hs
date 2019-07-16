@@ -5,14 +5,14 @@ module ProjectEuler.CommandLine.CmdGood
   ( cmdGood
   ) where
 
-import Text.ParserCombinators.ReadP
-import System.Exit
 import Data.Char
 import Data.Maybe
+import System.Exit
+import Text.ParserCombinators.ReadP
 
+import qualified Data.List.Match as LMatch
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
-import qualified Data.List.Match as LMatch
 
 import ProjectEuler.CommandLine.Common
 
@@ -57,10 +57,10 @@ markSolved inp = case readP_to_S (parse <* eof) inp of
     + in the consumed section, there should be exactly one occurrence of string "Unsolved",
       change that into "Solved", and write other content back without change.
 
-  Note: following parts are TODOs.
-
     Note that as a test we can go through all existing problems and try to parse
     all of them and see if we have some missing cases.
+
+  Note: following parts are TODOs.
 
   - for recording the current solution: execute, then update data/answers.yaml
     for this to work we'll need `updateEditZone` from CmdSync to be exported
@@ -117,6 +117,13 @@ cmdGood xs
   | [rawN] <- xs
   , [(pId,"")] <- reads @Int rawN
   = do
+      {-
+        TODO: we should execute the problem and update data/answers.yaml first,
+        this is to:
+        - confirm that current solution is working
+        - even if we failed to parse & modify the mark for some reason,
+          we will get the reminder for updating the mark from `pet exec` anyways.
+       -}
       prjHome <- getProjectHome
       let fpSol = FP.encodeString $ solutionPath prjHome pId
       raw <- System.IO.Strict.readFile fpSol
