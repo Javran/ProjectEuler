@@ -5,8 +5,10 @@ module ProjectEuler.CommandLine.CmdGood
   ( cmdGood
   ) where
 
+import Text.ParserCombinators.ReadP
 import System.Exit
 import Data.Char
+import Data.Maybe
 
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
@@ -21,9 +23,20 @@ import ProjectEuler.CommandLine.Common
   TOOD: not implemented yet.
  -}
 
-{-
-  Implementation draft:
+-- attempt to recognize "Unsolved" or "Solved" in a single line
+-- and modify it to be "Solved" if possible.
+markSolved :: String -> Maybe (String, Bool)
+markSolved inp = case readP_to_S (parse <* eof) inp of
+    [(r, "")] -> Just r
+    _ -> Nothing
+  where
+    parse = do
+      blk0 <- many get
+      mark <- string "Unsolved" <++ string "Solved"
+      blk1 <- many get
+      pure (blk0 <> "Solved" <> blk1, mark == "Unsolved")
 
+{-
   - for marking a problem as solved:
     we just need something quick and simple, I'll
     going to assume that all solutions are formatted in the following way:
@@ -44,6 +57,8 @@ import ProjectEuler.CommandLine.Common
     + in the consumed section, there should be exactly one occurrence of string "Unsolved",
       change that into "Solved", and write other content back without change.
 
+  Note: following parts are TODOs.
+
     Note that as a test we can go through all existing problems and try to parse
     all of them and see if we have some missing cases.
 
@@ -51,9 +66,18 @@ import ProjectEuler.CommandLine.Common
     for this to work we'll need `updateEditZone` from CmdSync to be exported
     and extend that function to allow modifying base on original contents.
  -}
+modifyProblemDefinition :: [String] -> Either String ([String], Bool)
+modifyProblemDefinition xs = case catMaybes ys of
+    [(_, actuallyModified)] ->
+      let merge l Nothing = l
+          merge l (Just (_, False)) = l
+          merge _ (Just (r, True)) = r
+      in pure (zipWith merge xs ys, actuallyModified)
+    _ -> Left "Expected exactly one occurrence of either `Unsolved` or `Solved`."
+  where
+    ys = markSolved <$> xs
 
 {-
-  TODO: impl
   this function modified the content of solution file,
   returns the content after modification, together with
   a Bool indicating whether the content actually have changed.
@@ -63,15 +87,16 @@ import ProjectEuler.CommandLine.Common
 modifySolutionFileContent :: String -> Either String (String, Bool)
 modifySolutionFileContent raw = do
     let inp0 = lines raw
-    (blk0,inp1) <- consume0 inp0 []
-    (blk1,remained) <- consume1 inp1 []
-    pure (unlines (blk0 <> ["<start>"] <> blk1 <> ["<end>"] <> remained), True)
+    (blk0, inp1) <- consume0 inp0 []
+    (blk1, remained) <- consume1 inp1 []
+    (blk1', actuallyModified) <- modifyProblemDefinition blk1
+    pure (unlines (blk0 <> blk1' <> remained), actuallyModified)
   where
     isProblemTySigLine x = xs == tySigLine && all isSpace ys
       where
         tySigLine = "problem :: Problem"
         (xs, ys) = LMatch.splitAt tySigLine x
-    -- first step: consume input lines until we get type signature line of `problem`.
+    -- consume input lines until we get type signature line of `problem`.
     consume0 [] _ = Left "cannot find type signature for `problem`."
     consume0 (x:xs) acc =
       if isProblemTySigLine x
@@ -104,9 +129,7 @@ cmdGood xs
         Right (raw', actuallyChanged) ->
           if actuallyChanged
             then do
-              putStrLn raw'
-              -- TODO: actually write to the file.
-              -- writeFile fpSol raw'
+              writeFile fpSol raw'
               putStrLn "Solution file updated."
             else putStrLn "No change necessary to the solution file."
       -- TODO: execute & record result in data/answers.yaml
