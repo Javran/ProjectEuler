@@ -6,9 +6,11 @@ module ProjectEuler.CommandLine.CmdGood
   ) where
 
 import System.Exit
+import Data.Char
 
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
+import qualified Data.List.Match as LMatch
 
 import ProjectEuler.CommandLine.Common
 
@@ -58,8 +60,32 @@ import ProjectEuler.CommandLine.Common
   As it could be the case that the solution is already marked
   as Solved, in which case we don't need to do anything.
  -}
-modifySolutionFileContent :: String -> Maybe (String, Bool)
-modifySolutionFileContent _ = Nothing
+modifySolutionFileContent :: String -> Either String (String, Bool)
+modifySolutionFileContent raw = do
+    let inp0 = lines raw
+    (blk0,inp1) <- consume0 inp0 []
+    (blk1,remained) <- consume1 inp1 []
+    pure (unlines (blk0 <> ["<start>"] <> blk1 <> ["<end>"] <> remained), True)
+  where
+    isProblemTySigLine x = xs == tySigLine && all isSpace ys
+      where
+        tySigLine = "problem :: Problem"
+        (xs, ys) = LMatch.splitAt tySigLine x
+    -- first step: consume input lines until we get type signature line of `problem`.
+    consume0 [] _ = Left "cannot find type signature for `problem`."
+    consume0 (x:xs) acc =
+      if isProblemTySigLine x
+        then pure (reverse acc', xs)
+        else consume0 xs acc'
+      where
+        acc' = x:acc
+    -- then consume body of `problem`.
+    consume1 [] acc = pure (reverse acc, [])
+    consume1 (x:xs) acc =
+      let acc' = x : acc
+      in if all isSpace x
+        then pure (reverse acc', xs)
+        else consume1 xs acc'
 
 cmdGood :: [String] -> IO ()
 cmdGood xs
@@ -70,14 +96,17 @@ cmdGood xs
       let fpSol = FP.encodeString $ solutionPath prjHome pId
       raw <- System.IO.Strict.readFile fpSol
       case modifySolutionFileContent raw of
-        Nothing -> do
+        Left reason -> do
           putStrLn $
             "Failed to modify " <> fpSol <> " , unexpected file content."
+          putStrLn $ "Error: " <> reason
           exitFailure
-        Just (raw', actuallyChanged) ->
+        Right (raw', actuallyChanged) ->
           if actuallyChanged
             then do
-              writeFile fpSol raw'
+              putStrLn raw'
+              -- TODO: actually write to the file.
+              -- writeFile fpSol raw'
               putStrLn "Solution file updated."
             else putStrLn "No change necessary to the solution file."
       -- TODO: execute & record result in data/answers.yaml
