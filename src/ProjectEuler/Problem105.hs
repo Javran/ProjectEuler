@@ -48,6 +48,13 @@ findSpecialSubsets solSz initCandidates =
         + sumSets !! 1 => set of sum of subsets of size 1
         + sumSets !! 2 => set of sum of subsets of size 2
         + etc.
+
+      TODO: Note that I'm not actually interpreting the first property correctly,
+      as we only need to check for *disjoint pair of subsets*.
+      However this misinterpretation doesn't affect correctness:
+      If common elements are present for two subsets, by removing those elements
+      from both sets, the net effect is just removing a constant from both sides,
+      which has no effect because we only care about whether the sum is distinct.
      -}
     solve :: [Int] -> Int -> [Int] -> [IS.IntSet] -> [[Int]]
     solve curList sz candidates sumSets
