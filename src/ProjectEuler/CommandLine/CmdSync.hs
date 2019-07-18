@@ -74,12 +74,14 @@ updateAllProblems projectHome = do
   Recognize exactly one edit zone in a file, and replace
   the content inside edit zone with a list of text for each line,
   padded by spaces. The sequence of spaces used for padding is the same
-  as the starting line of the edit zone
-  (hopefully it's also the same padding as the ending line of edit zone,
-  but this function doesn't care about that.)
+  as the starting line of the edit zone.
+  Note that this sequence of spaces should be used as prefix
+  throughout the whole edit zone section.
+  Extra spaces after the padding are fine - we only enforce
+  this particular sequence of spaces needs to be a prefix of
+  content lines (including "XXX_BEGIN" and "XXX_END" lines)
 
-  (TODO: in future we'll require all contents in the edit zone
-  to be left-padded by spaces exactly the same way)
+  (TODO: edit zone contents are not yet enforced)
 
   For example, a file with content:
 
@@ -117,10 +119,11 @@ updateEditZone zoneIdent newContents =
       where
         (sps, content) = span (== ' ') line
 
-    extractSectionEnd :: String -> Maybe ()
-    extractSectionEnd line = guard $ content == zoneEnd
+    extractSectionEnd :: String -> String -> Maybe ()
+    extractSectionEnd expSps line =
+        guard $ content == zoneEnd && sps == expSps
       where
-        (_sps, content) = span (== ' ') line
+        (sps, content) = span (== ' ') line
 
     updateContentLines :: [String] -> [String]
     updateContentLines [] =
@@ -130,7 +133,7 @@ updateEditZone zoneIdent newContents =
       error $ "Cannot find edit zone for " <> zoneIdent
     updateContentLines (x:xs) = case extractSectionBegin x of
       Just spChars ->
-        let secAfter = dropWhile (isNothing . extractSectionEnd) xs
+        let secAfter = dropWhile (isNothing . extractSectionEnd spChars) xs
             updatedLines = (spChars <>) <$> newContents
         in x : updatedLines <> secAfter
       _ -> x : updateContentLines xs
