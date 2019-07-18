@@ -67,6 +67,11 @@ getDataContent = snd . getDataPair
 
 newtype Answers = Answers (IM.IntMap [T.Text]) deriving Show
 
+{-
+  TODO:
+  looks like we can simply use CSV: first number is problem id,
+  and followed by output line-by-line (usually there should only be one line).
+ -}
 instance FromJSON Answers where
   parseJSON =
     withObject "Answers" $ \v -> do
