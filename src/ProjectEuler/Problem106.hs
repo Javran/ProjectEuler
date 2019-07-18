@@ -62,6 +62,19 @@ problem = pureProblem 106 Unsolved result
 
   Well, we need to investigate n>4 and see if we can find a pattern.
 
+  So far we know:
+
+  - For any n, we only need to check for subsets of the same size,
+    because from property 2, we can assume this is always true.
+
+  - Subsets of size 1 can be ignored, knowing all elements are unique.
+
+  - Subset sizes can only be <= floor(n/2),
+    so we want to do this for subset size m=2,3,4,...,floor(n/2)
+    for each of those pairs, if we can prove the inequality from
+    sequence of elements (e.g. using A < B < C < D for n = 4),
+    we don't need to check it.
+
  -}
 
 result :: ()
