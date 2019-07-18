@@ -3,6 +3,7 @@
   #-}
 module ProjectEuler.CommandLine.CmdSync
   ( cmdSync
+  , updateEditZone
   ) where
 
 import Control.Applicative

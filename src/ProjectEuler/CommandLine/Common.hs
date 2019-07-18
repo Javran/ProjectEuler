@@ -8,6 +8,7 @@ module ProjectEuler.CommandLine.Common
   , renderProblem
   , runProblem
   , solutionPath
+  , answersPath
   ) where
 
 import Control.DeepSeq
@@ -69,3 +70,7 @@ solutionPath :: FP.FilePath -> Int -> FP.FilePath
 solutionPath prjHome pId =
   prjHome </> "src" </> "ProjectEuler"
     </> FP.fromText ("Problem" <> showt pId <> ".hs")
+
+answersPath :: FP.FilePath -> FP.FilePath
+answersPath prjHome =
+  prjHome </> "data" </> "answers.yaml"

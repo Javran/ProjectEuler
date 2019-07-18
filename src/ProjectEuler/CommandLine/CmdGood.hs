@@ -15,12 +15,11 @@ import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
 
 import ProjectEuler.CommandLine.Common
+import ProjectEuler.CommandLine.CmdSync (updateEditZone)
 
 {-
   `pet good <problem id>` marks the solution to that problem as
   Solved, and record its output to answers.yaml
-
-  TOOD: not implemented yet.
  -}
 
 -- attempt to recognize "Unsolved" or "Solved" in a single line
@@ -112,11 +111,30 @@ modifySolutionFileContent raw = do
         then pure (reverse acc', xs)
         else consume1 xs acc'
 
+-- TODO: impl
+updateRawContentWithNewAnswer :: Int -> [String] -> [String] -> [String]
+updateRawContentWithNewAnswer _pId _answerLines = id
+
 cmdGood :: [String] -> IO ()
 cmdGood xs
   | [rawN] <- xs
   , [(pId,"")] <- reads @Int rawN
   = do
+      prjHome <- getProjectHome
+      let fpSol = FP.encodeString $ solutionPath prjHome pId
+          fpAns = FP.encodeString $ answersPath prjHome
+      do
+        raw <- System.IO.Strict.readFile fpAns
+        let newContent =
+              updateEditZone
+                "ANSWERS_LIST"
+                (updateRawContentWithNewAnswer pId [error "TODO: output lines"])
+                raw
+        if newContent == raw
+          then putStrLn "No change necessary to answers.yaml."
+          else do
+            writeFile fpAns newContent
+            putStrLn $ "Answer for Problem#" <> show pId <> " is now recorded."
       {-
         TODO: we should execute the problem and update data/answers.yaml first,
         this is to:
@@ -124,24 +142,20 @@ cmdGood xs
         - even if we failed to parse & modify the mark for some reason,
           we will get the reminder for updating the mark from `pet exec` anyways.
        -}
-      prjHome <- getProjectHome
-      let fpSol = FP.encodeString $ solutionPath prjHome pId
-      raw <- System.IO.Strict.readFile fpSol
-      case modifySolutionFileContent raw of
-        Left reason -> do
-          putStrLn $
-            "Failed to modify " <> fpSol <> " , unexpected file content."
-          putStrLn $ "Error: " <> reason
-          exitFailure
-        Right (raw', actuallyChanged) ->
-          if actuallyChanged
-            then do
-              writeFile fpSol raw'
-              putStrLn "Solution file updated."
-            else putStrLn "No change necessary to the solution file."
-      -- TODO: execute & record result in data/answers.yaml
-      pure ()
-
+      do
+        raw <- System.IO.Strict.readFile fpSol
+        case modifySolutionFileContent raw of
+          Left reason -> do
+            putStrLn $
+              "Failed to modify " <> fpSol <> " , unexpected file content."
+            putStrLn $ "Error: " <> reason
+            exitFailure
+          Right (raw', actuallyChanged) ->
+            if actuallyChanged
+              then do
+                writeFile fpSol raw'
+                putStrLn "Solution file updated."
+              else putStrLn "No change necessary to the solution file."
   | otherwise = do
       putStrLn "pet create <problem id>"
       exitFailure
