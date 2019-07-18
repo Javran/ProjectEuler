@@ -18,13 +18,14 @@ import Turtle.Prelude
 import Turtle.Shell
 
 import qualified Control.Foldl as Foldl
+import qualified Data.FileEmbed
 import qualified Data.HashMap.Strict as HM
+import qualified Data.List.Match as LMatch
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
 import qualified Data.Vector as V
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
-import qualified Data.FileEmbed
 
 import ProjectEuler.CommandLine.Common
 
@@ -81,20 +82,19 @@ updateAllProblems projectHome = do
   this particular sequence of spaces needs to be a prefix of
   content lines (including "XXX_BEGIN" and "XXX_END" lines)
 
-  (TODO: edit zone contents are not yet enforced)
-
   For example, a file with content:
 
   > outside.
   >     # ==== FOO_BEGIN
   >     whatever inside
+  >       foo
   >     # ==== FOO_END
   > outside, after.
 
   will be updated if the function is called with
 
   - "FOO" as zoneIdent
-  - ["aaa", "bb", "c"] as newContents
+  - `const ["aaa", "bb", "c"]` as mkNewContents
 
   to be:
 
@@ -106,9 +106,15 @@ updateAllProblems projectHome = do
   >     # ==== FOO_END
   > outside, after.
 
+  In addition, the sequence of spaces are removed
+  for mkNewContents to process,
+  so mkNewContents will be called with following argument:
+
+  ["whatever inside", "  foo"]
+
  -}
-updateEditZone :: String -> [String] -> String -> String
-updateEditZone zoneIdent newContents =
+updateEditZone :: String -> ([String] -> [String]) -> String -> String
+updateEditZone zoneIdent mkNewContents =
     unlines . updateContentLines . lines
   where
     zoneBegin = "# ==== " <> zoneIdent <> "_BEGIN"
@@ -133,8 +139,19 @@ updateEditZone zoneIdent newContents =
       error $ "Cannot find edit zone for " <> zoneIdent
     updateContentLines (x:xs) = case extractSectionBegin x of
       Just spChars ->
-        let secAfter = dropWhile (isNothing . extractSectionEnd spChars) xs
-            updatedLines = (spChars <>) <$> newContents
+        let (secContentsPadded, secAfter) =
+              span (isNothing . extractSectionEnd spChars) xs
+            unpadContentLine :: String -> String
+            unpadContentLine raw =
+                if actualSps == spChars
+                  then unpadded
+                  else error $ "unexpected prefix on line: " <> show raw
+              where
+                (actualSps, unpadded) = LMatch.splitAt spChars raw
+            updatedLines =
+              (spChars <>) <$>
+                mkNewContents
+                  (unpadContentLine <$> secContentsPadded)
         in x : updatedLines <> secAfter
       _ -> x : updateContentLines xs
 
@@ -143,7 +160,7 @@ updatePackageYaml projectHome pIds = do
     let fp = FP.encodeString $ projectHome </> "package.yaml"
     raw <- System.IO.Strict.readFile fp
     let moduleList = ("- ProjectEuler.Problem" <>) . show <$> pIds
-    writeFile fp (updateEditZone "PROBLEM_MODULE_LIST" moduleList raw)
+    writeFile fp (updateEditZone "PROBLEM_MODULE_LIST" (const moduleList) raw)
 
 updateGetDataModule :: FP.FilePath -> IO ()
 updateGetDataModule prjHome = do
@@ -158,7 +175,7 @@ updateGetDataModule prjHome = do
   writeFile fpGetData $
     updateEditZone
       "DATA_FILE_LIST"
-      (("- " <> ) <$> fPaths)
+      (const $ ("- " <> ) <$> fPaths)
       raw
 
 {-
