@@ -13,9 +13,11 @@ import Text.ParserCombinators.ReadP
 import qualified Data.List.Match as LMatch
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
+import qualified Data.IntMap as IM
 
 import ProjectEuler.CommandLine.Common
 import ProjectEuler.CommandLine.CmdSync (updateEditZone)
+import ProjectEuler.CommandLine.ParseAnswers
 
 {-
   `pet good <problem id>` marks the solution to that problem as
@@ -111,9 +113,19 @@ modifySolutionFileContent raw = do
         then pure (reverse acc', xs)
         else consume1 xs acc'
 
--- TODO: impl
 updateRawContentWithNewAnswer :: Int -> [String] -> [String] -> [String]
-updateRawContentWithNewAnswer _pId _answerLines = id
+updateRawContentWithNewAnswer pId answerLines rawLines =
+    foldMap pprPair (IM.toAscList answers)
+  where
+    pprPair (k,[v]) = [show k <> ": " <> v]
+    pprPair (k,vs) =
+      (show k <> ":") : (("  - " <> ) <$> vs)
+
+    answers :: IM.IntMap [String]
+    answers =
+      IM.insert pId answerLines
+      . IM.fromList
+      $ parseAnswersSection (unlines rawLines)
 
 cmdGood :: [String] -> IO ()
 cmdGood xs
@@ -128,13 +140,13 @@ cmdGood xs
         let newContent =
               updateEditZone
                 "ANSWERS_LIST"
-                (updateRawContentWithNewAnswer pId [error "TODO: output lines"])
+                (updateRawContentWithNewAnswer pId (words "placeholder for outputs"))
                 raw
         if newContent == raw
           then putStrLn "No change necessary to answers.yaml."
           else do
             writeFile fpAns newContent
-            putStrLn $ "Answer for Problem#" <> show pId <> " is now recorded."
+            putStrLn $ "Answer for Problem #" <> show pId <> " is now recorded."
       {-
         TODO: we should execute the problem and update data/answers.yaml first,
         this is to:
