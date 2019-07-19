@@ -16,8 +16,6 @@ import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.GetData
 import ProjectEuler.AllProblems
-import ProjectEuler.Types
-
 import ProjectEuler.CommandLine.Common
 
 {-

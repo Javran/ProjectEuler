@@ -77,6 +77,8 @@ newtype Answers = Answers (IM.IntMap [T.Text]) deriving Show
       if the output is exactly one line.
     + a non-empty array that each item of it is either an integer or a string,
       interpreted exactly the same as if it's exactly one line.
+  - note that the string is never quoted and there is no escaping,
+    for this project's use case, I don't think this will be necessary.
  -}
 instance FromJSON Answers where
   parseJSON =

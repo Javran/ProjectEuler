@@ -71,6 +71,7 @@ library:
     - ProjectEuler.SolCommon
     - ProjectEuler.AllProblems
     - ProjectEuler.CommandLine.Common
+    - ProjectEuler.CommandLine.ParseAnswers
     - ProjectEuler.CommandLine.CmdRun
     - ProjectEuler.CommandLine.CmdCreate
     - ProjectEuler.CommandLine.CmdSync
