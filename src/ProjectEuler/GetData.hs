@@ -79,15 +79,17 @@ instance FromJSON Answers where
         Answers . IM.fromList <$> mapM convert (HM.toList obj)
       where
         convert :: (T.Text, Value) -> Parser (Int, [T.Text])
-        convert (t, xs) = do
+        convert (t, jVal) = do
           [(v, "")] <- pure $ reads (T.unpack t)
-          let convertAnswerOuts :: Array -> Parser [T.Text]
+          let
+              scientificToInteger :: Scientific -> Parser Integer
+              scientificToInteger s = do
+                Right i <- pure (floatingOrInteger @Double s)
+                pure i
+
+              convertAnswerOuts :: Array -> Parser [T.Text]
               convertAnswerOuts = mapM convertLine . toList
                 where
-                  scientificToInteger :: Scientific -> Parser Integer
-                  scientificToInteger s = do
-                    Right i <- pure (floatingOrInteger @Double s)
-                    pure i
 
                   {-
                     First interpret the field as Text,
@@ -108,7 +110,11 @@ instance FromJSON Answers where
                           "OutputLine"
                           ((showt @Integer <$>) . scientificToInteger)
                           v'
-          ys <- withArray "AnswerList" convertAnswerOuts xs
+          ys <- withArray "AnswerList" convertAnswerOuts jVal
+                <|> withText "AnswerList" (pure . (:[])) jVal
+                <|> withScientific "AnswerList"
+                      ((fmap . fmap) ((:[]) . showt) scientificToInteger)
+                      jVal
           pure (v, ys)
 
 expectedAnswers :: IM.IntMap [T.Text]
