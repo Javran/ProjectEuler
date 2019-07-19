@@ -4,6 +4,9 @@
 # so I put my trust on the Internet
 # that no one would do such a thing.
 answers:
+  # Note: do not leave any comment between edit zone
+  #   (i.e. between ANSWERS_LIST_BEGIN and ANSWERS_LIST_END)
+  #   as this part will be parsed and maintained by tools.
   # ==== ANSWERS_LIST_BEGIN
   1: 233168
   2: 4613732

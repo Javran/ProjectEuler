@@ -68,9 +68,15 @@ getDataContent = snd . getDataPair
 newtype Answers = Answers (IM.IntMap [T.Text]) deriving Show
 
 {-
-  TODO:
-  looks like we can simply use CSV: first number is problem id,
-  and followed by output line-by-line (usually there should only be one line).
+  Format of data/answers.yaml:
+
+  - top level is a dictionary with field "answers"
+  - under "answers", a dictionary from problem id (integer) to expected output.
+  - the expected output is structured:
+    + one line being either an integer (will be converted to a string) or a string,
+      if the output is exactly one line.
+    + a non-empty array that each item of it is either an integer or a string,
+      interpreted exactly the same as if it's exactly one line.
  -}
 instance FromJSON Answers where
   parseJSON =
