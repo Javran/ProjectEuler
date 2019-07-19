@@ -1,4 +1,6 @@
-module ProjectEuler.CommandLine.ParseAnswers where
+module ProjectEuler.CommandLine.ParseAnswers
+  ( parseAnswersSection
+  ) where
 
 import Data.Char
 import Data.Functor
@@ -52,3 +54,8 @@ problemP = do
     ((:[]) <$> singleLineContentP)
     <++ (char '\n' *> multiLineContentsP)
   pure (pId, outs)
+
+parseAnswersSection :: String -> [(Int, [String])]
+parseAnswersSection raw = case readP_to_S (many problemP <* eof) raw of
+  [(r, "")] -> r
+  _ -> error "unexpected format."
