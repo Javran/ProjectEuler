@@ -5,18 +5,21 @@ module ProjectEuler.CommandLine.CmdGood
   ( cmdGood
   ) where
 
+import Control.Exception
 import Data.Char
 import Data.Maybe
 import System.Exit
 import Text.ParserCombinators.ReadP
 
+import qualified Data.IntMap as IM
 import qualified Data.List.Match as LMatch
+import qualified Data.Text as T
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
-import qualified Data.IntMap as IM
 
-import ProjectEuler.CommandLine.Common
+import ProjectEuler.AllProblems
 import ProjectEuler.CommandLine.CmdSync (updateEditZone)
+import ProjectEuler.CommandLine.Common
 import ProjectEuler.CommandLine.ParseAnswers
 
 {-
@@ -46,7 +49,6 @@ markSolved inp = case readP_to_S (parse <* eof) inp of
     > <... some contents (maybe several lines, but must be non-empty ...>
     > <end of file or an empty line>
 
-
     Also the string "Unsolved" is present exactly once in this section.
 
     With this assumption the update should be straightforward to do
@@ -61,11 +63,9 @@ markSolved inp = case readP_to_S (parse <* eof) inp of
     Note that as a test we can go through all existing problems and try to parse
     all of them and see if we have some missing cases.
 
-  Note: following parts are TODOs.
-
   - for recording the current solution: execute, then update data/answers.yaml
-    for this to work we'll need `updateEditZone` from CmdSync to be exported
-    and extend that function to allow modifying base on original contents.
+    for this to work we use `updateEditZone` from CmdSync to be exported
+    and extended that function to allow modifying base on original contents.
  -}
 modifyProblemDefinition :: [String] -> Either String ([String], Bool)
 modifyProblemDefinition xs = case catMaybes ys of
@@ -127,6 +127,23 @@ updateRawContentWithNewAnswer pId answerLines rawLines =
       . IM.fromList
       $ parseAnswersSection (unlines rawLines)
 
+runAndRecordAnswerLines :: Int -> IO [T.Text]
+runAndRecordAnswerLines pId = case IM.lookup pId allProblems of
+  Nothing -> do
+    putStrLn $ "Problem #" <> show pId <> " not found."
+    exitFailure
+  Just problem -> do
+    putStrLn $ "Executing Problem #" <> show pId <> "..."
+    (_, r) <- runProblem problem
+    case r of
+      Left e -> do
+        putStrLn $ displayException e
+        exitFailure
+      Right xs ->
+        -- unlines then lines. this will make sure no newline
+        -- appears in string content.
+        pure . T.lines . T.unlines $ xs
+
 cmdGood :: [String] -> IO ()
 cmdGood xs
   | [rawN] <- xs
@@ -135,25 +152,27 @@ cmdGood xs
       prjHome <- getProjectHome
       let fpSol = FP.encodeString $ solutionPath prjHome pId
           fpAns = FP.encodeString $ answersPath prjHome
+
+      {-
+        We execute the problem and update data/answers.yaml first,
+        this is to:
+        - confirm that current solution is working
+        - even if we failed to parse & modify the mark for some reason,
+          we will get the reminder for updating the mark from `pet exec` anyways.
+       -}
+      outputLines <- runAndRecordAnswerLines pId
       do
         raw <- System.IO.Strict.readFile fpAns
         let newContent =
               updateEditZone
                 "ANSWERS_LIST"
-                (updateRawContentWithNewAnswer pId (words "placeholder for outputs"))
+                (updateRawContentWithNewAnswer pId (T.unpack <$> outputLines))
                 raw
         if newContent == raw
           then putStrLn "No change necessary to answers.yaml."
           else do
             writeFile fpAns newContent
             putStrLn $ "Answer for Problem #" <> show pId <> " is now recorded."
-      {-
-        TODO: we should execute the problem and update data/answers.yaml first,
-        this is to:
-        - confirm that current solution is working
-        - even if we failed to parse & modify the mark for some reason,
-          we will get the reminder for updating the mark from `pet exec` anyways.
-       -}
       do
         raw <- System.IO.Strict.readFile fpSol
         case modifySolutionFileContent raw of
