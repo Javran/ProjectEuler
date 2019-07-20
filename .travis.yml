@@ -10,8 +10,6 @@ language: generic
 cache:
   directories:
   - $HOME/.stack
-before_cache:
-  - find $HOME/.stack -name '*.sqlite3*' -exec rm {} \;
 
 # Ensure necessary system libraries are present
 addons:
