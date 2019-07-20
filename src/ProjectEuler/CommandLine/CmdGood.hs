@@ -14,6 +14,7 @@ import Text.ParserCombinators.ReadP
 import qualified Data.IntMap as IM
 import qualified Data.List.Match as LMatch
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import qualified Filesystem.Path.CurrentOS as FP
 import qualified System.IO.Strict
 
@@ -161,6 +162,9 @@ cmdGood xs
           we will get the reminder for updating the mark from `pet exec` anyways.
        -}
       outputLines <- runAndRecordAnswerLines pId
+      putStrLn "++++ BEGIN ++++"
+      mapM_ T.putStrLn outputLines
+      putStrLn "---- END ----"
       do
         raw <- System.IO.Strict.readFile fpAns
         let newContent =
