@@ -15,6 +15,8 @@ import Data.List
   that will eventually be moved into petbox.
   The idea here is to use this module as an intermediate place
   so that we don't need to update petbox that often.
+
+  TODO: utilize hspec to at least get some example covered.
  -}
 
 factorials :: [Int]
