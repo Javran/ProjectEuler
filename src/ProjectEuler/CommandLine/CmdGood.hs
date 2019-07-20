@@ -168,6 +168,11 @@ cmdGood xs
       do
         raw <- System.IO.Strict.readFile fpAns
         let newContent =
+              {-
+                Surely we can modify updateEditZone to return info about
+                whether the content is modified so that we can save some expensive
+                String comparisons, but for now I don't see the need of optimizing this.
+               -}
               updateEditZone
                 "ANSWERS_LIST"
                 (updateRawContentWithNewAnswer pId (T.unpack <$> outputLines))

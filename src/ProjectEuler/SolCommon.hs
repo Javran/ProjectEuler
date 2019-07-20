@@ -5,6 +5,7 @@ module ProjectEuler.SolCommon
   , digitsToInt
   , intToDigitsRev
   , pick
+  , numReverseInBase
   ) where
 
 import Data.List
@@ -56,3 +57,17 @@ pick xs = map split (init $ zip (inits xs) (tails xs))
     split (ls,v:rs) = (v,ls++rs)
     split _ = error "cannot split empty list"
 {-# INLINABLE pick #-}
+
+-- convert to reversed list of digits and put digits together,
+-- this allows digit-wise reversal of numbers
+-- and gives a compact representation (i.e. the number itself) to work with
+-- rather than comparing on list of stuff.
+numReverseInBase :: Integral i => Int -> i -> i
+numReverseInBase base = foldl (\a b -> a*base'+b) 0 . unfoldr f
+  where
+    base' = fromIntegral base
+    f 0 = Nothing
+    f n = let (q,r) = n `quotRem` base' in Just (r, q)
+{-# INLINABLE numReverseInBase #-}
+{-# SPECIALIZE numReverseInBase :: Int -> Int -> Int #-}
+{-# SPECIALIZE numReverseInBase :: Int -> Integer -> Integer #-}

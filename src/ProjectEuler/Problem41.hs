@@ -3,7 +3,7 @@ module ProjectEuler.Problem41
   ) where
 
 import Math.NumberTheory.Primes.Testing
-import Petbox hiding (isPrime)
+import Petbox
 
 import ProjectEuler.Types
 

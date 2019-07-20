@@ -5,7 +5,7 @@ module ProjectEuler.Problem12
 import Control.Arrow
 import ProjectEuler.Types
 import Math.NumberTheory.Primes
-import Petbox hiding (primes) -- TODO: prefer arithmoi.
+import Petbox
 
 problem :: Problem
 problem = pureProblem 12 Solved result

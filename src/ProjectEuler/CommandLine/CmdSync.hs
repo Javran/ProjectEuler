@@ -180,8 +180,9 @@ updateGetDataModule prjHome = do
       raw
 
 {-
-  TODO: note that currently `pet sync` updates the files but won't try rebuilding the project,
-  we could consider doing that automatically if possible.
+  TODO: not sure whether try rebuilding again is a good idea -
+  I'd say solution is incomplete and need some initial code to kick things off anyway,
+  we might revisit this decision later.
  -}
 cmdSync :: [String] -> IO ()
 cmdSync _ = do

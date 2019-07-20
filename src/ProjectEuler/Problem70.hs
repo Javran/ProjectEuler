@@ -8,7 +8,7 @@ import Math.NumberTheory.Primes
 import Data.Ratio
 import Data.Function
 import Data.List
-import Petbox hiding (primes)
+import Petbox
 
 import ProjectEuler.Types
 
