@@ -7,7 +7,10 @@ module ProjectEuler.Problem107
   ) where
 
 import Data.Maybe
+import Data.List
+
 import qualified Data.Text as T
+import qualified Data.PSQueue as PSQ
 
 import ProjectEuler.GetData
 
@@ -29,11 +32,15 @@ problem = pureProblemWithData "p107_network.txt" 107 Unsolved compute
 type Coord = (Int, Int)
 
 -- compute :: T.Text -> ()
-compute raw = isSymmetric
+compute raw = show $ unfoldr PSQ.minView psq
   where
+    psq :: PSQ.PSQ Coord Int
+    psq = PSQ.fromList $ foldMap mkBinding weights
+      where
+        mkBinding (c@(x,y),w) = if x > y then [] else [c PSQ.:-> w]
     -- should be true. confirming the symmetricity allows us to only store half of
     -- the actual data.
-    isSymmetric = and $ do
+    _isSymmetric = and $ do
       ((x,y),w) <- weights
       case lookup (y,x) weights of
         Just w' -> pure $ w' == w
