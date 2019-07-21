@@ -1,3 +1,6 @@
+{-# LANGUAGE
+    OverloadedStrings
+  #-}
 module ProjectEuler.Problem107
   ( problem
   ) where
@@ -21,6 +24,10 @@ import ProjectEuler.GetData
 problem :: Problem
 problem = pureProblemWithData "p107_network.txt" 107 Unsolved compute
 
-compute :: T.Text -> ()
-compute _ = ()
+-- compute :: T.Text -> ()
+compute raw = show . fmap (fmap parse . T.splitOn ",") . T.lines $ raw
+  where
+    parse :: T.Text -> Maybe Int
+    parse "-" = Nothing
+    parse t = Just (read $ T.unpack t)
 
