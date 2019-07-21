@@ -52,15 +52,18 @@ problem = pureProblem 106 Unsolved result
 
   So we know that
   - we can skip all checks that involve singleton sets (since we know every number is different)
-  - we can skip all checks that involve two sets of different size (property 2)
+  - we can skip all checks that involve two sets of different sizes (property 2)
 
   Taking this into account, there's only 3 pairs remaining:
 
   - {A,B}, {C,D}: for this one, we know A+B < C+D, no need of checking
+    (or, in other words, this is because A < C and B < D)
   - {A,C}, {B,D}: for this one, A<B, C<D, no need of checking
   - {A,D}, {B,C}: looks like this is the remaining one.
 
-  Well, we need to investigate n>4 and see if we can find a pattern.
+  Notice the pattern: if we can pair all elements (taking from two sets)
+  in both set using the inequation A < B < C < D, then the comparison
+  is not needed.
 
   So far we know:
 
@@ -74,6 +77,12 @@ problem = pureProblem 106 Unsolved result
     for each of those pairs, if we can prove the inequality from
     sequence of elements (e.g. using A < B < C < D for n = 4),
     we don't need to check it.
+
+  Well, we need to investigate n>4 and see if we can find a pattern.
+  More precisely, let the full set contain n elements, and
+  let's assume we are pairing two disjoint set of the same size m,
+  we want to investigate the number of pairs that we cannot draw a conclusion
+  by simply looking at `A < B < C < ... < ...`.
 
  -}
 
