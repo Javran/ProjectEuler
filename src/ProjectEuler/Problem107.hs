@@ -1,10 +1,12 @@
 {-# LANGUAGE
     OverloadedStrings
+  , TupleSections
   #-}
 module ProjectEuler.Problem107
   ( problem
   ) where
 
+import Data.Maybe
 import qualified Data.Text as T
 
 import ProjectEuler.GetData
@@ -24,10 +26,25 @@ import ProjectEuler.GetData
 problem :: Problem
 problem = pureProblemWithData "p107_network.txt" 107 Unsolved compute
 
+type Coord = (Int, Int)
+
 -- compute :: T.Text -> ()
-compute raw = show . fmap (fmap parse . T.splitOn ",") . T.lines $ raw
+compute raw = isSymmetric
   where
-    parse :: T.Text -> Maybe Int
-    parse "-" = Nothing
-    parse t = Just (read $ T.unpack t)
+    -- should be true. confirming the symmetricity allows us to only store half of
+    -- the actual data.
+    isSymmetric = and $ do
+      ((x,y),w) <- weights
+      case lookup (y,x) weights of
+        Just w' -> pure $ w' == w
+        Nothing -> pure False
+    weights :: [(Coord, Int)]
+    weights =
+        catMaybes $ zipWith (\c t -> (c,) <$> t) [(r,c) | r <- [0..39], c <- [0..39]] parsed
+      where
+        parsed :: [Maybe Int]
+        parsed = concatMap (fmap parse . T.splitOn ",") . T.lines $ raw
+        parse :: T.Text -> Maybe Int
+        parse "-" = Nothing
+        parse t = Just (read $ T.unpack t)
 
