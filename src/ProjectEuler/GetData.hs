@@ -174,6 +174,7 @@ pureProblemWithData dFile pId pSt runWithData = Problem pId pSt $
   - p099_base_exp.txt
   - p102_triangles.txt
   - p105_sets.txt
+  - p107_network.txt
   # ==== DATA_FILE_LIST_END
 
  -}
