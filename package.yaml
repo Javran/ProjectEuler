@@ -51,6 +51,7 @@ dependencies:
 - time
 - transformers-base
 - turtle
+- union-find
 - unordered-containers
 - utility-ht
 - vector
