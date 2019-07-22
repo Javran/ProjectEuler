@@ -8,7 +8,6 @@ module ProjectEuler.Problem107
 
 import Data.Function
 import Data.Maybe
-import Data.List
 import Control.Monad.ST
 import Control.Monad
 
@@ -32,7 +31,7 @@ import ProjectEuler.GetData
  -}
 
 problem :: Problem
-problem = pureProblemWithData "p107_network.txt" 107 Unsolved compute
+problem = pureProblemWithData "p107_network.txt" 107 Solved compute
 
 type Coord = (Int, Int)
 
@@ -49,31 +48,39 @@ prim'sAlgorithm initPsq = runST $ do
   forM_ vertices $ \v -> do
     s <- UF.fresh v
     MVec.write uf v s
-  (fix $ \loop psq result -> do
-           sz0 <- MVec.read clsSz 0
-           if sz0 == 40
-             then pure result
-             else
-               case PSQ.minView psq of
-                 Nothing -> error "no more edge to try."
-                 Just ((x,y) PSQ.:-> w, psq') -> do
-                   px <- MVec.read uf x
-                   py <- MVec.read uf y
-                   connected <- UF.equivalent px py
-                   if connected
-                     then loop psq' result
-                     else do
-                       UF.union' px py $ \_ _ -> do
-                         szX <- MVec.read clsSz x
-                         szY <- MVec.read clsSz y
-                         MVec.write clsSz y (szX + szY)
-                         pure y
-                       loop psq' (result + w)
-
+  (fix $ \loop psq result ->
+      {-
+        TODO: using set size = 40 as condition for termination
+        runs into some weird issues, should investigate.
+       -}
+      case PSQ.minView psq of
+        Nothing -> pure result
+        Just ((x,y) PSQ.:-> w, psq') -> do
+          px <- MVec.read uf x
+          py <- MVec.read uf y
+          connected <- UF.equivalent px py
+          if connected
+            then loop psq' result
+            else do
+              UF.union' px py $ \_ _ -> do
+                szX <- MVec.read clsSz x
+                szY <- MVec.read clsSz y
+                -- here we try to make sure that it sums to 40.
+                if szX >= szY
+                  then do
+                    MVec.write clsSz x (szX + szY)
+                    MVec.write clsSz y 0
+                    pure x
+                  else do
+                    MVec.write clsSz y (szX + szY)
+                    MVec.write clsSz x 0
+                    pure y
+              loop psq' (result + w)
     ) initPsq (0 :: Int)
 
 compute :: T.Text -> Int
-compute raw = prim'sAlgorithm psq
+compute raw =
+    sum (PSQ.prio <$> PSQ.toList psq) - prim'sAlgorithm psq
   where
     psq :: PSQ.PSQ Coord Int
     psq = PSQ.fromList $ foldMap mkBinding weights
