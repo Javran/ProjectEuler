@@ -40,24 +40,35 @@ vMax :: Int
 vMax = 40
 
 vertices :: [Int]
-vertices = [0..vMax-1]
+vertices = [0 .. vMax-1]
 
 prim'sAlgorithm :: [] (Edge, Int) -> Int
 prim'sAlgorithm initPsq = runST $ do
   uf <- MVec.unsafeNew vMax
-  -- initialize union-find-set
-  forM_ vertices $ \v -> do
-    s <- UF.fresh (v,1)
-    MVec.write uf v s
+  -- initialize union-find-set, the descriptor we are using here
+  -- stands for current size of the equivalent class of that element (vertex).
+  forM_ vertices $ \v -> MVec.write uf v =<< UF.fresh 1
   (fix $ \loop !psq !result -> do
-      !v0 <- MVec.read uf 0
-      (_, !eqCnt) <- UF.descriptor v0
+      {-
+        Looking at first vertex and get # of vertices of the equivalent class
+        that this vertex is in.
+        The purpose of this step is to see whether all vertices has been connected,
+        so actually 0 is a random choice - any vertex should do.
+       -}
+      !eqCnt <- UF.descriptor =<< MVec.read uf 0
+      {-
+        If we have already have all vertices connected,
+        no more edges are needed to be considered.
+        (as the edges are sorted in the ascending order of weights)
+       -}
       if eqCnt == vMax
         then pure result
         else
           case uncons psq of
-            Nothing -> pure result
-            Just (((x,y), w), psq') -> do
+            Nothing ->
+              -- just in case that we run out of edges to try.
+              pure result
+            Just (((!x,!y), !w), psq') -> do
               !px <- MVec.read uf x
               !py <- MVec.read uf y
               connected <- UF.equivalent px py
@@ -65,14 +76,19 @@ prim'sAlgorithm initPsq = runST $ do
                 then
                   loop psq' result
                 else do
-                  UF.union' px py $
-                    \(_,szX') (y',szY') ->
-                      pure (y',szX'+szY')
-                  loop psq' (result + w)
-    ) initPsq (0 :: Int)
+                  -- update descriptor to keep in sync with the merge.
+                  UF.union' px py $ \u v -> pure $! u + v
+                  loop psq' $! result + w
+    ) initPsq 0
 
 compute :: T.Text -> Int
 compute raw =
+    {-
+      Here notice that we are actually using sorting from Data.List, rather than
+      relying on other fancy structures - this actually gives us a decent performance already.
+      The reason is: remember that we are using a lazy language, if we just need first few
+      of a sorted list, we don't get the extra penalty of actually sorting the whole list.
+     -}
     sum (snd <$> psq) - prim'sAlgorithm (sortOn snd psq)
   where
     psq :: [] (Edge ,Int)
