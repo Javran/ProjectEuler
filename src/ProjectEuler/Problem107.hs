@@ -10,9 +10,9 @@ module ProjectEuler.Problem107
 import Control.Monad
 import Control.Monad.ST
 import Data.Function
+import Data.List
 import Data.Maybe
 
-import qualified Data.PSQueue as PSQ
 import qualified Data.Text as T
 import qualified Data.UnionFind.ST as UF
 import qualified Data.Vector.Mutable as MVec
@@ -34,7 +34,7 @@ import ProjectEuler.GetData
 problem :: Problem
 problem = pureProblemWithData "p107_network.txt" 107 Solved compute
 
-type Coord = (Int, Int)
+type Edge = (Int, Int)
 
 vMax :: Int
 vMax = 40
@@ -42,7 +42,7 @@ vMax = 40
 vertices :: [Int]
 vertices = [0..vMax-1]
 
-prim'sAlgorithm :: PSQ.PSQ Coord Int -> Int
+prim'sAlgorithm :: [] (Edge, Int) -> Int
 prim'sAlgorithm initPsq = runST $ do
   uf <- MVec.unsafeNew vMax
   -- initialize union-find-set
@@ -55,9 +55,9 @@ prim'sAlgorithm initPsq = runST $ do
       if eqCnt == vMax
         then pure result
         else
-          case PSQ.minView psq of
+          case uncons psq of
             Nothing -> pure result
-            Just ((x,y) PSQ.:-> w, psq') -> do
+            Just (((x,y), w), psq') -> do
               !px <- MVec.read uf x
               !py <- MVec.read uf y
               connected <- UF.equivalent px py
@@ -73,12 +73,12 @@ prim'sAlgorithm initPsq = runST $ do
 
 compute :: T.Text -> Int
 compute raw =
-    sum (PSQ.prio <$> PSQ.toList psq) - prim'sAlgorithm psq
+    sum (snd <$> psq) - prim'sAlgorithm (sortOn snd psq)
   where
-    psq :: PSQ.PSQ Coord Int
-    psq = PSQ.fromList $ foldMap mkBinding weights
+    psq :: [] (Edge ,Int)
+    psq = foldMap mkBinding weights
       where
-        mkBinding (c@(x,y),w) = if x > y then [] else [c PSQ.:-> w]
+        mkBinding (c@(x,y),w) = if x > y then [] else [(c,w)]
     -- should be true. confirming the symmetricity allows us to only store half of
     -- the actual data.
     _isSymmetric = and $ do
@@ -86,7 +86,7 @@ compute raw =
       case lookup (y,x) weights of
         Just w' -> pure $ w' == w
         Nothing -> pure False
-    weights :: [(Coord, Int)]
+    weights :: [(Edge, Int)]
     weights =
         catMaybes $ zipWith (\c t -> (c,) <$> t) [(r,c) | r <- vertices, c <- vertices] parsed
       where
