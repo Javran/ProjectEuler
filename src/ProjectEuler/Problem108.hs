@@ -2,13 +2,13 @@ module ProjectEuler.Problem108
   ( problem
   ) where
 
-
+import Math.NumberTheory.ArithmeticFunctions
 import Control.Monad
 import Data.Ratio
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 108 Unsolved experiment
+problem = pureProblem 108 Solved result
 
 {-
   Given that:
@@ -25,17 +25,36 @@ problem = Problem 108 Unsolved experiment
   so we have search space `n+1 <= x <= 2*n` that we can search for solutions,
   my plan is to just brute force that and see if we can find any clues on this.
 
+
+  Actually initial search gives exactly what we want: https://oeis.org/A018892.
+
  -}
 
-search n = foldMap tryX [n+1 .. n+n] :: [(Int,Int)]
+search :: Int -> [] (Int, Int)
+search n = foldMap tryX [n+1 .. n+n]
   where
     tryX x = do
       let r = (x - n) % (n * x)
       guard (numerator r == 1)
       pure (x, denominator r)
 
-experiment =
-  forM_ [1 :: Int ..100] $ \n -> do
-    logT (n, length (search n))
+fast :: Int -> Int
+fast n = (tau (n*n) + 1) `quot` 2
+
+{-
+  TODO: for now it's still quite slow, need optimization.
+  the idea is that we want to maximize tau.
+ -}
+-- TODO: cleanup
+
+result :: Int
+result =
+  {-
+    Since the search space is [n+1 .. n+n], we should at least have
+    1000 candidates to check
+   -}
+  head
+  . dropWhile (\n -> fast n < 1000)
+  $ [1000..]
 
 
