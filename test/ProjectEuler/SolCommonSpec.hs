@@ -1,11 +1,14 @@
 {-# LANGUAGE
     TypeApplications
   , BinaryLiterals
+  , ScopedTypeVariables
   #-}
 module ProjectEuler.SolCommonSpec where
 
+import Data.List
 import Test.Hspec
 import Test.QuickCheck
+import Test.QuickCheck.Poly
 
 import ProjectEuler.SolCommon
 
@@ -29,13 +32,13 @@ spec = do
     specify "identity" $
       property $
         \(Positive x) ->
-          (digitsToInt . intToDigits @Int) x == x
+          (digitsToInt . intToDigits @Int) x === x
 
   describe "intToDigitsRev" $
     specify "reversed intToDigits" $
       property $
         \(Positive x) ->
-          intToDigits @Int x == reverse (intToDigitsRev x)
+          intToDigits @Int x === reverse (intToDigitsRev x)
 
   describe "pick" $ do
     specify "empty" $
@@ -43,6 +46,13 @@ spec = do
     specify "example" $
       pick @Int [4,1,2,3]
         `shouldBe` [(4,[1,2,3]),(1,[4,2,3]),(2,[4,1,3]),(3,[4,1,2])]
+    specify "poly" $
+      property $
+        \(xs :: [OrdA]) ->
+          let ys = pick xs
+              sortedXs = sort xs
+          in fmap fst ys === xs
+             .&&. conjoin (fmap (\(h,t) -> sort (h:t) === sortedXs) ys)
 
   describe "numReverseInBase" $
     specify "examples" $ do
