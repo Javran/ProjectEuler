@@ -27,4 +27,5 @@ install:
 - stack --no-interleaved-output build ProjectEuler:exe:pet
 
 script:
+- stack test
 - stack exec -- pet report
