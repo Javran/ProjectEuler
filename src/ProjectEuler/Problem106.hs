@@ -2,6 +2,11 @@ module ProjectEuler.Problem106
   ( problem
   ) where
 
+import Data.List
+import Control.Monad
+
+import qualified Data.List.Ordered as LOrdered
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -84,7 +89,42 @@ problem = pureProblem 106 Unsolved result
   we want to investigate the number of pairs that we cannot draw a conclusion
   by simply looking at `A < B < C < ... < ...`.
 
+  Experiment:
+  - given 0 .. n, create pairs of disjoint sets of the same size m
+  - see if we can avoid equality test by just discharging number pairs (a,b),
+    whenever a < b.
+  - print out / count remainings
+
  -}
 
-result :: ()
-result = ()
+{-
+  TODO: this one is taken from Problem105.
+  like "pick", but whenever an element picked,
+  all elements before it will be dropped. This has the effect of only picking
+  elements in order.
+ -}
+{-# INLINABLE pickInOrder #-}
+pickInOrder :: [a] -> [] (a,[a])
+pickInOrder = fmap (\(x:xs) -> (x,xs)) . init . tails
+
+pickSomeInOrder :: Int -> [a] -> [[a]]
+pickSomeInOrder 0 _ = [[]]
+pickSomeInOrder n xs = do
+  (y,ys) <- pickInOrder xs
+  (y:) <$> pickSomeInOrder (n-1) ys
+
+{-
+  generate pairs of disjoint sets,
+  from [1..n], with each set has m elements.
+ -}
+disjointPairs :: Int -> Int -> [] ([Int], [Int])
+disjointPairs n m = do
+    l <- sets
+    r <- sets
+    guard $ null (LOrdered.isect l r)
+    guard $ l < r
+    pure (l,r)
+  where
+    sets = pickSomeInOrder m [1..n]
+
+result = disjointPairs 4 2
