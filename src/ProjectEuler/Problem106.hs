@@ -8,9 +8,10 @@ import Control.Monad
 import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
-problem = pureProblem 106 Unsolved result
+problem = pureProblem 106 Solved result
 
 {-
   Looks like we should expect this to be a difficult one.
@@ -95,6 +96,9 @@ problem = pureProblem 106 Unsolved result
     whenever a < b.
   - print out / count remainings
 
+  Update: turns out testing on 12 is fast enough to solve the problem.
+  TODO: need some cleanup.
+
  -}
 
 {-
@@ -121,10 +125,25 @@ disjointPairs :: Int -> Int -> [] ([Int], [Int])
 disjointPairs n m = do
     l <- sets
     r <- sets
-    guard $ null (LOrdered.isect l r)
     guard $ l < r
+    guard $ null (LOrdered.isect l r)
     pure (l,r)
   where
     sets = pickSomeInOrder m [1..n]
 
-result = disjointPairs 4 2
+alreadyInequal :: ([Int], [Int]) -> Bool
+alreadyInequal ([],[]) = True
+alreadyInequal (xs,ys) = or $ do
+  (x,xs') <- pick xs
+  (y,ys') <- pick ys
+  guard $ x < y
+  pure $ alreadyInequal (xs',ys')
+
+needEqualTest :: Int -> Int
+needEqualTest n = sum $ do
+  m <- [2..quot n 2]
+  let count = filter (not . alreadyInequal) $ disjointPairs n m
+  pure (length count)
+
+result :: Int
+result = needEqualTest 12
