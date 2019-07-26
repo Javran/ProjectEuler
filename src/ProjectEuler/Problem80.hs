@@ -5,6 +5,7 @@ module ProjectEuler.Problem80
 import Math.NumberTheory.Powers.Squares
 import Petbox
 
+import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem
@@ -33,7 +34,7 @@ split100 n = map (read . take 2) $ iterate (drop 2) (sn' ++ repeat '0')
 result :: Int
 result =
   sum
-  . map (sum . take 100 . toDigits . genDigits 100)
+  . map (sum . take 100 . intToDigits . genDigits 100)
   . filter isIrrationalSquareRoot
   $ [1..100]
 

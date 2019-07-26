@@ -4,12 +4,13 @@ module ProjectEuler.Problem89
 
 import Control.Applicative
 import Data.Functor
-import Petbox
 import Text.Parsec hiding ((<|>))
 import Text.Parsec.String (Parser)
 
 import qualified Data.Text as T
+
 import ProjectEuler.GetData
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblemWithData "p089_roman.txt" 89 Solved compute
@@ -43,7 +44,7 @@ toRomanRep n
           , digitToStr "I" "V" "X" d
           ]
   where
-    [_,a,b,c,d] = toDigits (10000 + n)
+    [_,a,b,c,d] = intToDigits (10000 + n)
     digitToStr one five ten x
       | x == 0 = ""
       | x <= 3 = concat $ replicate x one
