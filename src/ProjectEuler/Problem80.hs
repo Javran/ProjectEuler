@@ -2,7 +2,9 @@ module ProjectEuler.Problem80
   ( problem
   ) where
 
+import Math.NumberTheory.Powers.Squares
 import Petbox
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -20,7 +22,7 @@ genDigits :: Int -> Int -> Integer
 genDigits limit n = fst $ iterate (uncurry next) (0,split100 n) !! limit
 
 isIrrationalSquareRoot :: Int -> Bool
-isIrrationalSquareRoot x = sq (sqrtI x) /= x
+isIrrationalSquareRoot = not . isSquare'
 
 split100 :: (Show a, Integral a) => a -> [Integer]
 split100 n = map (read . take 2) $ iterate (drop 2) (sn' ++ repeat '0')

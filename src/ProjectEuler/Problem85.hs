@@ -5,7 +5,7 @@ module ProjectEuler.Problem85
 import Control.Monad
 import Data.List
 import Data.Ord
-import Petbox
+import Math.NumberTheory.Powers.Squares
 
 import ProjectEuler.Types
 
@@ -50,7 +50,7 @@ result = fst $ minimumBy (comparing snd) solutions
   where
     targetMul4 = 8000000 :: Int
     -- "100" is a magic number
-    prodMN = 100 + sqrtI targetMul4
+    prodMN = 100 + integerSquareRoot targetMul4
     solutions = do
         n <- [1..prodMN]
         m <- [1..n]
