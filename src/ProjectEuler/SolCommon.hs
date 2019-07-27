@@ -5,6 +5,7 @@ module ProjectEuler.SolCommon
   , digitsToInt
   , intToDigitsRev
   , pick
+  , pickInOrder
   , numReverseInBase
   ) where
 
@@ -73,3 +74,13 @@ numReverseInBase base = foldl (\a b -> a*base'+b) 0 . unfoldr f
 {-# INLINABLE numReverseInBase #-}
 {-# SPECIALIZE numReverseInBase :: Int -> Int -> Int #-}
 {-# SPECIALIZE numReverseInBase :: Int -> Integer -> Integer #-}
+
+{-
+  like "pick", but whenever an element picked,
+  all elements before it will be dropped. This has the effect of only picking
+  elements in order.
+  TODO: test for this one.
+ -}
+pickInOrder :: [a] -> [] (a,[a])
+pickInOrder = fmap (\(x:xs) -> (x,xs)) . init . tails
+{-# INLINABLE pickInOrder #-}

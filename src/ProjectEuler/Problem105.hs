@@ -11,6 +11,7 @@ import Data.Monoid
 import qualified Data.IntSet as IS
 import qualified Data.Text as T
 
+import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem
@@ -22,15 +23,6 @@ problem = pureProblemWithData "p105_sets.txt" 105 Solved compute
   they are then moved here and backported back to Problem103
   because this version is more general than one used in Problem103.
  -}
-
-{-
-  like "pick", but whenever an element picked,
-  all elements before it will be dropped. This has the effect of only picking
-  elements in order.
- -}
-{-# INLINABLE pickInOrder #-}
-pickInOrder :: [a] -> [] (a,[a])
-pickInOrder = fmap (\(x:xs) -> (x,xs)) . init . tails
 
 {-# INLINABLE isIncreasing #-}
 isIncreasing :: Ord a => [a] -> Bool

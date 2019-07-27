@@ -97,16 +97,6 @@ problem = pureProblem 106 Solved result
 
  -}
 
-{-
-  TODO: this one is taken from Problem105.
-  like "pick", but whenever an element picked,
-  all elements before it will be dropped. This has the effect of only picking
-  elements in order.
- -}
-{-# INLINABLE pickInOrder #-}
-pickInOrder :: [a] -> [] (a,[a])
-pickInOrder = fmap (\(x:xs) -> (x,xs)) . init . tails
-
 pickSomeInOrder :: Int -> [a] -> [[a]]
 pickSomeInOrder 0 _ = [[]]
 pickSomeInOrder n xs = do
