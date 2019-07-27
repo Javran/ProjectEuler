@@ -145,6 +145,11 @@ needEqualTest n = sum $ do
   > 1,2,3,6,11,23,47,106,235
   oeis gives: https://oeis.org/A304011
  -}
+choose :: Integral i => i -> i -> i
+choose n k = foldl' (\acc (x,y) -> (acc*x) `quot` y) 1 $ zip [n,n-1..] [1..k]
 
 result :: Int
-result = needEqualTest 12
+result = sum $ fmap countPairs [2..quot n 2]
+  where
+    n = 12
+    countPairs i = choose n (i+i) * choose (i+i-1) (i-2)
