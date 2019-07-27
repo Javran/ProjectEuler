@@ -15,9 +15,9 @@ problem = pureProblem 106 Solved result
 
 {-
   Looks like we should expect this to be a difficult one.
+  But I blame the problem description of not doing a good job of explaining what's going on.
 
-  We first need to figure out
-  where do these numbers come from:
+  We first need to figure out where do these numbers come from:
 
   - n = 4, 1 out of 25 subsets pairs needs to be tested.
   - n = 7, 70 out of 966 subset pairs needs to be tested.
@@ -56,21 +56,6 @@ problem = pureProblem 106 Solved result
 
   This does sum up to 25.
 
-  So we know that
-  - we can skip all checks that involve singleton sets (since we know every number is different)
-  - we can skip all checks that involve two sets of different sizes (property 2)
-
-  Taking this into account, there's only 3 pairs remaining:
-
-  - {A,B}, {C,D}: for this one, we know A+B < C+D, no need of checking
-    (or, in other words, this is because A < C and B < D)
-  - {A,C}, {B,D}: for this one, A<B, C<D, no need of checking
-  - {A,D}, {B,C}: looks like this is the remaining one.
-
-  Notice the pattern: if we can pair all elements (taking from two sets)
-  in both set using the inequation A < B < C < D, then the comparison
-  is not needed.
-
   So far we know:
 
   - For any n, we only need to check for subsets of the same size,
@@ -84,20 +69,30 @@ problem = pureProblem 106 Solved result
     sequence of elements (e.g. using A < B < C < D for n = 4),
     we don't need to check it.
 
-  Well, we need to investigate n>4 and see if we can find a pattern.
+  Taking this into account, there's only 3 pairs remaining:
+
+  - {A,B}, {C,D}: for this one, we know A+B < C+D, no need of checking
+    (or, in other words, this is because A < C and B < D)
+  - {A,C}, {B,D}: for this one, A<B, C<D, no need of checking
+  - {A,D}, {B,C}: looks like this is the remaining one.
+
+  Notice the pattern: if we can pair all elements (taking from two sets)
+  in both set using the inequation A < B < C < D, then the comparison
+  is not needed.
+
+  Well, we need to investigate n > 4 and see if we can find a pattern.
   More precisely, let the full set contain n elements, and
   let's assume we are pairing two disjoint set of the same size m,
   we want to investigate the number of pairs that we cannot draw a conclusion
   by simply looking at `A < B < C < ... < ...`.
 
   Experiment:
-  - given 0 .. n, create pairs of disjoint sets of the same size m
+  - Given 0 .. n, create pairs of disjoint sets of the same size m
   - see if we can avoid equality test by just discharging number pairs (a,b),
     whenever a < b.
   - print out / count remainings
 
-  Update: turns out testing on 12 is fast enough to solve the problem.
-  TODO: need some cleanup.
+  So, turns out testing on 12 is fast enough to solve the problem.
 
  -}
 
@@ -144,6 +139,12 @@ needEqualTest n = sum $ do
   m <- [2..quot n 2]
   let count = filter (not . alreadyInequal) $ disjointPairs n m
   pure (length count)
+
+{-
+  needEqualTest <$> [4..10]
+  > 1,2,3,6,11,23,47,106,235
+  oeis gives: https://oeis.org/A304011
+ -}
 
 result :: Int
 result = needEqualTest 12
