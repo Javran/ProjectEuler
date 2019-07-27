@@ -2,8 +2,9 @@ module ProjectEuler.Problem106
   ( problem
   ) where
 
-import Data.List
 import Control.Monad
+import Data.List
+import Data.Monoid
 
 import qualified Data.List.Ordered as LOrdered
 
@@ -126,18 +127,28 @@ disjointPairs n m = do
   where
     sets = pickSomeInOrder m [1..n]
 
-alreadyInequal :: ([Int], [Int]) -> Bool
-alreadyInequal ([],[]) = True
-alreadyInequal (xs,ys) = or $ do
+{-
+  given two disjoint subset (sorted),
+  see if we can check for its inequality
+  by pairing all elements (from both sets)
+  using inequality.
+ -}
+_alreadyInequal :: ([Int], [Int]) -> Bool
+_alreadyInequal ([],[]) = True
+_alreadyInequal (xs,ys) = or $ do
   (x,xs') <- pick xs
   (y,ys') <- pick ys
   guard $ x < y
-  pure $ alreadyInequal (xs',ys')
+  pure $ _alreadyInequal (xs',ys')
 
-needEqualTest :: Int -> Int
-needEqualTest n = sum $ do
+{-
+  `needEqualTest 12` also computes the final answer.
+  slow, as this is brute force.
+ -}
+_needEqualTest :: Int -> Int
+_needEqualTest n = sum $ do
   m <- [2..quot n 2]
-  let count = filter (not . alreadyInequal) $ disjointPairs n m
+  let count = filter (not . _alreadyInequal) $ disjointPairs n m
   pure (length count)
 
 {-
@@ -146,10 +157,11 @@ needEqualTest n = sum $ do
   oeis gives: https://oeis.org/A304011
  -}
 choose :: Integral i => i -> i -> i
-choose n k = foldl' (\acc (x,y) -> (acc*x) `quot` y) 1 $ zip [n,n-1..] [1..k]
+choose n k =
+  foldl' (\acc (x,y) -> (acc*x) `quot` y) 1 $ zip [n,n-1..] [1..k]
 
 result :: Int
-result = sum $ fmap countPairs [2..quot n 2]
+result = getSum $ foldMap countPairs [2..quot n 2]
   where
     n = 12
-    countPairs i = choose n (i+i) * choose (i+i-1) (i-2)
+    countPairs i = Sum $ choose n (i+i) * choose (i+i-1) (i-2)
