@@ -6,23 +6,24 @@ module ProjectEuler.Problem74
 import Control.Monad
 import Data.Maybe
 import Data.Monoid
-import Petbox hiding (factorial)
-
 import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.Types
-
-factorials :: [Int]
-factorials = scanl (*) 1 [1..]
-
-factorial :: Int -> Int
-factorial = (factorials !!)
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 74 Solved result
 
 digitFac :: Int -> Int
-digitFac = getSum . foldMap (Sum . factorial) . allDigits
+digitFac =
+  getSum
+  . foldMap (Sum . factorial)
+    {-
+      we are using intToDigitsRev here as it's slightly more efficient
+      than intToDigits (without reversing) and we don't care about the order
+      in this occasion.
+     -}
+  . intToDigitsRev
 
 -- take combinations of 0!, 1!, ... 9!, 6 times.
 -- note that since 0! = 1, we need to remove prefixing zeros before
