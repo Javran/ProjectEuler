@@ -62,3 +62,13 @@ spec = do
         `shouldBe` 0b11010011
       numReverseInBase @Integer 10 987654321000
         `shouldBe` 123456789
+
+  describe "pickInOrder" $
+    specify "examples" $ do
+      pickInOrder @() [] `shouldBe` []
+      pickInOrder "ABCD" `shouldBe`
+        [ ('A', "BCD")
+        , ('B', "CD")
+        , ('C', "D")
+        , ('D', "")
+        ]
