@@ -30,8 +30,8 @@ problem = pureProblem 108 Solved result
 
  -}
 
-search :: Int -> [] (Int, Int)
-search n = foldMap tryX [n+1 .. n+n]
+_search :: Int -> [] (Int, Int)
+_search n = foldMap tryX [n+1 .. n+n]
   where
     tryX x = do
       let r = (x - n) % (n * x)
@@ -43,6 +43,9 @@ fast n = (tau (n*n) + 1) `quot` 2
 
 {-
   TODO: for now it's still quite slow, need optimization.
+
+  update: I tried with multiples of 2*3*5*7*11*13, which gives a faster solution.
+
   the idea is that we want to maximize tau.
  -}
 -- TODO: cleanup
@@ -55,6 +58,6 @@ result =
    -}
   head
   . dropWhile (\n -> fast n < 1000)
-  $ [1000..]
+  $ let t = 2*3*5*7*11*13 in iterate (+ t) t
 
 
