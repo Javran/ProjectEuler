@@ -6,10 +6,10 @@ import Data.List
 import Control.Arrow
 import Data.Maybe
 import Control.Monad
-import Debug.Trace
 
 import qualified Data.IntMap.Strict as IM
 
+import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem
@@ -53,25 +53,19 @@ dLastMoves =
   try to finish the game with exactly one double move.
  -}
 finishGame :: Int -> [] Move
-finishGame score = traceShow ('f', score) $ fromMaybe [] (IM.lookup score dLastMoves)
+finishGame score = fromMaybe [] (IM.lookup score dLastMoves)
 
 playGameWithMoves :: Int -> [(Int, Move)] -> [] [Move]
 playGameWithMoves _ [] = []
 playGameWithMoves score candidates =
   -- either finish the game right now
   ((:[]) <$> finishGame score)
-  <> case candidates of
-    [] -> []
-    ((s,m):_) ->
-      let newScore = score - s
-          candidates' =
-            filter (\(s',_) -> newScore - s' > 0) candidates
-            -- dropWhile ((> newScore) . fst) candidates
-      in ((m:) <$> traceShow ('a', newScore) (playGameWithMoves newScore candidates'))
-         <> do
-           guard (not . null $ candidates')
-           guard ((snd . head $ candidates') == m)
-           (m:) <$> traceShow ('b', newScore) (playGameWithMoves newScore (tail candidates'))
+  <> do
+    ((s,m),b) <- pickInOrder candidates
+    let newScore = score - s
+    guard $ newScore > 0
+    -- TODO: still some duplicates to knock down.
+    (m:) <$> playGameWithMoves newScore candidates
 
-result = length (playGameWithMoves 99 moves)
+result = length $ playGameWithMoves 6 moves
 
