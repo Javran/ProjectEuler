@@ -2,6 +2,7 @@ module ProjectEuler.Problem109
   ( problem
   ) where
 
+import Data.List
 import ProjectEuler.Types
 
 problem :: Problem
@@ -19,6 +20,23 @@ problem = pureProblem 109 Unsolved result
   can a straightforward search go.
  -}
 
-result = ()
+type Move = (Int, Int)
 
+{-
+  all possible moves in descending order of score
+ -}
+moves :: [(Int, Move)]
+moves =
+    sortBy cmp
+      $ (25,(25,1)) : (50,(25,2)) : [(a*b,(a,b)) | a <- [1..20], b <- [1..3]]
+  where
+    -- compare first by descending order of score, then by the structure encoding
+    -- which move are we representing.
+    cmp (x,xm) (y,ym) = compare y x <> compare xm ym
+
+{- one can only finish with a double -}
+lastMoves :: [(Int,Move)]
+lastMoves = filter ((== 2) . snd . snd) moves
+
+result = ()
 
