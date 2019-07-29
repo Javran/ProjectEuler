@@ -3,6 +3,11 @@ module ProjectEuler.Problem109
   ) where
 
 import Data.List
+import Control.Arrow
+import Data.Maybe
+
+import qualified Data.IntMap.Strict as IM
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -37,6 +42,16 @@ moves =
 {- one can only finish with a double -}
 lastMoves :: [(Int,Move)]
 lastMoves = filter ((== 2) . snd . snd) moves
+
+dLastMoves :: IM.IntMap [Move]
+dLastMoves =
+  IM.fromListWith (<>) . (fmap . second) (:[]) $ lastMoves
+
+{-
+  try to finish the game with exactly one double move.
+ -}
+finishGame :: Int -> [] Move
+finishGame score = fromMaybe [] (IM.lookup score dLastMoves)
 
 result = ()
 
