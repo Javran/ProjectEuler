@@ -13,7 +13,7 @@ import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 109 Unsolved result
+problem = pureProblem 109 Solved result
 
 {-
   One of those annoying problems that deals with random rule.
@@ -55,17 +55,17 @@ dLastMoves =
 finishGame :: Int -> [] Move
 finishGame score = fromMaybe [] (IM.lookup score dLastMoves)
 
-playGameWithMoves :: Int -> [(Int, Move)] -> [] [Move]
-playGameWithMoves _ [] = []
-playGameWithMoves score candidates =
+playGameWithMoves :: Int -> Int -> [(Int, Move)] -> [] [Move]
+playGameWithMoves 0 _ _ = []
+playGameWithMoves cnt score candidates =
   -- either finish the game right now
   ((:[]) <$> finishGame score)
   <> do
-    ((s,m),b) <- pickInOrder candidates
+    ((s,m),b) <- (\(u,v) -> (u,u:v)) <$> pickInOrder candidates
     let newScore = score - s
     guard $ newScore > 0
-    -- TODO: still some duplicates to knock down.
-    (m:) <$> playGameWithMoves newScore candidates
+    (m:) <$> playGameWithMoves (cnt-1) newScore b
 
-result = length $ playGameWithMoves 6 moves
+-- TODO: some cleanup & explain
+result = sum (fmap (\s -> length (playGameWithMoves 3 s moves)) [2..99])
 
