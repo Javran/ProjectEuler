@@ -19,7 +19,7 @@ problem = pureProblem 109 Solved result
   One of those annoying problems that deals with random rule.
 
   Dynamic programming could work, but find a way to encode
-  those states could be trouble.
+  those states could be troublesome.
 
   What I have in mind for now is to try all
   moves in a sorted way (since permutations are considered
@@ -41,17 +41,16 @@ moves =
     -- which move are we representing.
     cmp (x,xm) (y,ym) = compare y x <> compare xm ym
 
-{- one can only finish with a double -}
+-- one can only finish with a double.
 lastMoves :: [(Int,Move)]
 lastMoves = filter ((== 2) . snd . snd) moves
 
+-- dict from remaining score to all moves that can finish the game.
 dLastMoves :: IM.IntMap [Move]
 dLastMoves =
   IM.fromListWith (<>) . (fmap . second) (:[]) $ lastMoves
 
-{-
-  try to finish the game with exactly one double move.
- -}
+-- try to finish the game with exactly one double move.
 finishGame :: Int -> [] Move
 finishGame score = fromMaybe [] (IM.lookup score dLastMoves)
 
@@ -61,11 +60,15 @@ playGameWithMoves cnt score candidates =
   -- either finish the game right now
   ((:[]) <$> finishGame score)
   <> do
+    {-
+      Here we attach the chosen element back to the list,
+      this allows the taken element to be used multiple times.
+     -}
     ((s,m),b) <- (\(u,v) -> (u,u:v)) <$> pickInOrder candidates
     let newScore = score - s
     guard $ newScore > 0
     (m:) <$> playGameWithMoves (cnt-1) newScore b
 
--- TODO: some cleanup & explain
+result :: Int
 result = sum (fmap (\s -> length (playGameWithMoves 3 s moves)) [2..99])
 
