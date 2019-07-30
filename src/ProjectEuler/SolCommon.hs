@@ -34,7 +34,7 @@ intToDigits x = ($ []) . foldr (.) id $ unfoldr f x
     f 0 = Nothing
     f n = let (q,r) = n `quotRem` 10 in Just ((++[fromIntegral r]), q)
 {-# INLINABLE intToDigits #-}
-{-# SPECIALISE intToDigits :: Int -> [Int] #-}
+{-# SPECIALIZE intToDigits :: Int -> [Int] #-}
 
 digitsToInt :: Integral i => [Int] -> i
 digitsToInt = foldl (\a b -> fromIntegral a*10+ fromIntegral b) 0
