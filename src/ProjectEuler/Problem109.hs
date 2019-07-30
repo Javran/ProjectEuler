@@ -2,10 +2,10 @@ module ProjectEuler.Problem109
   ( problem
   ) where
 
-import Data.List
 import Control.Arrow
+import Data.List
 import Data.Maybe
-import Control.Monad
+import Data.Monoid
 
 import qualified Data.IntMap.Strict as IM
 
@@ -54,21 +54,28 @@ dLastMoves =
 finishGame :: Int -> [] Move
 finishGame score = fromMaybe [] (IM.lookup score dLastMoves)
 
-playGameWithMoves :: Int -> Int -> [(Int, Move)] -> [] [Move]
-playGameWithMoves 0 _ _ = []
-playGameWithMoves cnt score candidates =
+playWithMoves :: Int -> Int -> [(Int, Move)] -> [] [Move]
+playWithMoves 0 _ _ = []
+playWithMoves cnt score candidates =
   -- either finish the game right now
   ((:[]) <$> finishGame score)
   <> do
     {-
+      Since the moves are sorted, we can just drop some large scores
+      that will result in a bust from head to avoid some condition checking.
+     -}
+    let candidates' = dropWhile ((score <=) . fst) candidates
+    {-
       Here we attach the chosen element back to the list,
       this allows the taken element to be used multiple times.
      -}
-    ((s,m),b) <- (\(u,v) -> (u,u:v)) <$> pickInOrder candidates
-    let newScore = score - s
-    guard $ newScore > 0
-    (m:) <$> playGameWithMoves (cnt-1) newScore b
+    ((s,m),b) <- (\(u,v) -> (u,u:v)) <$> pickInOrder candidates'
+    (m:) <$> playWithMoves (cnt - 1) (score - s) b
 
 result :: Int
-result = sum (fmap (\s -> length (playGameWithMoves 3 s moves)) [2..99])
+result =
+  getSum $
+    foldMap
+      (\s -> foldMap (const 1) (playWithMoves 3 s moves))
+      [2..99]
 
