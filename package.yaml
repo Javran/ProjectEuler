@@ -197,23 +197,20 @@ library:
 executables:
   pet:
     main: Main.hs
-    source-dirs: src
-
+    source-dirs: exe
     dependencies:
       - ProjectEuler
-
     ghc-options: *exe-ghc-options
 
 tests:
   hspec:
     main: Spec.hs
-
     source-dirs:
       - test
-      - src
     dependencies:
       - hspec
       - QuickCheck
+      - ProjectEuler
     ghc-options:
       - -threaded
       - -O2
