@@ -3,11 +3,10 @@ module ProjectEuler.Problem206
   ) where
 
 import Data.Int
-import Petbox
 import Math.NumberTheory.Powers.Squares
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 206 Solved result

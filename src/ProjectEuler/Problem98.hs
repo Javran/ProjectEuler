@@ -3,18 +3,17 @@ module ProjectEuler.Problem98
   ( problem
   ) where
 
-import Data.List
 import Control.Monad
-import qualified Data.List.Ordered as LOrdered
-
+import Data.List
 import Math.NumberTheory.Powers.Squares
+import Petbox
 
+import qualified Data.List.Ordered as LOrdered
 import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 
 import ProjectEuler.GetData
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblemWithData "p098_words.txt" 98 Solved compute

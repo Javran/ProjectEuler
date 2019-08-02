@@ -7,11 +7,11 @@ import Control.Monad
 import Data.Bits
 import Data.List
 import Data.Monoid
+import Petbox
 
 import qualified Data.IntSet as IS
 import qualified Data.Text as T
 
-import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem

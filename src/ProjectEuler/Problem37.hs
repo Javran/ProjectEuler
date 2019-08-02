@@ -6,9 +6,9 @@ module ProjectEuler.Problem37
 import Data.List
 import Math.NumberTheory.Primes hiding (isPrime)
 import Math.NumberTheory.Primes.Testing
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 37 Solved result

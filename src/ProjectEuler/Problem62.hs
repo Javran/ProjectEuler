@@ -6,11 +6,11 @@ import Control.Arrow
 import Data.Function
 import Data.List
 import Data.Tuple
+import Petbox
 
 import qualified Data.Map.Strict as M
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (intToDigits)
 
 problem :: Problem
 problem = pureProblem 62 Solved result

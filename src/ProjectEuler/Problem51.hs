@@ -4,9 +4,9 @@ module ProjectEuler.Problem51
 
 import Control.Monad
 import Math.NumberTheory.Primes
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 51 Solved result

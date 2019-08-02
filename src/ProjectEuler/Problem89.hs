@@ -6,11 +6,11 @@ import Control.Applicative
 import Data.Functor
 import Text.Parsec hiding ((<|>))
 import Text.Parsec.String (Parser)
+import Petbox
 
 import qualified Data.Text as T
 
 import ProjectEuler.GetData
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblemWithData "p089_roman.txt" 89 Solved compute

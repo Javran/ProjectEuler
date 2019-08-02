@@ -5,7 +5,6 @@ module ProjectEuler.Problem80
 import Math.NumberTheory.Powers.Squares
 import Petbox
 
-import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem

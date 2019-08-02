@@ -6,12 +6,12 @@ module ProjectEuler.Problem35
 import Math.NumberTheory.Primes
 import Data.List
 import Data.Bits
+import Petbox
 
 import qualified Data.IntSet as IS
 import qualified Data.List.Match as LMatch
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (intToDigits, digitsToInt)
 
 problem :: Problem
 problem = pureProblem 35 Solved result

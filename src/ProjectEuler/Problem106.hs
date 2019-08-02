@@ -5,11 +5,11 @@ module ProjectEuler.Problem106
 import Control.Monad
 import Data.List
 import Data.Monoid
+import Petbox
 
 import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 106 Solved result

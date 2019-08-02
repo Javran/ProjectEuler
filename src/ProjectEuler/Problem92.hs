@@ -18,12 +18,6 @@ data Result
   | StuckIn89
   deriving (Eq)
 
-intToDigitsRev :: Int -> [Int]
-intToDigitsRev = unfoldr f
-  where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 10 in Just (r, q)
-
 squareDigit :: Int -> Int
 squareDigit n = sum $ sq <$> intToDigitsRev n
 

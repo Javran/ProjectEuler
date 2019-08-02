@@ -2,8 +2,9 @@ module ProjectEuler.Problem55
   ( problem
   ) where
 
+import Petbox
+
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 55 Solved result

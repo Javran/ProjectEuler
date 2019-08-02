@@ -4,8 +4,9 @@ module ProjectEuler.Problem24
   , breakList
   ) where
 
+import Petbox
+
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 24 Solved result

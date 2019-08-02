@@ -3,9 +3,9 @@ module ProjectEuler.Problem65
   ) where
 
 import Data.Ratio
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 65 Solved result

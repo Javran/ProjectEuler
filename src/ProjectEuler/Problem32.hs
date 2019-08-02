@@ -4,9 +4,9 @@ module ProjectEuler.Problem32
 
 import Control.Monad
 import Data.List
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (factorial)
 import ProjectEuler.Problem24 (getPermutation)
 
 problem :: Problem

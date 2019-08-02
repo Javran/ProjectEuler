@@ -5,12 +5,9 @@ module ProjectEuler.Problem101
 import Data.List
 import Data.Ratio
 import Data.Monoid
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
-
-fInt :: Int -> Integer
-fInt = fromIntegral
 
 problem :: Problem
 problem = pureProblem 101 Solved result

@@ -6,10 +6,10 @@ import Control.Arrow
 import Data.List
 import Data.Maybe
 import Data.Monoid
+import Petbox
 
 import qualified Data.IntMap.Strict as IM
 
-import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem

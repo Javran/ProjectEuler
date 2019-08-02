@@ -6,10 +6,11 @@ module ProjectEuler.Problem74
 import Control.Monad
 import Data.Maybe
 import Data.Monoid
+import Petbox
+
 import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 74 Solved result

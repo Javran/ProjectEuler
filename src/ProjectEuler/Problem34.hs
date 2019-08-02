@@ -4,9 +4,9 @@ module ProjectEuler.Problem34
 
 
 import Data.Char
+import Petbox
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon (factorial)
 
 problem :: Problem
 problem = pureProblem 34 Solved result
