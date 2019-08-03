@@ -45,12 +45,26 @@ problem = pureProblem 108 Solved result
   let a1=a2=...=at=1,
   (3^t + 1) / 2 > 1000
   > 3^t + 1 > 2000
+  > 3^t >= 2000
   > t >= 7
 
   So product [2,3,5,7,11,13,17] = 510510 is definitely **a** solution,
   but not the minimal one.
 
   (TODO: how do we find the minimal one?)
+
+  Now that we don't have a full solution yet but we've passed the problem,
+  knowing 180180 / (2*3*5*7*11*13) = 6, we know that this is actually
+  corresponding to the fact that:
+
+  > 5*5*3*3*3*3 = 2025 >= 2000
+
+  So if we can find:
+  - a non-increasing sequence of odd numbers
+  - with minimum number >= 3
+  - and product >= 2000
+
+  We pretty much knows how to construct the final answer from here.
 
  -}
 
