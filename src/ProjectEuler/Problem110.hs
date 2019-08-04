@@ -53,6 +53,11 @@ search upBnd odds acc = do
   update: found (take 14) by trial and error,
   this give us: (8000001,[3,3,67,13267]) -- doesn't feel right to me
   as the last one is a bit too large.
+
+  Current problem: for now we don't really know what are we searching:
+  if we just want to minimize a product larger by as close to 8,000,000 as possible,
+  we get the answer above, but this gives us a number too large to be an answer
+  to the final question.
  -}
 result = unfoldr improve (3 ^! 15 + 1)
   where
