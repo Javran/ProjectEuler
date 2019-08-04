@@ -1,8 +1,14 @@
 module ProjectEuler.Problem110
   ( problem
+  , pickInOrder'
   ) where
 
+import Control.Arrow
+import Petbox
+
 import ProjectEuler.Types
+
+import Debug.Trace
 
 {-
   This is basically the more difficult version of Problem108,
@@ -22,6 +28,22 @@ import ProjectEuler.Types
 problem :: Problem
 problem = pureProblem 110 Unsolved result
 
-result = ()
+minCount = 4000000
+
+-- TODO: this is the same function being used in Problem109,
+-- might worth make it into SolCommon
+pickInOrder' :: [a] -> [] (a,[a])
+pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
+
+search :: [Int] -> Int -> [] (Int, [Int])
+search odds acc = do
+  (x,odds') <- pickInOrder' odds
+  let acc' = acc*x
+  if acc' >= minCount * 2
+    then pure (acc', [x])
+    else second (x:) <$> search odds' acc'
+
+-- this finds a working solution but not necessarily the minimum solution.
+result = take 5 $ search [3,5..] 1
 
 
