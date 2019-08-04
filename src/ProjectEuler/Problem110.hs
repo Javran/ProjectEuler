@@ -35,15 +35,19 @@ minCount = 4000000
 pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
 
-search :: [Int] -> Int -> [] (Int, [Int])
-search odds acc = do
-  (x,odds') <- pickInOrder' odds
+search :: Int -> [Int] -> Int -> [] (Int, [Int])
+search upBnd odds acc = do
+  (x,odds') <- pickInOrder' $ takeWhile (\x -> x *acc < upBnd) odds
   let acc' = acc*x
-  if acc' >= minCount * 2
-    then pure (acc', [x])
-    else second (x:) <$> search odds' acc'
+  if acc' >= minCount*2
+    then
+      if acc' < upBnd
+        then pure (acc', [x])
+        else []
+    else
+      second (x:) <$> search upBnd odds' acc'
 
 -- this finds a working solution but not necessarily the minimum solution.
-result = take 5 $ search [3,5..] 1
+result = head $ search (3 ^! 15) [3,5..] 1
 
 
