@@ -4,6 +4,7 @@ module ProjectEuler.Problem110
   ) where
 
 import Control.Arrow
+import Data.List
 import Petbox
 
 import ProjectEuler.Types
@@ -47,7 +48,19 @@ search upBnd odds acc = do
     else
       second (x:) <$> search upBnd odds' acc'
 
--- this finds a working solution but not necessarily the minimum solution.
-result = head $ search (3 ^! 15) [3,5..] 1
+{-
+  this finds a working solution but not necessarily the minimum solution.
+  update: found (take 14) by trial and error,
+  this give us: (8000001,[3,3,67,13267]) -- doesn't feel right to me
+  as the last one is a bit too large.
+ -}
+result = unfoldr improve (3 ^! 15 + 1)
+  where
+    improve :: Int -> Maybe ((Int, [Int]), Int)
+    improve upBnd = do
+      (h@(b',_), _tl) <- uncons $ search upBnd [3,5..] 1
+      pure (h, b')
+
+--   head $ search (3 ^! 15 + 1) [3,5..] 1
 
 
