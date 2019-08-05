@@ -27,7 +27,7 @@ import Debug.Trace
  -}
 
 problem :: Problem
-problem = pureProblem 110 Unsolved result
+problem = pureProblem 110 Solved result
 
 minCount = 4000000
 
@@ -35,6 +35,12 @@ minCount = 4000000
 -- might worth make it into SolCommon
 pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
+
+recover :: [Int] -> Integer
+recover xs = product $ zipWith pow (reverse xs) (take l primes)
+  where
+    pow x p = p ^! (x `div` 2)
+    l = length xs
 
 search :: Int -> [Int] -> Int -> [] (Int, [Int])
 search _upBnd odds acc = do
@@ -60,9 +66,10 @@ search _upBnd odds acc = do
   Another way of attempt: given that if the power number is too larger,
   we'll end up with some very large numbers that won't fit into answer bar,
   let limit candidate numbers to a smaller set and see if we can have any luck there.
- -}
-result = take 10 $ sortOn fst $ search (3 ^! 15 + 1) [3,5..11] 1
 
+  TODO: cleanup
+ -}
+result = head $ sort $ map (recover . snd) $ search (3 ^! 15 + 1) [3,5..11] 1
 --   head $ search (3 ^! 15 + 1) [3,5..] 1
 
 
