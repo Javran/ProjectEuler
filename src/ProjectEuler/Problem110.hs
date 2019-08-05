@@ -3,13 +3,9 @@ module ProjectEuler.Problem110
   , pickInOrder'
   ) where
 
-import Control.Arrow
-import Data.List
 import Petbox
 
 import ProjectEuler.Types
-
-import Debug.Trace
 
 {-
   This is basically the more difficult version of Problem108,
@@ -29,6 +25,7 @@ import Debug.Trace
 problem :: Problem
 problem = pureProblem 110 Solved result
 
+minCount :: Int
 minCount = 4000000
 
 -- TODO: this is the same function being used in Problem109,
@@ -42,15 +39,15 @@ recover xs = product $ zipWith pow (reverse xs) (take l primes)
     pow x p = p ^! (x `div` 2)
     l = length xs
 
-search :: Int -> [Int] -> Int -> [] (Int, [Int])
-search _upBnd odds acc = do
-  (x,odds') <- pickInOrder' odds -- $ takeWhile (\x -> x *acc < upBnd) odds
+search :: [Int] -> Int -> [] [Int]
+search odds acc = do
+  (x,odds') <- pickInOrder' odds
   let acc' = acc*x
   if acc' >= minCount*2
     then
-      pure (acc', [x])
+      pure [x]
     else
-      second (x:) <$> search _upBnd odds' acc'
+      (x:) <$> search odds' acc'
 
 {-
   this finds a working solution but not necessarily the minimum solution.
@@ -63,13 +60,18 @@ search _upBnd odds acc = do
   we get the answer above, but this gives us a number too large to be an answer
   to the final question.
 
-  Another way of attempt: given that if the power number is too larger,
+  So the following attempt actually solves the problem:
+  Given that if the power number is too larger,
   we'll end up with some very large numbers that won't fit into answer bar,
-  let limit candidate numbers to a smaller set and see if we can have any luck there.
-
-  TODO: cleanup
+  so it make sense to limit candidate numbers to a smaller set
+  and see if we can have any luck there.
+  Now the idea becomes finding a sequence of numbers exceeding 8,000,000,
+  and recover the number the problem is asking for (see `recover` function),
+  namely zip in primes in backward order and take the production.
+  After this is done, we can simply find the minimum number recovered
+  and that's our final answer.
  -}
-result = head $ sort $ map (recover . snd) $ search (3 ^! 15 + 1) [3,5..11] 1
---   head $ search (3 ^! 15 + 1) [3,5..] 1
+result :: Integer
+result = minimum $ recover <$> search [3,5..11] 1
 
 
