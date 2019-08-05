@@ -37,16 +37,14 @@ pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
 
 search :: Int -> [Int] -> Int -> [] (Int, [Int])
-search upBnd odds acc = do
-  (x,odds') <- pickInOrder' $ takeWhile (\x -> x *acc < upBnd) odds
+search _upBnd odds acc = do
+  (x,odds') <- pickInOrder' odds -- $ takeWhile (\x -> x *acc < upBnd) odds
   let acc' = acc*x
   if acc' >= minCount*2
     then
-      if acc' < upBnd
-        then pure (acc', [x])
-        else []
+      pure (acc', [x])
     else
-      second (x:) <$> search upBnd odds' acc'
+      second (x:) <$> search _upBnd odds' acc'
 
 {-
   this finds a working solution but not necessarily the minimum solution.
@@ -58,13 +56,12 @@ search upBnd odds acc = do
   if we just want to minimize a product larger by as close to 8,000,000 as possible,
   we get the answer above, but this gives us a number too large to be an answer
   to the final question.
+
+  Another way of attempt: given that if the power number is too larger,
+  we'll end up with some very large numbers that won't fit into answer bar,
+  let limit candidate numbers to a smaller set and see if we can have any luck there.
  -}
-result = unfoldr improve (3 ^! 15 + 1)
-  where
-    improve :: Int -> Maybe ((Int, [Int]), Int)
-    improve upBnd = do
-      (h@(b',_), _tl) <- uncons $ search upBnd [3,5..] 1
-      pure (h, b')
+result = take 10 $ sortOn fst $ search (3 ^! 15 + 1) [3,5..11] 1
 
 --   head $ search (3 ^! 15 + 1) [3,5..] 1
 
