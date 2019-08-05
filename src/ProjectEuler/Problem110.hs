@@ -5,6 +5,8 @@ module ProjectEuler.Problem110
 
 import Petbox
 
+import qualified Data.List.Match as LMatch
+
 import ProjectEuler.Types
 
 {-
@@ -34,10 +36,10 @@ pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
 
 recover :: [Int] -> Integer
-recover xs = product $ zipWith pow (reverse xs) (take l primes)
+recover xs = product $ zipWith pow (reverse xs) primes'
   where
-    pow x p = p ^! (x `div` 2)
-    l = length xs
+    primes' = LMatch.take xs primes
+    pow x p = p ^! (x `quot` 2)
 
 search :: [Int] -> Int -> [] [Int]
 search odds acc = do
