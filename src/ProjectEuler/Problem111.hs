@@ -8,7 +8,7 @@ import Control.Monad
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 111 Unsolved result
+problem = pureProblem 111 Solved result
 
 {-
   There's about ~400000000 prime numbers that has 10 digits,
@@ -21,6 +21,8 @@ problem = pureProblem 111 Unsolved result
   we can proceed to generate numbers with M(10,d) repeated numbers,
   test again, to eventually get all primes of that pattern and
   therefore obtain S(10,d).
+
+  Update: this idea turns out to be fairly efficient, yay!
  -}
 
 {-
@@ -71,6 +73,11 @@ findMaxRepeat digitCount d = head $ foldMap search [9,8..]
       [] -> []
       x:_ -> pure (cnt,x)
 
+{-
+  For n = digitCount, generate the table from n to S(n,d),
+  useful to perform a fact check again n=4 cases, whose answer is
+  already given in the problem description.
+ -}
 findSum :: Int -> [(Int, Integer)]
 findSum digitCount = (\x -> (x, findSumForD x)) <$> [0..9]
   where
@@ -81,6 +88,7 @@ findSum digitCount = (\x -> (x, findSumForD x)) <$> [0..9]
 
 {-
   First notice that 222...2 = 2 * 111...1,
+  same for 333...3, 444...4 and so on.
   therefore there is only one number that repeats 10 times
   could be a prime, however:
 
@@ -90,4 +98,5 @@ findSum digitCount = (\x -> (x, findSumForD x)) <$> [0..9]
   This is clearly a composite number. So we can safely
   start with attempting 9 repeated digits for all d = 0 .. 9
  -}
-result = findSum 4 -- (\x -> (x, findMaxRepeat 4 x)) <$> [0..9]
+result :: Integer
+result = sum $ snd <$> findSum 10
