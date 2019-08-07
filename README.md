@@ -43,5 +43,7 @@ Feel free to use them & contribution welcomed.
 - Also note that the data does not need to be there - we can have a caching
   mechanism that fetches data on the fly and put it locally for future uses.
 
-- `ProjectEuler.GetData` works fine except when a new data file is added,
-  we need to somehow force this module to recompile when it is the case.
+- Now I start to find it being a bit wasteful to have a central place
+  for all data files, as any change to them recompiles everything.
+  I'm thinking about having a different template for problems
+  that requires external data and have TemplateHaskell enabled for them by default.
