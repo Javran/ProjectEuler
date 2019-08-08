@@ -100,5 +100,5 @@ h l = sum fs + sum gs - 9
 result :: Int
 result =
   -- same as `sum [h l | l <- [1..100]]`
-  (getSum . foldMap (\(a,b) -> Sum $ sum a + sum b) $ take 100 combined) - 900
+  (getSum . foldMap (\(a,b) -> foldMap Sum a <> foldMap Sum b) $ take 100 combined) - 900
 
