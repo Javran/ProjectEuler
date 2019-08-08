@@ -2,6 +2,8 @@ module ProjectEuler.Problem113
   ( problem
   ) where
 
+import Data.List
+import Control.Arrow
 import ProjectEuler.Types
 
 {-
@@ -41,20 +43,54 @@ import ProjectEuler.Types
  -}
 
 problem :: Problem
-problem = pureProblem 113 Unsolved result
+problem = pureProblem 113 Solved result
 
-f :: Int -> Int -> Int
-f _ 0 = 0
-f 1 _ = 1
-f l d = f (l-1) d + f l (d-1)
+{-
 
-g :: Int -> Int -> Int
-g 1 0 = 0
-g 1 _ = 1
-g l d = g (l-1) d + if d == 9 then 0 else g l (d+1)
+  Original implementation:
+
+  f _ 0 = 0
+  f 1 _ = 1
+  f l d = f (l-1) d + f l (d-1)
+
+  g :: Int -> Int -> Int
+  g 1 0 = 0
+  g 1 _ = 1
+  g l d = g (l-1) d + if d == 9 then 0 else g l (d+1)
+
+ -}
+
+{-
+
+  The implementation above can be further optimized into:
+
+  f, g :: Int -> Int -> Int
+  f l d = fst (combined !! (l-1)) !! d
+  g l d = snd (combined !! (l-1)) !! (9-d)
+
+ -}
+
+{-
+  Speed up calculation of f(l,d) and g(l,d) into one list.
+
+  Turns out if we compute f layer by layer, from left to right,
+  and compute g layer by layer, from right to left,
+  these two computations are basically the same and only
+  differ in the first layer (the first layer is a seed list)
+  This allow us to combine calculation of both function
+  into this one.
+ -}
+combined :: [([Int], [Int])]
+combined = iterate (evolve *** evolve) (seed, reverse seed)
+  where
+    seed = take 10 (0 : repeat 1)
+    evolve :: [Int] -> [Int]
+    evolve = tail . scanl' (+) 0
 
 h :: Int -> Int
-h l = sum [f l d + g l d | d <- [0..9]] - 9
+h l = sum [fs !! d + gs !! (9-d) | d <- [0..9]] - 9
+ where
+   (fs,gs) = combined !! (l-1)
 
 {-
 
@@ -68,5 +104,4 @@ h l = sum [f l d + g l d | d <- [0..9]] - 9
  -}
 
 result :: Int
-result = sum [h l | l <- [1..10]]
-
+result = sum [h l | l <- [1..100]]
