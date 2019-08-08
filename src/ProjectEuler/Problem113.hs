@@ -16,27 +16,27 @@ import ProjectEuler.Types
 
   let's define f(l,d) properly (d <- [1..9])
 
-  f(1,0) = 0
+  f(_,0) = 0
   f(1,_) = 1
 
   f(l,d) = sum of f(l-1,d') where 0 <= d' <= d
-
-  TODO: this can be sped up by deriving f(l,d) from f(l-1,d) and f(l,d-1)
+         = f(l-1,d) + f(l,d-1)
 
   now let g(l,d) be the number of non-increasing number of length l.
 
   g(1,0) = 0
   g(1,_) = 1
   g(l,d) = sum of g(l-1,d') where d <= d' <= 9
+         =
+         - g(l-1,d) + g l (d+1) (when d < 9)
+         - g(l-1,d) (when d == 9)
 
   let h(l) be the number of non-bouncy numbers of length l:
 
-  h(l) = sum {f(l,d) + g(l,d)} - t(l) for d <- [0..9]
+  h(l) = sum {f(l,d) + g(l,d)} - 9 for d <- [0..9]
 
-  where t(l) is the number of number that are both non-increasing and non-decreasing
-  of length l:
-
-  t(_) = 9
+  where `9` is the number of number that are both non-increasing and non-decreasing
+  of length l.
 
  -}
 
@@ -44,14 +44,14 @@ problem :: Problem
 problem = pureProblem 113 Unsolved result
 
 f :: Int -> Int -> Int
-f 1 0 = 0
+f _ 0 = 0
 f 1 _ = 1
-f l d = sum [f (l-1) d' | d' <- [0..d]]
+f l d = f (l-1) d + f l (d-1)
 
 g :: Int -> Int -> Int
 g 1 0 = 0
 g 1 _ = 1
-g l d = sum [g (l-1) d' | d' <- [d..9]]
+g l d = g (l-1) d + if d == 9 then 0 else g l (d+1)
 
 h :: Int -> Int
 h l = sum [f l d + g l d | d <- [0..9]] - 9
