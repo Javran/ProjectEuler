@@ -3,7 +3,9 @@ module ProjectEuler.Problem113
   ) where
 
 import Data.List
+import Data.Monoid
 import Control.Arrow
+
 import ProjectEuler.Types
 
 {-
@@ -86,22 +88,17 @@ combined = iterate (evolve *** evolve) (seed, reverse seed)
     seed = take 10 (0 : repeat 1)
     evolve :: [Int] -> [Int]
     evolve = tail . scanl' (+) 0
-
-h :: Int -> Int
-h l = sum [fs !! d + gs !! (9-d) | d <- [0..9]] - 9
- where
-   (fs,gs) = combined !! (l-1)
+{-# INLINE combined #-}
 
 {-
-
-  Update: the proof of concept works for 6 digits and 10 digits:
-
-  > sum [h l | l <- [1..6]]
-  12951
-  > sum [h l | l <- [1..10]]
-  277032
-
+h :: Int -> Int
+h l = sum fs + sum gs - 9
+  where
+    (fs, gs) = combined !! (l-1)
  -}
 
 result :: Int
-result = sum [h l | l <- [1..100]]
+result =
+  -- same as `sum [h l | l <- [1..100]]`
+  (getSum . foldMap (\(a,b) -> Sum $ sum a + sum b) $ take 100 combined) - 900
+
