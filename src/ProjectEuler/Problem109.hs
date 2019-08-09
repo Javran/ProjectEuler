@@ -10,6 +10,7 @@ import Petbox
 
 import qualified Data.IntMap.Strict as IM
 
+import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 problem :: Problem
@@ -69,7 +70,7 @@ playWithMoves cnt score candidates =
       Here we attach the chosen element back to the list,
       this allows the taken element to be used multiple times.
      -}
-    ((s,m),b) <- (\(u,v) -> (u,u:v)) <$> pickInOrder candidates'
+    ((s,m),b) <- pickInOrder' candidates'
     (m:) <$> playWithMoves (cnt - 1) (score - s) b
 
 result :: Int

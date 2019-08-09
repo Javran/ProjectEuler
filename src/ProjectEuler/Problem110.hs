@@ -7,6 +7,7 @@ import Petbox
 
 import qualified Data.List.Match as LMatch
 
+import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 {-
@@ -29,11 +30,6 @@ problem = pureProblem 110 Solved result
 
 minCount :: Int
 minCount = 4000000
-
--- TODO: this is the same function being used in Problem109,
--- might worth make it into SolCommon
-pickInOrder' :: [a] -> [] (a,[a])
-pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
 
 recover :: [Int] -> Integer
 recover xs = product $ zipWith pow (reverse xs) primes'
