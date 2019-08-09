@@ -9,9 +9,13 @@ module ProjectEuler.SolCommon
   so that we don't need to update petbox that often.
  -}
 
-import Petbox
+import Data.List
 
+{-
+  like pickInOrder but the element being picked is not removed from the list,
+  therefore has the effect of allowing a previously picked element to be picked again.
+ -}
 pickInOrder' :: [a] -> [] (a,[a])
-pickInOrder' x = (\(u,v) -> (u,u:v)) <$> pickInOrder x
+pickInOrder' = fmap (\(x:xs) -> (x,x:xs)) . init . tails
 {-# INLINABLE pickInOrder' #-}
 
