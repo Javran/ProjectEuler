@@ -2,10 +2,10 @@ module ProjectEuler.Problem27
   ( problem
   ) where
 
-import Math.NumberTheory.Primes hiding (isPrime)
-import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Primes.Testing (isPrime)
 import Data.List
 import Data.Ord
+import Petbox
 
 import ProjectEuler.Types
 

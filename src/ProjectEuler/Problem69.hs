@@ -2,7 +2,6 @@ module ProjectEuler.Problem69
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
 import Petbox
 
 import ProjectEuler.Types

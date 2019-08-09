@@ -3,7 +3,7 @@ module ProjectEuler.Problem77
   ) where
 
 import Petbox
-
+import Math.NumberTheory.Primes.Testing (isPrime)
 import ProjectEuler.Types
 
 problem :: Problem

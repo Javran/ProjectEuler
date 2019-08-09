@@ -2,7 +2,7 @@ module ProjectEuler.Problem47
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
+import Math.NumberTheory.Primes.Factorisation
 import ProjectEuler.Types
 
 problem :: Problem

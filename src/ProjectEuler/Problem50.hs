@@ -3,8 +3,8 @@ module ProjectEuler.Problem50
   ) where
 
 import Math.NumberTheory.Primes.Testing
-import Math.NumberTheory.Primes hiding (isPrime)
 import Control.Monad
+import Petbox
 
 import ProjectEuler.Types
 

@@ -8,7 +8,8 @@ import Control.Monad
 import Data.Function
 import Data.List
 import Data.Tuple
-import Math.NumberTheory.Primes
+import Math.NumberTheory.Primes.Testing (isPrime)
+import Petbox
 
 import qualified Data.IntMap as IM
 import qualified Data.IntSet as IS

@@ -2,8 +2,9 @@ module ProjectEuler.Problem7
   ( problem
   ) where
 
+import Petbox
+
 import ProjectEuler.Types
-import Math.NumberTheory.Primes
 
 problem :: Problem
 problem = pureProblem 7 Solved result

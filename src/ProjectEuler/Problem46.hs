@@ -2,8 +2,8 @@ module ProjectEuler.Problem46
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
 import Math.NumberTheory.Powers.Squares
+import Petbox
 
 import qualified Data.List.Ordered as LOrdered
 

@@ -4,8 +4,7 @@ module ProjectEuler.Problem37
   ) where
 
 import Data.List
-import Math.NumberTheory.Primes hiding (isPrime)
-import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Primes.Testing (isPrime)
 import Petbox
 
 import ProjectEuler.Types

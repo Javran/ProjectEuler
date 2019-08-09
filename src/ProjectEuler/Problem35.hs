@@ -3,7 +3,6 @@ module ProjectEuler.Problem35
   , circularNums
   ) where
 
-import Math.NumberTheory.Primes
 import Data.List
 import Data.Bits
 import Petbox

@@ -3,7 +3,7 @@ module ProjectEuler.Problem10
   ) where
 
 import ProjectEuler.Types
-import Math.NumberTheory.Primes
+import Petbox
 
 problem :: Problem
 problem = pureProblem 10 Solved result

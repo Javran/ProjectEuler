@@ -5,7 +5,7 @@ module ProjectEuler.Problem49
 import Control.Monad
 import Data.Int
 import Data.List
-import Math.NumberTheory.Primes
+import Petbox
 
 import qualified Data.IntMap.Strict as IM
 import qualified Data.List.Ordered as LOrdered
@@ -18,15 +18,6 @@ problem = pureProblem 49 Solved result
 -- step 1: get primes
 -- step 2: group by permutation closure
 -- step 3: find arithmetic seq
-
-intToDigits :: Int -> [Int]
-intToDigits x = ($ []) . foldr (.) id $ unfoldr f x
-  where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 10 in Just ((++[r]), q)
-
-digitsToInt :: [Int] -> Int
-digitsToInt = foldl (\a b -> a*10+b) 0
 
 limitedPrimes :: [Int]
 limitedPrimes = takeWhile (< 10000) $ dropWhile (< 1000) primes

@@ -4,7 +4,7 @@ module ProjectEuler.Problem3
 
 import ProjectEuler.Types
 import Math.NumberTheory.Powers.Squares
-import Math.NumberTheory.Primes.Sieve
+import Petbox
 
 problem :: Problem
 problem = pureProblem 3 Solved result

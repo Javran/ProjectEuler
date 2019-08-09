@@ -2,7 +2,7 @@ module ProjectEuler.Problem111
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
+import Math.NumberTheory.Primes.Testing (isPrime)
 import Control.Monad
 
 import ProjectEuler.Types

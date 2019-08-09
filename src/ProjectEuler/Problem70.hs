@@ -4,7 +4,6 @@ module ProjectEuler.Problem70
   ) where
 
 
-import Math.NumberTheory.Primes
 import Data.Ratio
 import Data.Function
 import Data.List
