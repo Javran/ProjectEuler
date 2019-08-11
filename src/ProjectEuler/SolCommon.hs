@@ -1,5 +1,6 @@
 module ProjectEuler.SolCommon
   ( pickInOrder'
+  , slidingWindows
   ) where
 
 {-
@@ -19,3 +20,12 @@ pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' = fmap (\(x:xs) -> (x,x:xs)) . init . tails
 {-# INLINABLE pickInOrder' #-}
 
+slidingWindows :: Int -> [a] -> [[a]]
+slidingWindows n xs =
+    take (l-n+1)
+    . map (take n)
+    . iterate tail
+    $ xs
+  where
+    l = length xs
+{-# INLINABLE slidingWindows #-}

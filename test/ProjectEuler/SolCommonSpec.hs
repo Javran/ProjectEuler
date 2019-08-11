@@ -11,7 +11,7 @@ import Petbox
 import ProjectEuler.SolCommon
 
 spec :: Spec
-spec =
+spec = do
   describe "pickInOrder'" $ do
     specify "example" $
       pickInOrder' "abcd1"
@@ -26,3 +26,11 @@ spec =
       property $
         \(xs :: [A]) ->
           pickInOrder' xs === fmap (\(u,v) -> (u,u:v)) (pickInOrder xs)
+  describe "slidingWindows" $
+    specify "examples" $ do
+      slidingWindows 3 "abcde"
+        `shouldBe` ["abc", "bcd", "cde"]
+      slidingWindows 4 "abcd"
+        `shouldBe` ["abcd"]
+      slidingWindows 10 "a"
+        `shouldBe` []
