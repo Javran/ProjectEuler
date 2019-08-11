@@ -19,6 +19,11 @@ problem = pureProblem 114 Unsolved result
   Update: no clue on this one - len-based dynamic programming
   doesn't break down into sub-problems well:
   we'll have to deal with duplicated case given the definition of f.
+
+  Alternative plan:
+
+  let f(i) be the ways to occupy from head to i (inclusive),
+  and all these ways has to end at i. - let's see if this definition gets us anywhere.
  -}
 
 result = ()
