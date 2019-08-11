@@ -20,6 +20,12 @@ pickInOrder' :: [a] -> [] (a,[a])
 pickInOrder' = fmap (\(x:xs) -> (x,x:xs)) . init . tails
 {-# INLINABLE pickInOrder' #-}
 
+{-
+  sliding a window of n elements against a list xs,
+  note that xs has to be a finite list, as
+  this function computes the position to truncate
+  so that each window is exactly the expected length.
+ -}
 slidingWindows :: Int -> [a] -> [[a]]
 slidingWindows n xs =
     take (l-n+1)

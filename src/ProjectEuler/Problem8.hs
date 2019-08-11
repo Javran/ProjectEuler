@@ -3,22 +3,14 @@ module ProjectEuler.Problem8
   ) where
 
 import Data.Char
+
 import qualified Data.Text as T
 
+import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem
 problem = pureProblemWithData "p008_product.txt" 8 Solved compute
-
-
-slidingWindows :: Int -> [a] -> [[a]]
-slidingWindows n xs =
-    take (l-n+1)
-    . map (take n)
-    . iterate tail
-    $ xs
-  where
-    l = length xs
 
 solve :: Int -> String -> Integer
 solve n raw = maximum (map product (slidingWindows n parsed))

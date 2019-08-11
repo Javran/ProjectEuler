@@ -4,8 +4,10 @@ module ProjectEuler.Problem11
 
 import Control.Arrow
 import Data.Array
+
 import qualified Data.Text as T
 
+import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem
@@ -45,15 +47,6 @@ allWindows = concatMap (slidingWindows 4)
                        ++ dg1Coordinates
                        ++ dg2Coordinates
                        )
-
--- TODO: factor this out?
-slidingWindows :: Int -> [a] -> [[a]]
-slidingWindows n xs = take (l-n+1)
-                    . map (take n)
-                    . iterate tail
-                    $ xs
-  where
-    l = length xs
 
 getProduct :: Array Index Integer -> [Index] -> Integer
 getProduct ar = product . map (ar !)
