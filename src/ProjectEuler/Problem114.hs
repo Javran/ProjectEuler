@@ -15,6 +15,10 @@ problem = pureProblem 114 Unsolved result
   We can grow the length between i and j to eventually cover
   whole set. Also beware that not putting any block at all counts
   as a valid solution, so we'll need to have some special handlings.
+
+  Update: no clue on this one - len-based dynamic programming
+  doesn't break down into sub-problems well:
+  we'll have to deal with duplicated case given the definition of f.
  -}
 
 result = ()
