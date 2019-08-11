@@ -41,7 +41,7 @@ findSpecialSubsets solSz initCandidates =
         + sumSets !! 2 => set of sum of subsets of size 2
         + etc.
 
-      TODO: Note that I'm not actually interpreting the first property correctly,
+      Note that I'm not actually interpreting the first property correctly,
       as we only need to check for *disjoint pair of subsets*.
       However this misinterpretation doesn't affect correctness:
       If common elements are present for two subsets, by removing those elements
