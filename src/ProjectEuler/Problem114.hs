@@ -22,10 +22,46 @@ problem = pureProblem 114 Unsolved result
 
   Alternative plan:
 
-  let f(i) be the ways to occupy from head to i (inclusive),
+  let f(i) be the ways to occupy from 1 to i (inclusive),
   and all these ways has to end at i. - let's see if this definition gets us anywhere.
+
+  therefore:
+
+  f(i) = 0 (i < 3)
+  f(3) = 1 [XXX]
+  f(4) = 2 [XXXX] or [_XXX]
+  f(5) = 3 [XXXXX] or [_XXXX] or [__XXX]
+
+  I guess there is two ways that we can construct a solution for f(i):
+
+  - from f(i-1), simply extend the last block by 1
+  - from f(j) where j < i and there's enough space to add another block of length (of at least 3),
+    and this another block must end at position i.
+
+  formalize this:
+
+  f(i) = f(i-1) + extra, where extra are the sets of solutions constructed by putting
+  one extra block who ends at i:
+  - [j+2 .. i]
+  - [j+3 .. i]
+  - ...
+  - [i-2 .. i]
+
+  => f(i) = f(i-1) + sum of { f(j) * (i-j-3), for all i - j > 3 } + 1
+
+  the last (+1) term is for a 3-block in the end, which cannot be derived from f(i-1)
+
+
+  if this works, we'll get sum of { f(i) } where i <= 7 equal to 16,
+  which one extra "nothing at all" solution to get a sum of 17.
+
  -}
 
-result = ()
+f :: Int -> Int
+f i
+  | i < 3 = 0
+  | i == 3 = 1
+  | otherwise =
+    1 + f (i-1) + sum ((\j -> f j * (i-j-3)) <$> [0,1..i-4])
 
-
+result = sum (f <$> [1..7]) + 1
