@@ -12,14 +12,6 @@ import ProjectEuler.Types
 problem :: Problem
 problem = pureProblem 37 Solved result
 
-{-
-
-  TODO: might worth making following functions common:
-
-  - factorial, fib
-  - numReverseInBase
-
- -}
 isTruncatable :: Int -> Bool
 isTruncatable x =
     all (isPrime . fromIntegral @Int) $ possibleNumLeft <> possibleNumRight
