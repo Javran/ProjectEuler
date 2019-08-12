@@ -1,6 +1,12 @@
+{-# LANGUAGE
+    LambdaCase
+  #-}
 module ProjectEuler.Problem114
   ( problem
   ) where
+
+import Control.Monad.State
+import qualified Data.IntMap as IM
 
 import ProjectEuler.Types
 
@@ -57,11 +63,22 @@ problem = pureProblem 114 Unsolved result
 
  -}
 
-f :: Int -> Int
+f :: Int -> State (IM.IntMap Integer) Integer
 f i
-  | i < 3 = 0
-  | i == 3 = 1
+  | i < 3 = pure 0
+  | i == 3 = pure 1
   | otherwise =
-    1 + f (i-1) + sum ((\j -> f j * (i-j-3)) <$> [0,1..i-4])
+      -- 1 + f (i-1) + sum ((\j -> f j * (i-j-3)) <$> [0,1..i-4])
+      gets (IM.lookup i) >>= \case
+        Nothing -> do
+          v1 <- f (i-1)
+          ts <- forM [0,1..i-4] $ \j -> do
+            vz <- f j
+            pure $ vz * fromIntegral (i-j-3)
+          let r = 1 + v1 + sum ts :: Integer
+          modify (IM.insert i r)
+          pure r
+        Just v -> pure (v :: Integer)
 
-result = sum (f <$> [1..7]) + 1
+result :: Integer
+result = 1 + sum (evalState (mapM f [1..7]) IM.empty)
