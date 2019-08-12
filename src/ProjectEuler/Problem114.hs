@@ -66,7 +66,6 @@ problem = pureProblem 114 Unsolved result
 f :: Int -> State (IM.IntMap Integer) Integer
 f i
   | i < 3 = pure 0
-  | i == 3 = pure 1
   | otherwise =
       -- 1 + f (i-1) + sum ((\j -> f j * (i-j-3)) <$> [0,1..i-4])
       gets (IM.lookup i) >>= \case
