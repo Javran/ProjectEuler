@@ -15,56 +15,61 @@ problem = pureProblem 114 Unsolved result
 
 {-
   Idea: perhaps dynamic programming is possible on this one:
-  Let f(i,j) be the ways to occupy range i to j (inclusive)
-  with position i and position j taken as edge of a block.
 
-  We can grow the length between i and j to eventually cover
-  whole set. Also beware that not putting any block at all counts
-  as a valid solution, so we'll need to have some special handlings.
+  Let f(i) be the ways to occupy from 1 to i (inclusive),
+  and all these ways has to:
 
-  Update: no clue on this one - len-based dynamic programming
-  doesn't break down into sub-problems well:
-  we'll have to deal with duplicated case given the definition of f.
-
-  Alternative plan:
-
-  let f(i) be the ways to occupy from 1 to i (inclusive),
-  and all these ways has to end at i. - let's see if this definition gets us anywhere.
+  - at least have one block in it.
+  - the last block must end at position i.
 
   therefore:
 
   f(i) = 0 (i < 3)
   f(3) = 1 [XXX]
-  f(4) = 2 [XXXX] or [_XXX]
-  f(5) = 3 [XXXXX] or [_XXXX] or [__XXX]
+  f(4) = 2
+       [XXXX]
+    or [_XXX]
+  f(5) = 3
+       [XXXXX]
+    or [_XXXX]
+    or [__XXX]
+  f(6) = 4
+       [XXXXXX]
+    or [_XXXXX]
+    or [__XXXX]
+    or [___XXX]
+  f(7) = 6
+       [XXXXXXX]
+    or [_XXXXXX]
+    or [__XXXXX]
+    or [___XXXX]
+    or [____XXX]
+    or [XXX_XXX]
 
-  I guess there is two ways that we can construct a solution for f(i):
+  then the solution should be 1 + sum of f(i) for all i,
+  and the missing case corresponds to "no block at all".
 
-  - from f(i-1), simply extend the last block by 1
-  - from f(j) where j < i and there's enough space to add another block of length (of at least 3),
-    and this another block must end at position i.
+  To avoid counting duplicated cases, let's consider
+  the final block being of length l:
+  (from problem description we know l >= 3)
 
-  formalize this:
-
-  f(i) = f(i-1) + extra, where extra are the sets of solutions constructed by putting
-  one extra block who ends at i:
-  - [j+2 .. i]
-  - [j+3 .. i]
-  - ...
-  - [i-2 .. i]
-
-  => f(i) = f(i-1) + sum of { f(j) * (i-j-3), for all i - j > 3 } + 1
-
-  the last (+1) term is for a 3-block in the end, which cannot be derived from f(i-1)
-
-
-  if this works, we'll get sum of { f(i) } where i <= 7 equal to 16,
-  which one extra "nothing at all" solution to get a sum of 17.
-
-  Update: current definition of f(i) doesn't work because of overlapping cases.
+  - note that for l = 3 to l = i, we can do a "nothing but last block" case,
+    which accounts for i-3+1 = i-2 cases.
+  - besides the case above, for 3 <= j <= i-l-1, we can sum up f(j) for  3 <= l <= i
 
  -}
 
+f i
+  | i < 3 = 0
+  | i == 3 = 1
+  | otherwise =
+      let g :: Int -> Int
+          g l = sum (f <$> [3,4..i-l-1])
+      in (i-2) + sum (g <$> [3,4..i])
+
+-- TODO: following are old and incorrection solution, the memoization logic
+-- might be of use though.
+{-
 f :: Int -> State (IM.IntMap Integer) Integer
 f i
   | i < 3 = pure 0
@@ -80,6 +85,6 @@ f i
           modify (IM.insert i r)
           pure r
         Just v -> pure (v :: Integer)
-
-result :: Integer
-result = 1 + sum (evalState (mapM f [1..7]) IM.empty)
+ -}
+-- result :: Integer
+result = sum (f <$> [1,2,3,4,5,6,7]) + 1
