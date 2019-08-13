@@ -59,6 +59,8 @@ problem = pureProblem 114 Unsolved result
 
  -}
 
+{-
+
 f i
   | i < 3 = 0
   | i == 3 = 1
@@ -66,25 +68,24 @@ f i
       let g :: Int -> Int
           g l = sum (f <$> [3,4..i-l-1])
       in (i-2) + sum (g <$> [3,4..i])
+ -}
 
--- TODO: following are old and incorrection solution, the memoization logic
--- might be of use though.
-{-
 f :: Int -> State (IM.IntMap Integer) Integer
 f i
   | i < 3 = pure 0
+  | i == 3 = pure 1
   | otherwise =
-      -- 1 + f (i-1) + sum ((\j -> f j * (i-j-3)) <$> [0,1..i-4])
       gets (IM.lookup i) >>= \case
         Nothing -> do
-          v1 <- f (i-1)
-          ts <- forM [0,1..i-4] $ \j -> do
-            vz <- f j
-            pure $ vz * fromIntegral (i-j-3)
-          let r = 1 + v1 + sum ts :: Integer
+          let g :: Int -> State (IM.IntMap Integer) Integer
+              g l = do
+                xs <- mapM f [3,4..i-l-1]
+                pure (sum xs)
+          ys <- mapM g [3,4..i]
+          let r = fromIntegral (i-2) + sum ys
           modify (IM.insert i r)
           pure r
         Just v -> pure (v :: Integer)
- -}
--- result :: Integer
-result = sum (f <$> [1,2,3,4,5,6,7]) + 1
+
+result :: Integer
+result = 1 + sum (evalState (mapM f [1..50]) IM.empty)
