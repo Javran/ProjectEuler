@@ -11,7 +11,7 @@ import qualified Data.IntMap as IM
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 114 Unsolved result
+problem = pureProblem 114 Solved result
 
 {-
   Idea: perhaps dynamic programming is possible on this one:
@@ -70,6 +70,11 @@ f i
       in (i-2) + sum (g <$> [3,4..i])
  -}
 
+{-
+  TODO: see if we can somehow simplify f
+    so we don't need to deal with "nothing at all" case specially.
+  TODO: abstract out memoization logic?
+ -}
 f :: Int -> State (IM.IntMap Integer) Integer
 f i
   | i < 3 = pure 0
