@@ -61,6 +61,8 @@ problem = pureProblem 114 Unsolved result
   if this works, we'll get sum of { f(i) } where i <= 7 equal to 16,
   which one extra "nothing at all" solution to get a sum of 17.
 
+  Update: current definition of f(i) doesn't work because of overlapping cases.
+
  -}
 
 f :: Int -> State (IM.IntMap Integer) Integer
