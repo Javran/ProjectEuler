@@ -68,12 +68,13 @@ f i
 f :: Int -> Integer
 f = memoFix pf
   where
-    pf f' i
-      | i < 3 = 0
-      | i == 3 = 1
-      | otherwise =
-        let g l = sum (f' <$> [3..i-l-1])
-        in fromIntegral (i-2) + sum (g <$> [3..i])
+    pf f' i =
+      case compare i 3 of
+        LT -> 0
+        EQ -> 1
+        _ ->
+          let g l = sum (f' <$> [3..i-l-1])
+          in fromIntegral (i-2) + sum (g <$> [3..i])
 
 result :: Integer
 result = 1 + sum (f <$> [1..50])
