@@ -3,11 +3,20 @@ module ProjectEuler.Problem115
   ) where
 
 import Data.MemoTrie (memoFix)
+import Petbox
+
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 115 Unsolved result
+problem = pureProblem 115 Solved result
 
+{-
+  Note that this problem is a generalization of Problem114,
+  if we can parameterize on m from Problem114,
+  we should be at least half way on the actual solution.
+ -}
+
+{- TODO: perhaps reuse code in Problem114 -}
 fillCount :: Int -> Int -> Integer
 fillCount m n = 1 + sum (f <$> [1..n])
   where
@@ -22,10 +31,5 @@ fillCount m n = 1 + sum (f <$> [1..n])
               let g l = sum (f' <$> [m..i-l-1])
               in fromIntegral (i-m+1) + sum (g <$> [m..i])
 
-result :: Bool
-result =
-  and [ fillCount 3 29 == 673135
-      , fillCount 3 30 == 1089155
-      , fillCount 10 56 == 880711
-      , fillCount 10 57 == 1148904
-      ]
+result :: Int
+result = firstSuchThat (\n -> fillCount 50 n > 1000000) [51..]
