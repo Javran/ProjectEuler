@@ -1,12 +1,8 @@
-{-# LANGUAGE
-    LambdaCase
-  #-}
 module ProjectEuler.Problem114
   ( problem
   ) where
 
-import Control.Monad.State.Strict
-import qualified Data.IntMap as IM
+import Data.MemoTrie (memoFix)
 
 import ProjectEuler.Types
 
@@ -69,21 +65,15 @@ f i
       in (i-2) + sum (g <$> [3..i])
  -}
 
-{-
-  TODO: abstract out memoization logic?
- -}
-f :: Int -> State (IM.IntMap Integer) Integer
-f i
-  | i < 3 = pure 0
-  | otherwise =
-      gets (IM.lookup i) >>= \case
-        Nothing -> do
-          let g :: Int -> State (IM.IntMap Integer) Integer
-              g l = sum <$> mapM f [3..i-l-1]
-          cnt <- sum <$> mapM g [3..i]
-          let r = fromIntegral (i-2) + cnt
-          r <$ modify (IM.insert i r)
-        Just v -> pure v
+f :: Int -> Integer
+f = memoFix pf
+  where
+    pf f' i
+      | i < 3 = 0
+      | i == 3 = 1
+      | otherwise =
+        let g l = sum (f' <$> [3..i-l-1])
+        in fromIntegral (i-2) + sum (g <$> [3..i])
 
 result :: Integer
-result = 1 + sum (evalState (mapM f [1..50]) IM.empty)
+result = 1 + sum (f <$> [1..50])

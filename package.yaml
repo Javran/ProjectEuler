@@ -33,6 +33,7 @@ dependencies:
 - lens
 - lifted-base
 - math-functions
+- MemoTrie
 - microstache
 - monad-control
 - MonadRandom
