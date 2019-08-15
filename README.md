@@ -31,19 +31,14 @@ Stands for "ProjectEuler Toolbox".
 Some commonly used functions are extracted into this standalone package.
 Feel free to use them & contribution welcomed.
 
-## Some more ideas about the "workspace" bit
+## Some potential improvements
 
-- I want to have one giant binary that has everything, so we can:
-
-    + share common code among different problems
-    + note that every binary ships with RTS, having everything compiled
-      together will save some space & linking time, with a slight cost
-      (dynamic dispatching to one particular problem) at runtime.
-
-- Also note that the data does not need to be there - we can have a caching
+- Note that the data does not need to be there - we can have a caching
   mechanism that fetches data on the fly and put it locally for future uses.
 
 - Now I start to find it being a bit wasteful to have a central place
   for all data files, as any change to them recompiles everything.
   I'm thinking about having a different template for problems
   that requires external data and have TemplateHaskell enabled for them by default.
+
+- Investigate whether https://hackage.haskell.org/package/combinat could be useful to include.
