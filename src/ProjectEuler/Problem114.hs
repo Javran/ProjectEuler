@@ -1,5 +1,6 @@
 module ProjectEuler.Problem114
   ( problem
+  , fillCount
   ) where
 
 import Data.MemoTrie (memoFix)
@@ -54,27 +55,25 @@ problem = pureProblem 114 Solved result
     which accounts for i-3+1 = i-2 cases.
   - besides the case above, for 3 <= j <= i-l-1, we can sum up f(j) for 3 <= l <= i.
 
-original implementation for this is:
-
-f i
-  | i < 3 = 0
-  | i == 3 = 1
-  | otherwise =
-      let g :: Int -> Int
-          g l = sum (f <$> [3..i-l-1])
-      in (i-2) + sum (g <$> [3..i])
  -}
 
-f :: Int -> Integer
-f = memoFix pf
+{-
+  fillCount is originally implemented with m=3 baked in,
+  but it does generalize to Problem115.
+ -}
+fillCount :: Int -> Int -> Integer
+fillCount m n = 1 + sum (f <$> [1..n])
   where
-    pf f' i =
-      case compare i 3 of
-        LT -> 0
-        EQ -> 1
-        _ ->
-          let g l = sum (f' <$> [3..i-l-1])
-          in fromIntegral (i-2) + sum (g <$> [3..i])
+    f :: Int -> Integer
+    f = memoFix pf
+      where
+        pf f' i =
+          case compare i m of
+            LT -> 0
+            EQ -> 1
+            _ ->
+              let g l = sum (f' <$> [m..i-l-1])
+              in fromIntegral (i-m+1) + sum (g <$> [m..i])
 
 result :: Integer
-result = 1 + sum (f <$> [1..50])
+result = fillCount 3 50
