@@ -37,6 +37,17 @@ problem = pureProblem 116 Unsolved result
 
   While Stirling numbers describes the way to put x elements into y non-empty subsets,
   we can workaround this restriction by fixing y from 1 to k+1 and sum the result up.
+
+  Not quite there: for Stirling numbers to work, every object needs to be
+  distinct, which in our case is not the case.
+ -}
+
+{-
+  sub-problem: put k identical balls into n bins, how many ways are there? (empty bins are allowed)
+
+  to separate them into n bins, we need n-1 separator,
+  and there are in total n-1+k elements we need to place, in which (n-1) of them are separators.
+  therefore (n+k-1) choose (n-1)
  -}
 
 result = ()
