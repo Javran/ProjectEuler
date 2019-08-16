@@ -1,6 +1,7 @@
 module ProjectEuler.SolCommon
   ( pickInOrder'
   , slidingWindows
+  , choose
   ) where
 
 {-
@@ -35,3 +36,10 @@ slidingWindows n xs =
   where
     l = length xs
 {-# INLINABLE slidingWindows #-}
+
+choose :: Integral i => i -> i -> i
+choose n k =
+  foldl' (\acc (x,y) -> (acc*x) `quot` y) 1 $ zip [n,n-1..] [1..k]
+{-# INLINABLE choose #-}
+{-# SPECIALIZE choose :: Int -> Int -> Int #-}
+{-# SPECIALIZE choose :: Integer -> Integer -> Integer #-}

@@ -10,6 +10,7 @@ import Petbox
 import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 106 Solved result
@@ -146,9 +147,6 @@ _needEqualTest n = sum $ do
   > 1,2,3,6,11,23,47,106,235
   oeis gives: https://oeis.org/A304011
  -}
-choose :: Integral i => i -> i -> i
-choose n k =
-  foldl' (\acc (x,y) -> (acc*x) `quot` y) 1 $ zip [n,n-1..] [1..k]
 
 result :: Int
 result = getSum $ foldMap countPairs [2..quot n 2]
