@@ -3,10 +3,11 @@
   #-}
 module ProjectEuler.SolCommonSpec where
 
-import Test.Hspec
-import Test.QuickCheck
-import Test.QuickCheck.Poly
+import Control.Monad
 import Petbox
+import Test.Hspec
+import Test.QuickCheck hiding (choose)
+import Test.QuickCheck.Poly
 
 import ProjectEuler.SolCommon
 
@@ -34,3 +35,13 @@ spec = do
         `shouldBe` ["abcd"]
       slidingWindows 10 "a"
         `shouldBe` []
+  describe "choose" $ do
+    specify "examples" $
+      choose (37 :: Integer) 11 `shouldBe`
+        (product (take 11 [37,36..]) `div` product [1..11])
+    specify "small" $
+      forM_ [2..10] $ \n -> do
+        let xs = (n `choose`) <$> [0..n]
+        take 3 xs `shouldBe` [1, n, n*(n-1) `div` 2]
+        xs `shouldBe` reverse xs
+        sum xs `shouldBe` 2 ^! n
