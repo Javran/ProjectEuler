@@ -3,9 +3,10 @@ module ProjectEuler.Problem116
   ) where
 
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 problem :: Problem
-problem = pureProblem 116 Unsolved result
+problem = pureProblem 116 Solved result
 
 {-
   Idea: since colors are not allowed to mix,
@@ -42,6 +43,12 @@ problem = pureProblem 116 Unsolved result
   distinct, which in our case is not the case.
  -}
 
+f m n = sum (g m n <$> [1 .. kMax])
+  where
+    kMax = n `quot` m
+
+g m n k = ballsInBins (n-k*m) (k+1)
+
 {-
   sub-problem: put k identical balls into n bins, how many ways are there? (empty bins are allowed)
 
@@ -49,7 +56,12 @@ problem = pureProblem 116 Unsolved result
   and there are in total n-1+k elements we need to place, in which (n-1) of them are separators.
   therefore (n+k-1) choose (n-1)
  -}
+ballsInBins :: Integer -> Integer -> Integer
+ballsInBins k n = (n+k-1) `choose` (n-1)
 
-result = ()
+{- TODO: cleanup -}
 
+sol n = f 2 n + f 3 n + f 4 n
+
+result = sol 50
 
