@@ -42,11 +42,12 @@ problem = pureProblem 116 Solved result
   Not quite there: for Stirling numbers to work, every object needs to be
   distinct, which in our case is not the case.
  -}
-
+f :: Int -> Int -> Integer
 f m n = sum (g m n <$> [1 .. kMax])
   where
     kMax = n `quot` m
 
+g :: Int -> Int -> Int -> Integer
 g m n k = ballsInBins (n-k*m) (k+1)
 
 {-
@@ -56,12 +57,14 @@ g m n k = ballsInBins (n-k*m) (k+1)
   and there are in total n-1+k elements we need to place, in which (n-1) of them are separators.
   therefore (n+k-1) choose (n-1)
  -}
-ballsInBins :: Integer -> Integer -> Integer
-ballsInBins k n = (n+k-1) `choose` (n-1)
+ballsInBins :: Int -> Int -> Integer
+ballsInBins k n = fromIntegral (n+k-1) `choose` fromIntegral (n-1)
 
 {- TODO: cleanup -}
 
+sol :: Int -> Integer
 sol n = f 2 n + f 3 n + f 4 n
 
+result :: Integer
 result = sol 50
 
