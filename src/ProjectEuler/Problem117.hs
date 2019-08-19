@@ -3,6 +3,8 @@ module ProjectEuler.Problem117
   ) where
 
 import ProjectEuler.Types
+import Data.Monoid
+import Control.Monad
 
 problem :: Problem
 problem = pureProblem 117 Unsolved result
@@ -18,6 +20,13 @@ problem = pureProblem 117 Unsolved result
   and then fill in spaces.
  -}
 
-result = ()
+-- try brute force the combinations - which is too slow.
+search :: Int -> [[Int]]
+search emptyCount = do
+  y <- [2,3,4]
+  guard $ y <= emptyCount
+  [[y]] <> ((y:) <$> search (emptyCount - y))
+
+result = search 10
 
 
