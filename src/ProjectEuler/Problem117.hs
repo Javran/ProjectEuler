@@ -7,7 +7,7 @@ import Data.Monoid
 import Data.MemoTrie (memoFix)
 
 problem :: Problem
-problem = pureProblem 117 Unsolved result
+problem = pureProblem 117 Solved result
 
 {-
   Despite that this problem is based on Problem116,
