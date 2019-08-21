@@ -11,7 +11,7 @@ import ProjectEuler.Types
 import Control.Monad
 
 problem :: Problem
-problem = pureProblem 118 Unsolved result
+problem = pureProblem 118 Solved result
 
 {-
   Idea: this could be a set-cover problem:
@@ -24,6 +24,10 @@ problem = pureProblem 118 Unsolved result
   so if we organize these primes by the set of digits they have,
   we can save quite a bit of computation.
 
+  To get the final answer, we first solve set cover problem,
+  for each of those solutions, compute the product of number of primes of
+  all set of digits invoved, and take the sum of all solutions, which
+  is our answer.
  -}
 
 -- 43089 primes that we need to consider.
