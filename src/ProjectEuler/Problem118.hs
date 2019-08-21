@@ -33,18 +33,23 @@ genPrimes acc candidates = do
   let acc' = acc*10 + d
   [acc' | isPrime (fromIntegral acc')] <> genPrimes acc' candidates'
 
+solve :: [] IS.IntSet -> IS.IntSet -> [] [IS.IntSet]
 solve candidate todo = case IS.minView todo of
   Nothing -> pure []
-  Just (target, todo') -> do
+  Just (target, _) -> do
     c <- candidate
     guard $ IS.member target c
-    let todo'' = IS.difference todo' c
+    let todo' = IS.difference todo c
         candidate' = filter (IS.null . IS.intersection c) candidate
-    (c:) <$> solve candidate' todo''
+    (c:) <$> solve candidate' todo'
 
-result = length $ solve (M.keys groups) (IS.fromDistinctAscList [1..9])
+result :: Int
+result = getSum $ foldMap (Sum . solCount) solutions
   where
+    solCount :: [IS.IntSet] -> Int
+    solCount = getProduct . foldMap (Product . (groups M.!))
+    solutions = solve (M.keys groups) (IS.fromDistinctAscList [1..9])
     -- now we only have 308 elements to do set-cover.
     groups =
-      M.fromListWith (<>)
-      $ (\n -> (IS.fromList $ intToDigits n, 1 :: Sum Int)) <$> genPrimes 0 [1..9]
+      M.fromListWith (+)
+      $ (\n -> (IS.fromList $ intToDigits n, 1)) <$> genPrimes 0 [1..9]
