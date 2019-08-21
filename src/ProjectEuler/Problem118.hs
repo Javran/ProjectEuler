@@ -2,13 +2,15 @@ module ProjectEuler.Problem118
   ( problem
   ) where
 
-import Petbox (pick, intToDigits)
-import Math.NumberTheory.Primes.Testing (isPrime)
-import qualified Data.Map.Strict as M
-import qualified Data.IntSet as IS
-import Data.Monoid
-import ProjectEuler.Types
 import Control.Monad
+import Data.Monoid
+import Math.NumberTheory.Primes.Testing (isPrime)
+import Petbox (pick, intToDigits)
+
+import qualified Data.IntSet as IS
+import qualified Data.Map.Strict as M
+
+import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 118 Solved result
