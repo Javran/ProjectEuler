@@ -2,13 +2,11 @@ module ProjectEuler.Problem120
   ( problem
   ) where
 
-import Control.Monad
-import Petbox
-import ProjectEuler.Types
 import Math.NumberTheory.Powers.Modular
+import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 120 Unsolved result
+problem = pureProblem 120 Solved result
 
 {-
   Idea: not sure what to do yet, see if I can find some pattern:
@@ -42,14 +40,9 @@ f a n = (powModInt (a-1) n aSq + powModInt (a+1) n aSq) `rem` aSq
   where
     aSq = a * a
 
-  {- fromIntegral $ ((a'-1) ^! n + (a'+1) ^! n) `rem` (a' * a')
-  where
-    a' :: Integer
-    a' = fromIntegral a -}
+findMax :: Int -> Int
+findMax a = maximum $ 2 : [f a n | n <- [1,3..a*2-1]]
 
-findMax a = maximum $ 2 : do
-  n <- [0..a*2-1]
-  guard $ odd n
-  pure $ f a n
-
+{- TODO: We are kind of brute forcing this, I feel there should be a better way -}
+result :: Int
 result = sum $ findMax <$> [3..1000]
