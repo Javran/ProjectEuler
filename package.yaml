@@ -202,6 +202,7 @@ library:
     - ProjectEuler.Problem117
     - ProjectEuler.Problem118
     - ProjectEuler.Problem119
+    - ProjectEuler.Problem120
     - ProjectEuler.Problem206
     # ==== PROBLEM_MODULE_LIST_END
 
