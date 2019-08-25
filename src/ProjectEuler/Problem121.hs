@@ -40,6 +40,19 @@ problem = pureProblem 121 Unsolved result
     + b,b,r,b: 3 cases
     + b,b,b,r: 4 cases
 
+  Actually have already found the pattern: for a game that plays n rounds,
+  We need strictly more than n/2 rounds of picking blue disc,
+  which is equivalent to say it's less than n/2 rounds of picking red disc.
+
+  - there is one case where we pick blue disc every time.
+  - there are 1 + 2 + ... + n cases where exactly 1 red disc is picked.
+  - there are [1*n + 2*n + ... + (n-1)*n] + [1*(n-1) + 2*(n-1) + ... + (n-2)*(n-1)] ...
+
+    or in other words, if there are exactly m red disc being picked,
+    we are actually count all the cases of picking m values from 1,2,3,...,n without replacement
+    and taking the product of these m numbers. - I'm interested to see whether there's some
+    existing formula about how to do this efficiently.
+
  -}
 
 result = ()
