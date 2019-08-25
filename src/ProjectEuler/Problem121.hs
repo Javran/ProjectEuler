@@ -61,22 +61,28 @@ problem = pureProblem 121 Unsolved result
 {-
   `sumProd n m` computes the sum of products formed by taking
   exactly m numbers from 1,2,3,...n without replacement.
+
+  sumProd 6 <$> [0..6]
+  > [1,21,175,735,1624,1764,720]
+
+  This search finds us https://oeis.org/A094638.
+
+  And further investigation shows that we can get this number
+  from Stirling number of first kind.
  -}
-sumProd :: Int -> Int -> Int
+sumProd :: Int -> Int -> Integer
 sumProd n m = sum $ aux 1 m [1..n]
   where
     aux acc 0 _ = pure acc
     aux acc t candidates = do
       (c, candidates') <- pickInOrder candidates
-      let acc' = c * acc
+      let acc' = fromIntegral c * acc
       acc' `seq` aux acc' (t-1) candidates'
 
-verify :: Int -> Bool
-verify n = ((fromIntegral . sumProd n) <$> [0..n]) == (reverse . tail $ (unsignedStirling1st (n+1) <$> [0..(n+1)]))
+sumProdFast :: Int -> Int -> Integer
+sumProdFast n m = unsignedStirling1st (n+1) (n+1-m)
 
-testFormula :: Bool
-testFormula = all verify [1..15]
+_testFormula :: Bool
+_testFormula = and [ sumProd n k == sumProdFast n k | n <- [1..15], k <- [0..n]]
 
--- This search finds us https://oeis.org/A094638.
-result = testFormula
-
+result = product [2..16] `div` sum [ sumProdFast 15 k | k <- [0..7] ]
