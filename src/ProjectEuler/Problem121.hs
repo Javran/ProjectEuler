@@ -2,6 +2,8 @@ module ProjectEuler.Problem121
   ( problem
   ) where
 
+import Petbox
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -55,6 +57,19 @@ problem = pureProblem 121 Unsolved result
 
  -}
 
-result = ()
+{-
+  `sumProd n m` computes the sum of products formed by taking
+  exactly m numbers from 1,2,3,...n without replacement.
+ -}
+sumProd :: Int -> Int -> Int
+sumProd n m = sum $ aux 1 m [1..n]
+  where
+    aux acc 0 _ = pure acc
+    aux acc t candidates = do
+      (c, candidates') <- pickInOrder candidates
+      let acc' = c * acc
+      acc' `seq` aux acc' (t-1) candidates'
 
+-- This search finds us https://oeis.org/A094638.
+result = sumProd 6 <$> [0..6]
 
