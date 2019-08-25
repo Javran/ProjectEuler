@@ -3,6 +3,7 @@ module ProjectEuler.Problem121
   ) where
 
 import Petbox
+import Math.Combinat.Numbers.Sequences (unsignedStirling1st)
 
 import ProjectEuler.Types
 
@@ -70,6 +71,12 @@ sumProd n m = sum $ aux 1 m [1..n]
       let acc' = c * acc
       acc' `seq` aux acc' (t-1) candidates'
 
+verify :: Int -> Bool
+verify n = ((fromIntegral . sumProd n) <$> [0..n]) == (reverse . tail $ (unsignedStirling1st (n+1) <$> [0..(n+1)]))
+
+testFormula :: Bool
+testFormula = all verify [1..15]
+
 -- This search finds us https://oeis.org/A094638.
-result = sumProd 6 <$> [0..6]
+result = testFormula
 
