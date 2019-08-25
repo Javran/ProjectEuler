@@ -7,3 +7,4 @@ extra-deps:
   commit: 33380a3930501985840d1bb01f94ba411e9cbc8c
 - PSQueue-1.1.0.1
 - set-cover-0.0.9
+- combinat-0.2.9.0

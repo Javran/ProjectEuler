@@ -21,6 +21,7 @@ dependencies:
 - array
 - base
 - bytestring
+- combinat
 - containers
 - criterion
 - data-ordlist
