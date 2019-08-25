@@ -8,7 +8,7 @@ import Math.Combinat.Numbers.Sequences (unsignedStirling1st)
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 121 Unsolved result
+problem = pureProblem 121 Solved result
 
 {-
   First thing, let's work out these numbers:
@@ -85,4 +85,5 @@ sumProdFast n m = unsignedStirling1st (n+1) (n+1-m)
 _testFormula :: Bool
 _testFormula = and [ sumProd n k == sumProdFast n k | n <- [1..15], k <- [0..n]]
 
+result :: Integer
 result = product [2..16] `div` sum [ sumProdFast 15 k | k <- [0..7] ]
