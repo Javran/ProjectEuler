@@ -1,11 +1,13 @@
+{-# LANGUAGE TupleSections #-}
 module ProjectEuler.Problem122
   ( problem
   ) where
 
 import Control.Monad
 
-import Data.List
-import Data.IntSet as IS
+import qualified Data.Set as S
+import qualified Data.IntSet as IS
+import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.Types
 import ProjectEuler.SolCommon
@@ -73,13 +75,33 @@ nextOp s = do
   guard $ IS.findMax s < c
   pure (c, IS.insert c s)
 
-result = show $ layers !! 5
-  where
-    {-
-      index into this list:
-      layers !! k is the states after performing k operations
-     -}
-    layers = iterate (nub . (>>= nextOp')) [IS.singleton 1]
-    nextOp' :: IS.IntSet -> [] IS.IntSet
-    nextOp' x = snd <$> nextOp x
+solveAll :: IS.IntSet -> IM.IntMap Int -> Int -> S.Set IS.IntSet -> IM.IntMap Int
+solveAll todoSet results opCnt states
+  | IS.null todoSet = results
+  | otherwise =
+      let nextStates =
+            {-
+              only examine those that produces missing numbers.
+              this filter is more of a heuristic, but it helps us to
+              dramatically reduce number of states,
+              and even if we get a wrong answer, we can consider this as the upperbound.
+             -}
+            filter ((`IS.member` todoSet) . fst) $
+              S.toList states >>= nextOp
+          states' = snd <$> nextStates
+          newlyNums = fst <$> nextStates
+          opCnt' = opCnt+1
+          results' = IM.union results (IM.fromList $ (,opCnt') <$> newlyNums)
+          todoSet' = IS.difference todoSet (IS.fromList newlyNums)
+      in solveAll todoSet' results' opCnt' (S.fromList states')
+
+result :: Int
+result =
+  sum
+  . fmap snd
+  . IM.toList
+  $ solveAll
+    -- note that 1 -> 0, we don't really need to count k = 1 case anyway.
+    (IS.fromDistinctAscList [2..200]) IM.empty 0 $
+    S.singleton (IS.singleton 1)
 
