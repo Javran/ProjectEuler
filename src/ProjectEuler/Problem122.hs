@@ -49,7 +49,7 @@ import ProjectEuler.SolCommon
  -}
 
 problem :: Problem
-problem = pureProblem 122 Unsolved result
+problem = pureProblem 122 Solved result
 
 {-
   perform one operation non-deterministically,
@@ -85,6 +85,7 @@ solveAll todoSet results opCnt states
               this filter is more of a heuristic, but it helps us to
               dramatically reduce number of states,
               and even if we get a wrong answer, we can consider this as the upperbound.
+              Update: turns out we do produce the right answer using this.
              -}
             filter ((`IS.member` todoSet) . fst) $
               S.toList states >>= nextOp
