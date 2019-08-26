@@ -65,7 +65,12 @@ nextOp s = do
   (a,xs') <- pickInOrder' xs
   (b,_) <- pickInOrder' xs'
   let c = a + b
-  guard $ IS.notMember c s
+  {-
+    We enforce that we only produce values that are greater
+    than any that we already have - since other states
+    in the same layer should have those "smaller" cases covered anyway.
+   -}
+  guard $ IS.findMax s < c
   pure (c, IS.insert c s)
 
 result = show $ layers !! 5
