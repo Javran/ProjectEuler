@@ -2,7 +2,13 @@ module ProjectEuler.Problem122
   ( problem
   ) where
 
+import Control.Monad
+
+import Data.List
+import Data.IntSet as IS
+
 import ProjectEuler.Types
+import ProjectEuler.SolCommon
 
 {-
   Idea:
@@ -43,6 +49,32 @@ import ProjectEuler.Types
 problem :: Problem
 problem = pureProblem 122 Unsolved result
 
-result = ()
+{-
+  perform one operation non-deterministically,
+  return the number being produced and the resulting set.
+  (the produced number must be new)
+ -}
+nextOp :: IS.IntSet -> [] (Int, IS.IntSet)
+nextOp s = do
+  let xs = IS.toAscList s
+  {-
+    since addition is commutative,
+    there is no need to check for b + a
+    if we already attempted a + b.
+   -}
+  (a,xs') <- pickInOrder' xs
+  (b,_) <- pickInOrder' xs'
+  let c = a + b
+  guard $ IS.notMember c s
+  pure (c, IS.insert c s)
 
+result = show $ layers !! 5
+  where
+    {-
+      index into this list:
+      layers !! k is the states after performing k operations
+     -}
+    layers = iterate (nub . (>>= nextOp')) [IS.singleton 1]
+    nextOp' :: IS.IntSet -> [] IS.IntSet
+    nextOp' x = snd <$> nextOp x
 
