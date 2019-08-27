@@ -3,7 +3,9 @@ module ProjectEuler.Problem123
   ) where
 
 import Petbox
+
 import ProjectEuler.Types
+import ProjectEuler.Problem120 (f)
 
 problem :: Problem
 problem = pureProblem 123 Solved result
@@ -12,15 +14,10 @@ problem = pureProblem 123 Solved result
   Note the similarity between this problem and Problem120,
   I think we can learn something from that one and come back with
   some more insights to work with.
- -}
 
-f :: Integer -> Int -> Integer
-f a n =
-  if even n
-    then 2
-    else
-      let n' = fromIntegral n
-      in (2 * n' * a) `rem` (a * a)
+  Update: turns out the exact same function used in Problem120
+  is efficient enough to solve this problem as well.
+ -}
 
 oddPosPrimes :: [Integer]
 oddPosPrimes = cuts primes

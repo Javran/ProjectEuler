@@ -1,5 +1,6 @@
 module ProjectEuler.Problem120
   ( problem
+  , f
   ) where
 
 import ProjectEuler.Types
@@ -42,11 +43,15 @@ problem = pureProblem 120 Solved result
 
  -}
 
-f :: Int -> Int -> Int
+{-
+  Efficient implementation of ( (a+1)^n + (a-1)^n ) mod (a^2)
+ -}
+f :: Integral i => i -> Int -> i
 f a n =
   if even n
     then 2
-    else (2 * n * a) `rem` (a * a)
+    else (2 * fromIntegral n * a) `rem` (a * a)
+{-# INLINE f #-}
 
 findMax :: Int -> Int
 findMax a = maximum $ 2 : [f a n | n <- [1,3..a*2-1]]
