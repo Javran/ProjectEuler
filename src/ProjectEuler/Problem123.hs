@@ -6,7 +6,7 @@ import Petbox
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 123 Unsolved result
+problem = pureProblem 123 Solved result
 
 {-
   Note the similarity between this problem and Problem120,
