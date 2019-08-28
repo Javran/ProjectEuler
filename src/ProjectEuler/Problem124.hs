@@ -3,10 +3,8 @@ module ProjectEuler.Problem124
   ) where
 
 import Math.NumberTheory.Primes.Factorisation
-import Control.Monad
 
 import qualified Data.List.Ordered as LOrdered
-import qualified Petbox
 import qualified Data.IntMap.Strict as IM
 import ProjectEuler.Types
 
@@ -14,39 +12,32 @@ problem :: Problem
 problem = pureProblem 124 Solved result
 
 {-
-  Idea: instead of enumerating all numbers in range
-  and produce their radicals, I plan to:
+  Idea:
 
-  - generate all radicals within range first
-  - then for each radical, generate numbers of that radical
-    (so we basically need the radical number and the set of primes)
-  - note that in the sorted results, numbers from same radical
-    is always groupped together, we can take advantage of this property
-    to skip through elements.
+  Originally I want to generate radicals first them
+  for each radical generate the set of numbers.
 
-  Update: generating them take more time, experimenting factorization on all of them.
+  But actually what's more efficient is to just
+  compute factorisation for each numbers in range and group them together
+  by radical number,
+
+  This way we can simply toAscList and concatenate the resulting list
+  to get the sorted version, and index into it.
+
+  And since we are using a lazy language, one benefit is that a partial
+  concatenation will save us some unnecessary work because we actually only
+  visit about ~10% of the total elements (since list is linear) for the
+  final indexing.
 
  -}
 
 maxN :: Int
 maxN = 100000
 
--- for this particular problem, these are all primes that we need to consider.
-primes :: [Int]
-primes = takeWhile (< maxN) Petbox.primes
-
--- NOTE: this might not be as practical as I thought - generating them takes more time.
-_genRadicals curProduct curList candidates = do
-  (c, candidates') <- Petbox.pickInOrder candidates
-  let curProduct' = c * curProduct
-  guard $ curProduct' < maxN
-  [(curProduct', c:curList)] <> _genRadicals curProduct' (c:curList) candidates'
-
 calcRadical :: Int -> Int
 calcRadical x = product (fromIntegral . fst <$> factorise (fromIntegral x))
 
-{- TODO: cleanup -}
-
+result :: Int
 result =
     (!! 9999)
     . foldMap snd
