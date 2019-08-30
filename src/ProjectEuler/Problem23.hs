@@ -3,6 +3,7 @@ module ProjectEuler.Problem23
   ) where
 
 import Math.NumberTheory.ArithmeticFunctions
+import Math.NumberTheory.Primes.Factorisation (factorise)
 import Data.Monoid
 import qualified Data.IntSet as IS
 
@@ -14,6 +15,14 @@ problem = pureProblem 23 Solved result
 -- see: http://mathschallenge.net/library/number/sum_of_divisors
 divisorSum :: Int -> Int
 divisorSum = IS.foldl' (+) 0 . divisorsSmall
+
+divisorSum' :: Int -> Int
+divisorSum' n = product $ dSumPrimePow <$> fs
+  where
+    dSumPrimePow (p,a) = (p'^(a+1) - 1) `quot` (p'-1)
+      where
+        p' = fromIntegral p
+    fs = factorise (fromIntegral n)
 
 isAbundant :: Int -> Bool
 isAbundant n = n < divisorSum n - n
