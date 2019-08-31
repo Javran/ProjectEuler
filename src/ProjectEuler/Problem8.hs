@@ -3,10 +3,10 @@ module ProjectEuler.Problem8
   ) where
 
 import Data.Char
+import Petbox
 
 import qualified Data.Text as T
 
-import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem

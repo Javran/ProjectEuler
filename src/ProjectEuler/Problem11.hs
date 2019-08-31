@@ -4,10 +4,10 @@ module ProjectEuler.Problem11
 
 import Control.Arrow
 import Data.Array
+import Petbox
 
 import qualified Data.Text as T
 
-import ProjectEuler.SolCommon
 import ProjectEuler.GetData
 
 problem :: Problem

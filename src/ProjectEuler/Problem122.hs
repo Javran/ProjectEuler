@@ -4,13 +4,14 @@ module ProjectEuler.Problem122
   ) where
 
 import Control.Monad
+import Petbox
 
 import qualified Data.Set as S
 import qualified Data.IntSet as IS
 import qualified Data.IntMap.Strict as IM
 
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
+
 
 {-
   Idea:

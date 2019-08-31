@@ -4,7 +4,7 @@ packages:
 
 extra-deps:
 - git: https://github.com/Javran/petbox.git
-  commit: 33380a3930501985840d1bb01f94ba411e9cbc8c
+  commit: 267e8cf14c793d600f5b1daf471049da0dcbba3f
 - PSQueue-1.1.0.1
 - set-cover-0.0.9
 - combinat-0.2.9.0

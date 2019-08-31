@@ -2,8 +2,8 @@ module ProjectEuler.Problem116
   ( problem
   ) where
 
+import Petbox
 import ProjectEuler.Types
-import ProjectEuler.SolCommon
 
 problem :: Problem
 problem = pureProblem 116 Solved result
