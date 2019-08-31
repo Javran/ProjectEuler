@@ -114,7 +114,7 @@ cmdReport _ = do
         $ results
   unless (null acPairs) $ do
     putStrLn ""
-    putStrLn "Most Time-consuming & Accepted solutions are:"
+    putStrLn "Among accepted solutions, most time-consuming ones are:"
     forM_ (take 10 acPairs) $ \(pId,t) ->
       printf "- Problem #%d: %.4f ms.\n" pId t
   if failedCount == 0
