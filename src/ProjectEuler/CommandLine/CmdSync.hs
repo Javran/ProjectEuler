@@ -156,13 +156,6 @@ updateEditZone zoneIdent mkNewContents =
         in x : updatedLines <> secAfter
       _ -> x : updateContentLines xs
 
-updatePackageYaml :: FP.FilePath -> [Int] -> IO ()
-updatePackageYaml projectHome pIds = do
-    let fp = FP.encodeString $ projectHome </> "package.yaml"
-    raw <- System.IO.Strict.readFile fp
-    let moduleList = ("- ProjectEuler.Problem" <>) . show <$> pIds
-    writeFile fp (updateEditZone "PROBLEM_MODULE_LIST" (const moduleList) raw)
-
 updateGetDataModule :: FP.FilePath -> IO ()
 updateGetDataModule prjHome = do
   let fpGetData =
@@ -188,5 +181,4 @@ cmdSync :: [String] -> IO ()
 cmdSync _ = do
   prjHome <- getProjectHome
   pIds <- updateAllProblems prjHome
-  updatePackageYaml prjHome pIds
   updateGetDataModule prjHome
