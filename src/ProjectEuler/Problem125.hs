@@ -9,7 +9,7 @@ import qualified Data.IntSet as IS
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 125 Unsolved result
+problem = pureProblem 125 Solved result
 
 {-
   Idea: given n, we know that
