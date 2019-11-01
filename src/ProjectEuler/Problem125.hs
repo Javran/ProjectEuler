@@ -4,6 +4,8 @@ module ProjectEuler.Problem125
 
 import Petbox
 
+import qualified Data.IntSet as IS
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -60,6 +62,6 @@ partialAns n = filter isPalindrome sqSum
       $ (\i -> i*i) <$> [n..]
 
 result :: Int -- TODO: could it be possible that the generated list is containing non-uniques?
-result = sum $ do
+result = IS.foldr' (+) 0 $ IS.fromList $ do
   i <- [1 .. 10000]
   partialAns i
