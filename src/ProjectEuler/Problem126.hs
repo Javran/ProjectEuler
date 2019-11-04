@@ -84,10 +84,35 @@ cuboidCovering x y z = unfoldr next initShape
     initShape = S.fromList $
       Coord <$> [1..x] <*> [1..y] <*> [1..z]
 
-result =
-  [ take 20 (cuboidCovering 1 2 3)
-  , take 3 (cuboidCovering 5 1 1)
-  , take 3 (cuboidCovering 5 3 1)
-  , take 3 (cuboidCovering 7 2 1)
-  , take 20 (cuboidCovering 11 1 1)
+cuboidCoveringFast :: Int -> Int -> Int -> [Int]
+cuboidCoveringFast x y z = seq2
+  where
+    a:b:c:_ = cuboidCovering x y z
+    dba = b - a
+    dcb = c - b
+    dd = dcb - dba
+    seq0 = repeat dd
+    seq1 = dba : zipWith (+) seq1 seq0
+    seq2 = a : zipWith (+) seq2 seq1
+
+{-
+  This is to verify the correctness of cuboidCoveringFast in
+  a native way: compute and compare the result of both.
+  This does take a long time to run, but since any False
+  value will immediately terminate the computation,
+  we know this holds at least for some small cases.
+
+  Confirmed results:
+  - _verifyCover 10 11 is True
+ -}
+_verifyCover :: Int -> Int -> Bool
+_verifyCover limit mx = and
+  [ take limit result0 == take limit result1
+  | x <- [1..mx]
+  , y <- [x..mx]
+  , z <- [y..mx]
+  , let result0 = cuboidCovering x y z
+  , let result1 = cuboidCoveringFast x y z
   ]
+
+result = _verifyCover 5 50
