@@ -4,6 +4,7 @@ module ProjectEuler.Problem126
   ) where
 
 import Control.Monad
+import Data.List
 
 import qualified Data.Set as S
 import qualified Control.Foldl as L
@@ -60,13 +61,19 @@ coverShape s = S.fromList $ do
     (minY, maxY) = getMinMax coordY
     (minZ, maxZ) = getMinMax coordZ
 
-result =
-    show
-    . fmap (S.size . snd)
-    . take 10
-    $ iterate step (initShape, S.empty)
+cuboidCovering :: Int -> Int -> Int -> [Int]
+cuboidCovering x y z = unfoldr next initShape
   where
-    step (s, _) = (S.union s incr, incr)
+    next s = Just (S.size incr, S.union s incr)
       where
         incr = coverShape s
-    initShape = S.fromList [ Coord x y z | let x = 1, y <- [1..2], z <- [1..3]]
+    initShape = S.fromList $
+      Coord <$> [1..x] <*> [1..y] <*> [1..z]
+
+result =
+  [ take 3 (cuboidCovering 1 2 3)
+  , take 3 (cuboidCovering 5 1 1)
+  , take 3 (cuboidCovering 5 3 1)
+  , take 3 (cuboidCovering 7 2 1)
+  , take 3 (cuboidCovering 11 1 1)
+  ]
