@@ -20,6 +20,20 @@ problem = pureProblem 126 Unsolved result
   all directions because of intersections.
 
   Well, let's figure out those numbers with the stupid way.
+
+  Now some interesting findings:
+
+  > cuboidCovering 1 2 3
+  22,46,78,118,166,222,286,358,438,526,622,726,838,958,1086,1222,1366,1518,1678,1846
+  This sequence seems to be 4 n^2 + 12 n + 6 (n = 1, 2, ...)
+
+  > cuboidCovering 11 1 1
+  46,98,158,226,302,386,478,578,686,802,926,1058,1198,1346,1502,1666,1838,2018,2206,2402
+  This sequence seems to be 4 n^2 + 40 n + 2 (n = 1, 2, ...)
+
+  It does make sense that the growth is quadratic, given that if we do this covering
+  for infinite number of steps, we'll end up getting a sphere, whose surface area is 4 pi n^2.
+
  -}
 
 data Coord a
@@ -71,9 +85,9 @@ cuboidCovering x y z = unfoldr next initShape
       Coord <$> [1..x] <*> [1..y] <*> [1..z]
 
 result =
-  [ take 3 (cuboidCovering 1 2 3)
+  [ take 20 (cuboidCovering 1 2 3)
   , take 3 (cuboidCovering 5 1 1)
   , take 3 (cuboidCovering 5 3 1)
   , take 3 (cuboidCovering 7 2 1)
-  , take 3 (cuboidCovering 11 1 1)
+  , take 20 (cuboidCovering 11 1 1)
   ]
