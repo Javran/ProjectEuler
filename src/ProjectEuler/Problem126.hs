@@ -115,8 +115,9 @@ cuboidCoveringCoeff x y z = (a, b, c)
   we know this holds at least for some small cases.
 
   Confirmed results:
-  - _verifyCover 10 16 is True
+  - _verifyCover 20 16 is True
   - _verifyCover 5 20 is True
+  - _verifyCover 20 20 is True
  -}
 _verifyCover :: Int -> Int -> Bool
 _verifyCover limit mx = and
@@ -128,4 +129,4 @@ _verifyCover limit mx = and
   , let result1 = cuboidCoveringSpeedup2 x y z
   ]
 
-result = _verifyCover 20 16
+result = _verifyCover 20 20
