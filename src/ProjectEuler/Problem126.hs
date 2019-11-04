@@ -73,8 +73,8 @@ cuboidCovering x y z = unfoldr next (initShape, initBound)
     initShape = S.fromList $
       Dim3 <$> [1..x] <*> [1..y] <*> [1..z]
 
-cuboidCoveringFast :: Int -> Int -> Int -> [Int]
-cuboidCoveringFast x y z = seq2
+cuboidCoveringSpeedup1 :: Int -> Int -> Int -> [Int]
+cuboidCoveringSpeedup1 x y z = seq2
   where
     a:b:c:_ = cuboidCovering x y z
     dba = b - a
@@ -83,6 +83,13 @@ cuboidCoveringFast x y z = seq2
     seq0 = repeat dd
     seq1 = dba : zipWith (+) seq1 seq0
     seq2 = a : zipWith (+) seq2 seq1
+
+cuboidCoveringSpeedup2 :: Int -> Int -> Int -> [Int]
+cuboidCoveringSpeedup2 x y z = l <$> [1..]
+  where
+    a = x*y + y*z + x*z
+    b = x+y+z
+    l n = 4*n*n + 4*(b-3)*n + (2*a-4*b+8)
 
 {-
   Some observations from printing out those coefficients:
@@ -108,7 +115,7 @@ cuboidCoveringCoeff x y z = (a, b, c)
   we know this holds at least for some small cases.
 
   Confirmed results:
-  - _verifyCover 10 11 is True
+  - _verifyCover 10 16 is True
   - _verifyCover 5 20 is True
  -}
 _verifyCover :: Int -> Int -> Bool
@@ -118,8 +125,7 @@ _verifyCover limit mx = and
   , y <- [x..mx]
   , z <- [y..mx]
   , let result0 = cuboidCovering x y z
-  , let result1 = cuboidCoveringFast x y z
+  , let result1 = cuboidCoveringSpeedup2 x y z
   ]
 
-
-result = _verifyCover 10 11
+result = _verifyCover 20 16
