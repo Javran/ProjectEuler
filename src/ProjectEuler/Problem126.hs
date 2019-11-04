@@ -12,7 +12,7 @@ import qualified Control.Foldl as L
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 126 Unsolved result
+problem = Problem 126 Unsolved run
 
 {-
   Idea: appears tricky because of the complexity involved
@@ -95,6 +95,15 @@ cuboidCoveringFast x y z = seq2
     seq1 = dba : zipWith (+) seq1 seq0
     seq2 = a : zipWith (+) seq2 seq1
 
+cuboidCoveringCoeff :: Int -> Int -> Int -> (Int, Int, Int)
+cuboidCoveringCoeff x y z = (a, b, c)
+  where
+    s1:s2:s3:_ = cuboidCovering x y z
+    a = (s1 - 2 * s2 + s3) `quot` 2
+    -- b and c seems to always be Ints.
+    b = ((-5) * s1 + 8 * s2 - 3 * s3) `quot` 2
+    c = 3 * s1 - 3 * s2 + s3
+
 {-
   This is to verify the correctness of cuboidCoveringFast in
   a native way: compute and compare the result of both.
@@ -104,6 +113,7 @@ cuboidCoveringFast x y z = seq2
 
   Confirmed results:
   - _verifyCover 10 11 is True
+  - _verifyCover 5 20 is True
  -}
 _verifyCover :: Int -> Int -> Bool
 _verifyCover limit mx = and
@@ -115,4 +125,12 @@ _verifyCover limit mx = and
   , let result1 = cuboidCoveringFast x y z
   ]
 
-result = _verifyCover 5 50
+run = do
+  let mx = 8
+  forM_
+    [ (x,y,z)
+    | x <- [1..mx]
+    , y <- [x..mx]
+    , z <- [y..mx]
+    ] $ \p@(x,y,z) -> do
+      logT $ show p <> " -> " <> show (cuboidCoveringCoeff x y z)
