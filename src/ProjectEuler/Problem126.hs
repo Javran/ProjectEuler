@@ -1,4 +1,6 @@
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE
+    DeriveFunctor
+  #-}
 module ProjectEuler.Problem126
   ( problem
   ) where
@@ -7,12 +9,11 @@ import Control.Monad
 import Data.List
 
 import qualified Data.Set as S
-import qualified Control.Foldl as L
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 126 Unsolved run
+problem = pureProblem 126 Unsolved result
 
 {-
   Idea: appears tricky because of the complexity involved
@@ -36,53 +37,41 @@ problem = Problem 126 Unsolved run
 
  -}
 
-data Coord a
-  = Coord
-  { coordX :: a
-  , coordY :: a
-  , coordZ :: a
+data Dim3 a
+  = Dim3
+  { dimX :: !a
+  , dimY :: !a
+  , dimZ :: !a
   }
   deriving (Ord, Eq, Functor, Show)
 
-type Shape = S.Set (Coord Int) -- Shape are blocks represented by set of their coordinates
+type Shape = S.Set (Dim3 Int) -- Shape are blocks represented by set of their coordinates
 
-neighbors :: Coord Int -> [Coord Int]
-neighbors (Coord x y z) =
-  [ Coord (x-1) y z , Coord (x+1) y z
-  , Coord x (y-1) z , Coord x (y+1) z
-  , Coord x y (z-1) , Coord x y (z+1)
+neighbors :: Dim3 Int -> [Dim3 Int]
+neighbors (Dim3 x y z) =
+  [ Dim3 (x-1) y z , Dim3 (x+1) y z
+  , Dim3 x (y-1) z , Dim3 x (y+1) z
+  , Dim3 x y (z-1) , Dim3 x y (z+1)
   ]
 
-coverShape :: Shape -> Shape
-coverShape s = S.fromList $ do
-    x <- [minX-1 .. maxX+1]
-    y <- [minY-1 .. maxY+1]
-    z <- [minZ-1 .. maxZ+1]
-    let c = Coord x y z
+coverShape :: Dim3 (Int, Int) -> Shape -> Shape
+coverShape (Dim3 (minX,maxX) (minY,maxY) (minZ,maxZ)) s = S.fromList $ do
+    c <- Dim3 <$> [minX .. maxX] <*> [minY .. maxY] <*> [minZ .. maxZ]
     -- near existing shape but itself is not one part of it.
     guard $ any (`S.member` s) (neighbors c)
     guard $ S.notMember c s
     pure c
-  where
-    cs = S.toList s
-    getMinMax getter = (minV, maxV)
-      where
-        (Just minV, Just maxV) =
-          L.fold ((,) <$> L.minimum <*> L.maximum) . fmap getter $ cs
-    -- Admittedly this is not the most efficient way of getting mins and maxs,
-    -- but let's not worry about efficiency for now.
-    (minX, maxX) = getMinMax coordX
-    (minY, maxY) = getMinMax coordY
-    (minZ, maxZ) = getMinMax coordZ
 
 cuboidCovering :: Int -> Int -> Int -> [Int]
-cuboidCovering x y z = unfoldr next initShape
+cuboidCovering x y z = unfoldr next (initShape, initBound)
   where
-    next s = Just (S.size incr, S.union s incr)
+    next (s, curBound) = Just (S.size incr, (S.union s incr, nxtBnd))
       where
-        incr = coverShape s
+        nxtBnd = fmap (\(lo,hi) -> (lo-1,hi+1)) curBound
+        incr = coverShape nxtBnd s
+    initBound = Dim3 (1,x) (1,y) (1,z)
     initShape = S.fromList $
-      Coord <$> [1..x] <*> [1..y] <*> [1..z]
+      Dim3 <$> [1..x] <*> [1..y] <*> [1..z]
 
 cuboidCoveringFast :: Int -> Int -> Int -> [Int]
 cuboidCoveringFast x y z = seq2
@@ -95,6 +84,13 @@ cuboidCoveringFast x y z = seq2
     seq1 = dba : zipWith (+) seq1 seq0
     seq2 = a : zipWith (+) seq2 seq1
 
+{-
+  Some observations from printing out those coefficients:
+
+  - we can bascially expect s1, s2, s3 to all be even numbers,
+    therefore we can simply use integral division on b and c.
+  - a always seems to be 4.
+ -}
 cuboidCoveringCoeff :: Int -> Int -> Int -> (Int, Int, Int)
 cuboidCoveringCoeff x y z = (a, b, c)
   where
@@ -125,12 +121,5 @@ _verifyCover limit mx = and
   , let result1 = cuboidCoveringFast x y z
   ]
 
-run = do
-  let mx = 8
-  forM_
-    [ (x,y,z)
-    | x <- [1..mx]
-    , y <- [x..mx]
-    , z <- [y..mx]
-    ] $ \p@(x,y,z) -> do
-      logT $ show p <> " -> " <> show (cuboidCoveringCoeff x y z)
+
+result = _verifyCover 10 11

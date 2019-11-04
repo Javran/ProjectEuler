@@ -41,6 +41,7 @@ dependencies:
 - mtl
 - parsec
 - petbox
+- profunctors
 - PSQueue
 - scientific
 - set-cover
