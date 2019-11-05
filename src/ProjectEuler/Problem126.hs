@@ -84,6 +84,64 @@ cuboidCoveringSpeedup1 x y z = seq2
     seq1 = dba : zipWith (+) seq1 seq0
     seq2 = a : zipWith (+) seq2 seq1
 
+{-
+  For a cuboid measuring X x Y x Z, generate an infinite list of number of cubes
+  necessary for covering current shape.
+
+  Let's say that this cuboid "grows" outwards by 1 each time, and we have
+  the following observations:
+
+  - The size of 6 faces of the cuboid stays the same.
+    Because this is a layer-by-layer procedure, edge & corner can never outgrow.
+
+    Let A = x*y + y*z + x*z, each layer will always need the same amount of cubes to
+    cover its all faces, which is:
+
+    2*A
+
+
+  - The length of all 12 edges also stays the same.
+    In fact edges do become longer, but let's say count those extra growth
+    on edges as growth on corners.
+
+    However, despite that edge length never grows, we do need more cubes
+    as we have more layers:
+
+                                #
+                          #     X#
+                ->  #  -> X# -> XX#
+    L1(nothing)     L2    L3    L4
+
+    - L1: first layer, no need to cover any edge
+    - L2: second layer, need to cover one edge
+    - L3: third layer, needs 2 set of edges to cover previous one.
+    - and so forth.
+
+    Therefore, let B = x + y + z, for the n-th layer (n >= 1),
+    the number of cubes needed for covering that layer is:
+
+    4*B*(n-1)
+
+  - We have 8 corners, all are covered in the same way:
+
+    - First layer got no corner to cover
+    - Second layer need 1 cube on each of the 8 corners to cover.
+    - Third layer need 3 (1+2) cube to cover exposing faces of previous cover, on each of 8 corners.
+    - Fourth layer, 6 (1+2+3) cubes on each of 8 corners.
+    - Fifth layer, 10 (1+2+3+4) cubes on each of 8 corners.
+
+    You've seen the pattern, for the n-th layer (n >= 1),
+    the number of cubes needed for covering that layer is:
+
+    8 * ((n-1) * (n-2) / 2) => 4*(n-1)*(n-2)
+
+  Put it all together, for the n-th layer (n >= 1), the number of cubes needed in total is:
+
+  2*A + 4*B*(n-1) + 4 * (n-1) * (n-2)
+  => 2*A + 4*(n-1)*(n+(B-2))
+  => 4*n*n + 4*(B-3)*n + (2*A-4*B+8)
+
+ -}
 cuboidCoveringSpeedup2 :: Int -> Int -> Int -> [Int]
 cuboidCoveringSpeedup2 x y z = l <$> [1..]
   where
