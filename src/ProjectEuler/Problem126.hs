@@ -109,14 +109,14 @@ runLengthEncoding :: Eq a => [a] -> [(Int, a)]
 runLengthEncoding (x:xs) = (1+ length ys, x) : runLengthEncoding zs
   where
     (ys,zs) = span (== x) xs
-runLengthEncoding [] = error "expected input to be infinite."
+runLengthEncoding [] = []
 
 result =
     {-
       TODO: Now the following does give (10, 154), as desired, but this is too slow
       and maxSize remains a guesswork.
      -}
-    firstSuchThat ((== 1000) . fst) $ runLengthEncoding (foldl1 LO.merge covSeqs)
+    firstSuchThat ((== 1000) . fst) $ runLengthEncoding (foldr LO.merge [] covSeqs)
   where
-    maxSize = 40
+    maxSize = 400
     covSeqs = [ cuboidCovering x y z | x <- [1..maxSize], y <- [x..maxSize], z <-[y..maxSize] ]
