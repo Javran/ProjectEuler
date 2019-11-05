@@ -2,7 +2,12 @@ module ProjectEuler.Problem126
   ( problem
   ) where
 
+import qualified Data.Map.Strict as M
+import qualified Data.List.Ordered as LO
+
 import ProjectEuler.Types
+
+import Petbox
 
 problem :: Problem
 problem = pureProblem 126 Unsolved result
@@ -100,4 +105,18 @@ cuboidCovering x y z = l <$> [1..]
     b = x+y+z
     l n = 4*n*n + 4*(b-3)*n + (2*a-4*b+8)
 
-result = ()
+runLengthEncoding :: Eq a => [a] -> [(Int, a)]
+runLengthEncoding (x:xs) = (1+ length ys, x) : runLengthEncoding zs
+  where
+    (ys,zs) = span (== x) xs
+runLengthEncoding [] = error "expected input to be infinite."
+
+result =
+    {-
+      TODO: Now the following does give (10, 154), as desired, but this is too slow
+      and maxSize remains a guesswork.
+     -}
+    firstSuchThat ((== 1000) . fst) $ runLengthEncoding (foldl1 LO.merge covSeqs)
+  where
+    maxSize = 40
+    covSeqs = [ cuboidCovering x y z | x <- [1..maxSize], y <- [x..maxSize], z <-[y..maxSize] ]
