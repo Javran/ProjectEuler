@@ -2,8 +2,14 @@ module ProjectEuler.Problem126
   ( problem
   ) where
 
+import Data.Int
+import Control.Monad.ST
+import Control.Monad
+
 import qualified Data.Map.Strict as M
 import qualified Data.List.Ordered as LO
+import qualified Data.Vector.Unboxed as VU
+import qualified Data.Vector.Unboxed.Mutable as VUM
 
 import ProjectEuler.Types
 
@@ -106,21 +112,30 @@ cuboidCovering x y z = l <$> [1..]
     l n = 4*n*n + 4*(b-3)*n + (2*a-4*b+8)
 
 runLengthEncoding :: Eq a => [a] -> [(Int, a)]
-runLengthEncoding (x:xs) = (1+ length ys, x) : runLengthEncoding zs
+runLengthEncoding (x:xs) =
+    (1+ length ys, x) : runLengthEncoding zs
   where
     (ys,zs) = span (== x) xs
 runLengthEncoding [] = []
 
+genCovSeqs :: Int -> [[Int]]
+genCovSeqs upBound = do
+  x <- takeWhile (\i -> head (cuboidCovering i i i) < upBound) [1..]
+  y <- takeWhile (\j -> head (cuboidCovering x j j) < upBound) [x..]
+  z <- takeWhile (\k -> head (cuboidCovering x y k) < upBound) [y..]
+  pure $ takeWhile (< upBound) $ cuboidCovering x y z
+
+makeTable :: Int -> VU.Vector Int16
+makeTable sz = runST $ do
+  vec <- VUM.replicate sz 0
+  let nums = concat (genCovSeqs sz)
+  forM_ nums $ \x -> VUM.modify vec succ (fromIntegral x)
+  VU.unsafeFreeze vec
+
+result :: Int
 result =
-    {-
-      TODO: Now the following does give (10, 154), as desired, but this is too slow
-      and maxSize remains a guesswork.
-     -}
-    firstSuchThat ((== 10) . fst) $ runLengthEncoding (foldr LO.merge [] covSeqs)
+    snd
+    . firstSuchThat ((== 1000) . fst)
+    $ zip (VU.toList tbl) [0..]
   where
-    upBound = 500
-    covSeqs = do
-      x <- takeWhile (\i -> head (cuboidCovering i i i) < upBound) [1..]
-      y <- takeWhile (\j -> head (cuboidCovering x j j) < upBound) [x..]
-      z <- takeWhile (\k -> head (cuboidCovering x y k) < upBound) [y..]
-      pure $ cuboidCovering x y z
+    tbl = makeTable 100000 -- this number is a guesswork.
