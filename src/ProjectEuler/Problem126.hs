@@ -116,7 +116,11 @@ result =
       TODO: Now the following does give (10, 154), as desired, but this is too slow
       and maxSize remains a guesswork.
      -}
-    firstSuchThat ((== 1000) . fst) $ runLengthEncoding (foldr LO.merge [] covSeqs)
+    firstSuchThat ((== 10) . fst) $ runLengthEncoding (foldr LO.merge [] covSeqs)
   where
-    maxSize = 400
-    covSeqs = [ cuboidCovering x y z | x <- [1..maxSize], y <- [x..maxSize], z <-[y..maxSize] ]
+    upBound = 500
+    covSeqs = do
+      x <- takeWhile (\i -> head (cuboidCovering i i i) < upBound) [1..]
+      y <- takeWhile (\j -> head (cuboidCovering x j j) < upBound) [x..]
+      z <- takeWhile (\k -> head (cuboidCovering x y k) < upBound) [y..]
+      pure $ cuboidCovering x y z
