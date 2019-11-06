@@ -6,8 +6,6 @@ import Data.Int
 import Control.Monad.ST
 import Control.Monad
 
-import qualified Data.Map.Strict as M
-import qualified Data.List.Ordered as LO
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
 
@@ -43,6 +41,13 @@ problem = pureProblem 126 Solved result
   for infinite number of steps, we'll end up getting a sphere, whose surface area is 4 pi n^2.
 
   Alright, we've figured out the exact formula, let's worry about how to get to the answer now.
+
+  First implementation is based on generating lazy streams, merging them (as there are
+  all individually sorted list), and counting the result with run length encoding -
+  there are simply too many comparisons for this to be efficient,
+  so as the final implementation, I used unboxed vector for counting
+  (here we don't really need a thunk for anything, might as well speed this up),
+  which turns out to be quite efficient.
 
  -}
 
@@ -111,13 +116,6 @@ cuboidCovering x y z = l <$> [1..]
     b = x+y+z
     l n = 4*n*n + 4*(b-3)*n + (2*a-4*b+8)
 
-runLengthEncoding :: Eq a => [a] -> [(Int, a)]
-runLengthEncoding (x:xs) =
-    (1+ length ys, x) : runLengthEncoding zs
-  where
-    (ys,zs) = span (== x) xs
-runLengthEncoding [] = []
-
 genCovSeqs :: Int -> [[Int]]
 genCovSeqs upBound = do
   x <- takeWhile (\i -> head (cuboidCovering i i i) < upBound) [1..]
@@ -138,4 +136,13 @@ result =
     . firstSuchThat ((== 1000) . fst)
     $ zip (VU.toList tbl) [0..]
   where
-    tbl = makeTable 100000 -- this number is a guesswork.
+    {-
+      The number was originall 100000 - we just need
+      to find a number large enough to make sure that we
+      get the correct counting.
+
+      Once the correct answer is found, we can speed up and "cheat"
+      by reducing the upperbound to as close to the actual answer as possible.
+
+     -}
+    tbl = makeTable 19000
