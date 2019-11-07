@@ -40,6 +40,9 @@ rad = (radVec V.!)
   Update: now the example (c < 1000) given by the problem is working,
   but it is too slow to simply plugging in 120000, we need to do something else.
 
+  Update: brute forced the answer: 18407904, but the problem is designed in
+  a way such that we can do this much more faster, going to investigate on that.
+
  -}
 
 searchAbcHits = do
