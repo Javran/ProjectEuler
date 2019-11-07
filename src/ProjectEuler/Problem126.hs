@@ -137,7 +137,7 @@ result =
     $ zip (VU.toList tbl) [0..]
   where
     {-
-      The number was originall 100000 - we just need
+      The number was originally 100000 - we just need
       to find a number large enough to make sure that we
       get the correct counting.
 
