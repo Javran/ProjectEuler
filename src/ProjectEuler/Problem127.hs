@@ -6,15 +6,25 @@ import Control.Monad
 import Math.NumberTheory.Primes
 import Math.NumberTheory.Euclidean
 import Data.Monoid
-import Data.MemoTrie
+
+import qualified Data.Vector as V
 
 import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 127 Unsolved result
 
+maxN :: Int
+maxN = 120000
+
+radVec :: V.Vector Int
+radVec = V.fromListN maxN $ undefined : fmap radImpl [1..]
+  where
+    radImpl :: Int -> Int
+    radImpl = product . fmap (unPrime . fst) . factorise
+
 rad :: Int -> Int
-rad = memo (product . fmap (unPrime . fst) . factorise)
+rad = (radVec V.!)
 
 {-
   No idea at first, as always. But there are few things that might come in handy:
@@ -32,7 +42,7 @@ rad = memo (product . fmap (unPrime . fst) . factorise)
 
  -}
 
-searchAbcHits maxN = do
+searchAbcHits = do
   b <- [2..maxN]
   a <- filter (coprime b) [1..min (b-1) (maxN-b-1)]
   let rab = rad a * rad b
@@ -40,6 +50,4 @@ searchAbcHits maxN = do
   guard $ coprime b c && coprime a c && rab * rad c < c
   pure (a,b,c)
 
-result = getSum $ foldMap (\(_,_,c) -> Sum c) xs
-  where
-    xs = searchAbcHits 120000
+result = getSum $ foldMap (\(_,_,c) -> Sum c) searchAbcHits
