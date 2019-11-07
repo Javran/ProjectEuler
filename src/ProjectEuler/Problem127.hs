@@ -50,7 +50,12 @@ searchAbcHits = do
   a <- filter (coprime b) [1..min (b-1) (maxN-b-1)]
   let rab = rad a * rad b
       c = a + b
-  guard $ coprime b c && coprime a c && rab * rad c < c
+  {-
+    At this point we know a and b does not share any factor,
+    therefore c = a + b is already coprime to both a and b,
+    there is no need to check this fact.
+   -}
+  guard $ rab * rad c < c
   pure (a,b,c)
 
 result = getSum $ foldMap (\(_,_,c) -> Sum c) searchAbcHits
