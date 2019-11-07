@@ -6,6 +6,7 @@ import Control.Monad
 import Math.NumberTheory.Primes
 import Math.NumberTheory.Euclidean
 import Data.Monoid
+import Data.MemoTrie
 
 import ProjectEuler.Types
 
@@ -13,7 +14,7 @@ problem :: Problem
 problem = pureProblem 127 Unsolved result
 
 rad :: Int -> Int
-rad n = product $ unPrime . fst <$> factorise n
+rad = memo (product . fmap (unPrime . fst) . factorise)
 
 {-
   No idea at first, as always. But there are few things that might come in handy:
@@ -33,11 +34,12 @@ rad n = product $ unPrime . fst <$> factorise n
 
 searchAbcHits maxN = do
   b <- [2..maxN]
-  a <- filter (coprime b) . takeWhile (< (maxN - b)) $ [1..b-1]
-  let c = a + b
-  guard $ coprime b c && coprime a c && rad a * rad b * rad c < c
+  a <- filter (coprime b) [1..min (b-1) (maxN-b-1)]
+  let rab = rad a * rad b
+      c = a + b
+  guard $ coprime b c && coprime a c && rab * rad c < c
   pure (a,b,c)
 
 result = getSum $ foldMap (\(_,_,c) -> Sum c) xs
   where
-    xs = searchAbcHits 1000
+    xs = searchAbcHits 120000
