@@ -21,7 +21,7 @@ radVec :: V.Vector Int
 radVec = V.fromListN maxN $ undefined : fmap radImpl [1..]
   where
     radImpl :: Int -> Int
-    radImpl = product . fmap (unPrime . fst) . factorise
+    radImpl = getProduct . foldMap (Product . unPrime . fst) . factorise
 
 rad :: Int -> Int
 rad = (radVec V.!)
@@ -38,7 +38,7 @@ rad = (radVec V.!)
   - c = a + b, if c < 1000, we know a + b < 1000
 
   Update: now the example (c < 1000) given by the problem is working,
-  but it is too slow by simply plugging in 120000, we need to do something else.
+  but it is too slow to simply plugging in 120000, we need to do something else.
 
  -}
 
