@@ -14,17 +14,6 @@ import ProjectEuler.Types
 problem :: Problem
 problem = pureProblem 127 Unsolved result
 
-maxN :: Int
-maxN = 120000
-
-radVec :: V.Vector Int
-radVec = V.fromListN maxN $ undefined : fmap radImpl [1..]
-  where
-    radImpl :: Int -> Int
-    radImpl = getProduct . foldMap (Product . unPrime . fst) . factorise
-
-rad :: Int -> Int
-rad = (radVec V.!)
 
 {-
   No idea at first, as always. But there are few things that might come in handy:
@@ -37,6 +26,8 @@ rad = (radVec V.!)
 
   - c = a + b, if c < 1000, we know a + b < 1000
 
+  - c = a + b and a < b, therefore c < 2b
+
   Update: now the example (c < 1000) given by the problem is working,
   but it is too slow to simply plugging in 120000, we need to do something else.
 
@@ -45,8 +36,28 @@ rad = (radVec V.!)
 
  -}
 
+maxN :: Int
+maxN = 120000
+
+radVec :: V.Vector Int
+radVec =
+    V.fromListN maxN $
+      {-
+        laziness in action: the actual computation only happen when that position in vector
+        is accessed for the first time.
+       -}
+      undefined : fmap radImpl [1..]
+  where
+    radImpl :: Int -> Int
+    radImpl = getProduct . foldMap (Product . unPrime . fst) . factorise
+
+rad :: Int -> Int
+rad = (radVec V.!)
+
+searchAbcHits :: [(Int, Int, Int)]
 searchAbcHits = do
   b <- [2..maxN]
+  -- c < maxN => a + b < maxN => a <= maxN - b - 1
   a <- filter (coprime b) [1..min (b-1) (maxN-b-1)]
   let rab = rad a * rad b
       c = a + b
@@ -58,4 +69,5 @@ searchAbcHits = do
   guard $ rab * rad c < c
   pure (a,b,c)
 
+result :: Int
 result = getSum $ foldMap (\(_,_,c) -> Sum c) searchAbcHits
