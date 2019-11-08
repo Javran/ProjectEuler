@@ -59,7 +59,7 @@ maxN = 120000
 
 radVec :: V.Vector Int
 radVec =
-    V.fromListN maxN $
+    V.fromListN (maxN+1) $
       {-
         laziness in action: the actual computation only happen when that position in vector
         is accessed for the first time.
@@ -70,7 +70,7 @@ radVec =
     radImpl = getProduct . foldMap (Product . unPrime . fst) . factorise
 
 rad :: Int -> Int
-rad = (radVec V.!)
+rad = (radVec V.!) -- requires that 0 < input <= maxN
 
 searchAbcHits :: [(Int, Int, Int)]
 searchAbcHits = do
