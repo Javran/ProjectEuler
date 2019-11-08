@@ -6,8 +6,11 @@ import Control.Monad
 import Math.NumberTheory.Primes
 import Math.NumberTheory.Euclidean
 import Data.Monoid
+import Data.Bifunctor
 
+import qualified Data.DList as DL
 import qualified Data.Vector as V
+import qualified Data.IntMap as IM
 
 import ProjectEuler.Types
 
@@ -71,6 +74,15 @@ radVec =
 
 rad :: Int -> Int
 rad = (radVec V.!) -- requires that 0 < input <= maxN
+
+revRadMap :: [] (Int, [Int])
+revRadMap =
+  (fmap . second) DL.toList
+  . IM.toAscList
+    -- append it the other way to keep the values sorted.
+  . IM.fromListWith (flip (<>))
+  . fmap (\x -> (rad x, DL.singleton x))
+  $ [1..maxN]
 
 searchAbcHits :: [(Int, Int, Int)]
 searchAbcHits = do
