@@ -25,7 +25,23 @@ import TextShow
 import qualified Data.DList as DL
 import qualified Data.Text as T
 
-data ProblemStatus = Solved | Unsolved deriving (Eq)
+data ProblemStatus
+  = {-
+      A problem marked as solved is a problem that:
+
+      (1) gets the correct answer
+      (2) execution time is reasonable (i.e. "one minute rule")
+
+      And all solved problems should have test coverage.
+     -}
+    Solved
+  | {-
+      A problem marked as unsolved are all the problems that doesn't qualify
+      to be marked as solved. This will include solutions that give
+      correct answer but its execution time is not acceptable.
+     -}
+    Unsolved
+  deriving (Eq)
 
 {-
   problemRun performs some arbitrary action,
