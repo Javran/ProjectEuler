@@ -3,19 +3,19 @@ module ProjectEuler.Problem127
   ) where
 
 import Control.Monad
-import Math.NumberTheory.Primes
-import Math.NumberTheory.Euclidean
-import Data.Monoid
 import Data.Bifunctor
+import Data.Monoid
+import Math.NumberTheory.Euclidean
+import Math.NumberTheory.Primes
 
 import qualified Data.DList as DL
-import qualified Data.Vector as V
 import qualified Data.IntMap as IM
+import qualified Data.Vector as V
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 127 Unsolved result
+problem = pureProblem 127 Solved result
 
 
 {-
