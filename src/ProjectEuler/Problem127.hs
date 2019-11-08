@@ -86,17 +86,15 @@ revRadMap =
 
 searchAbcHits :: [(Int, Int, Int)]
 searchAbcHits = do
-  b <- [3..maxN]
-  let rb = rad b
-  -- c < maxN => a + b < maxN => a <= maxN - b - 1
-  a <- filter (\a -> coprime a b && rad a * rb < b) [1..min (b-1) (maxN-b-1)]
-  let rab = rad a * rb
-      c = a + b
-  {-
-    At this point we know a and b does not share any factor,
-    therefore c = a + b is already coprime to both a and b,
-    there is no need to check this fact.
-   -}
+  (radB, bs) <- revRadMap
+  b <- bs
+  -- we are searching radA where radA * radB < b
+  (radA, as) <- takeWhile (\(radA', _) -> radA' * radB < b) revRadMap
+  guard $ coprime radB radA
+  let rab = radA * radB
+  -- a < b && a + b < maxN => a < min(b,maxN-b)
+  a <- takeWhile (< min b (maxN-b)) as
+  let c = a + b
   guard $ rab * rad c < c
   pure (a,b,c)
 
