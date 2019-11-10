@@ -14,8 +14,8 @@ module ProjectEuler.CommandLine.Common
 import Control.DeepSeq
 import Control.Exception
 import Data.Aeson
+import Data.Time.Clock
 import Filesystem.Path.CurrentOS ((</>))
-import System.CPUTime
 import System.Exit
 import Text.Microstache
 import TextShow
@@ -58,10 +58,10 @@ renderProblem pId solved extraContent = do
  -}
 runProblem :: Problem -> IO (Double, Either SomeException [T.Text])
 runProblem Problem {problemRun} = do
-  tStart <- getCPUTime
+  tStart <- getCurrentTime
   r <- try @SomeException (runPEM problemRun >>= \((), outs) -> pure $!! outs)
-  tEnd <- getCPUTime
-  let diff = fromIntegral (tEnd - tStart) / (10^(9 :: Int))
+  tEnd <- getCurrentTime
+  let diff = realToFrac (diffUTCTime tEnd tStart) * 1000
   diff `deepseq` case r of
     Left e -> pure (diff, Left e)
     Right outs -> pure (diff, Right outs)
