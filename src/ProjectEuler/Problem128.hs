@@ -51,25 +51,19 @@ unitDirs =
   , (-1, 0)
   ]
 
-{-
+plus (x,y) (a,b) = (x+a, y+b)
 
-  Try this out:
-  > let xs = "ABCDE"
-  > take 40 $ concat $ concatMap ("!" : ) $ iterate (fmap (\ys@(x:_) -> x : ys)) ((:[]) <$> xs)
-  "!ABCDE!AABBCCDDEE!AAABBBCCCDDDEEE!AAAABB"
-
- -}
 dCoords :: [] AxialDir
 dCoords =
-  concat
-  . concatMap ([(0,-1)] :)
+  concatMap (\xs -> let ys = concat xs in init ys <> [plus (last ys) (0,-1)])
   . iterate (fmap (\ys@(x:_) -> x:ys))
   . fmap (:[])
   $ unitDirs
 
-coords :: [] AxialCoord
-coords = scanl (\(x,y) (dx,dy) -> (x+dx, y+dy)) (0,0) dCoords
+pairs :: [] (AxialCoord, Int)
+pairs = ((0,0), 1) : zip coords [2..]
+  where
+    coords :: [] AxialCoord
+    coords = scanl plus (0,-1) dCoords
 
-pairs = zip coords [1..]
-
-result = show (take 20 pairs) -- not quite right though: should be (0,-2),8
+result = show (take 62 pairs) -- not quite right though: should be (0,-2),8
