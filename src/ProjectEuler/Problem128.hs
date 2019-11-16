@@ -3,6 +3,13 @@ module ProjectEuler.Problem128
   ) where
 
 import Data.List
+import Data.Ord
+import Data.Maybe
+import Data.Monoid
+import Math.NumberTheory.Primes.Testing
+
+import qualified Data.Map.Strict as M
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -55,6 +62,7 @@ plus (x,y) (a,b) = (x+a, y+b)
 
 dCoords :: [] AxialDir
 dCoords =
+  -- TODO: not the best method in the world, but this does give us correct results.
   concatMap (\xs -> let ys = concat xs in init ys <> [plus (last ys) (0,-1)])
   . iterate (fmap (\ys@(x:_) -> x:ys))
   . fmap (:[])
@@ -66,4 +74,23 @@ pairs = ((0,0), 1) : zip coords [2..]
     coords :: [] AxialCoord
     coords = scanl plus (0,-1) dCoords
 
-result = show (take 62 pairs) -- not quite right though: should be (0,-2),8
+-- n >= 1 for this to work.
+mkTiles :: Int -> M.Map AxialCoord Int
+mkTiles n = M.fromList $ take count pairs
+  where
+    count = 3*n*n - 3*n + 2
+
+computePDs :: Int -> [(Int, Int)]
+computePDs n = foldMap go coords
+  where
+    go cur = do
+      let x = tiles M.! cur
+      let tileNums = mapMaybe ((tiles M.!?) . plus cur) unitDirs
+      ys@[_,_,_,_,_,_] <- pure tileNums
+      let diffs = (\y -> abs (y - x)) <$> ys
+      pure (x, getSum $ foldMap (\v -> if isPrime (fromIntegral v) then 1 else 0) diffs)
+
+    coords = M.keys tiles
+    tiles = mkTiles n
+
+result = (!! 9) $ filter ((== 3) . snd ) $  sortOn fst $ computePDs 20
