@@ -39,6 +39,13 @@ problem = pureProblem 128 Unsolved result
   - note that for the actial representation we'll use Axial Coordinate since
     one axis is redundant.
 
+  - for two cells a & b in cube coordinates, the distance between them is:
+
+    (abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z)) / 2
+
+    if we plug in b = (0,0,0) as origin, we can figure out which circle are we in,
+    this helps us in finding the mapping between axial coordinate and the number on that grid.
+
  -}
 
 type AxialCoord = (Int, Int) -- coordinate
