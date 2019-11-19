@@ -67,25 +67,23 @@ unitDirs =
 
 plus (x,y) (a,b) = (x+a, y+b)
 
-dCoords :: [] AxialDir
-dCoords =
-  -- TODO: not the best method in the world, but this does give us correct results.
-  concatMap (\xs -> let ys = concat xs in init ys <> [plus (last ys) (0,-1)])
-  . iterate (fmap (\ys@(x:_) -> x:ys))
-  . fmap (:[])
-  $ unitDirs
-
-pairs :: [] (AxialCoord, Int)
-pairs = ((0,0), 1) : zip coords [2..]
+{-
+  If we number the center cell "circle 0",
+  and walk our way outwards around,
+  "genTiles n" generates "circle n" for us.
+ -}
+genTiles :: Int -> [(AxialCoord, Int)]
+genTiles 0 = [((0,0), 1)]
+genTiles n = zip coords $ take (6*n) [vInit..]
   where
-    coords :: [] AxialCoord
-    coords = scanl plus (0,-1) dCoords
+    coords = scanl plus (0,-n) dirs
+    dirs = concatMap (replicate n) unitDirs
+    vInit = 3*n*n - 3*n + 2
 
--- n >= 1 for this to work.
 mkTiles :: Int -> M.Map AxialCoord Int
-mkTiles n = M.fromList $ take count pairs
-  where
-    count = 3*n*n - 3*n + 2
+mkTiles n =
+  M.unions $
+    uncurry M.singleton (head (genTiles n)) : fmap (M.fromList . genTiles) [0..n-1]
 
 computePDs :: Int -> [(Int, Int)]
 computePDs n = foldMap go coords
@@ -100,4 +98,4 @@ computePDs n = foldMap go coords
     coords = M.keys tiles
     tiles = mkTiles n
 
-result = (!! 9) $ filter ((== 3) . snd ) $  sortOn fst $ computePDs 20
+result = filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
