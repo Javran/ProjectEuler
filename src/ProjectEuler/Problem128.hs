@@ -85,6 +85,33 @@ mkTiles n =
   M.unions $
     uncurry M.singleton (head (genTiles n)) : fmap (M.fromList . genTiles) [0..n-1]
 
+{-
+  TODO: Now, if we can have an efficient way of implementing tileNumToCoord and coordToTileNum,
+  I suspect that's sufficient to solve the problem.
+
+  coordToTileNum: we can easily figure out the circle of that coord, but its exact location
+  is a bit tricky to do.
+
+  - define "anchors" to be 6 angle tiles on that circle
+  - if coord in question is one of those anchors, we already know how to produce a result
+  - pair anchors in counter-clockwise order, and compute distance between that coord and pairs,
+    there must be one pair that the coord sits in between (and with total distance being n),
+    we can then figure out the offset therefore compute the tile number.
+
+  tileNumToCoord:
+
+  - find the positive solution n for  3*n*n - 3*n + 2 = <tileNum>,
+    take the floor, hopefully this gives us circle number.
+
+  - condition around anchors, like what we are planning to do with coordToTileNum.
+
+ -}
+tileNumToCoord :: Int -> AxialCoord
+tileNumToCoord = undefined
+
+coordToTileNum :: AxialCoord -> Int
+coordToTileNum = undefined
+
 computePDs :: Int -> [(Int, Int)]
 computePDs n = foldMap go coords
   where
