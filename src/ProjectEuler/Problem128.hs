@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFunctor #-}
 module ProjectEuler.Problem128
   ( problem
   ) where
@@ -51,6 +52,8 @@ problem = pureProblem 128 Unsolved result
 type AxialCoord = (Int, Int) -- coordinate
 type AxialDir = (Int, Int)
 
+data HexCorners a = HC a a a a a a deriving (Functor, Show) -- start from top, counter-clockwise
+
 -- unit directions following tiles' growing direction.
 -- TODO: notice that we can generete a infinite list of diffs, from which
 -- we can build up <coordinate, tile number> pairs without using any formula.
@@ -85,6 +88,13 @@ mkTiles n =
   M.unions $
     uncurry M.singleton (head (genTiles n)) : fmap (M.fromList . genTiles) [0..n-1]
 
+mkHexCorners :: Int -> HexCorners (AxialCoord, Int)
+mkHexCorners 0 = let z = ((0,0), 1) in HC z z z z z z
+mkHexCorners n =
+  let vInit = 3*n*n - 3*n + 2
+      a:b:c:d:e:f:_ = iterate (+ n) vInit
+  in HC ((0,-n), a) ((-n,0), b) ((-n,n), c) ((0,n), d) ((n,0), e) ((n, -n), f)
+
 {-
   TODO: Now, if we can have an efficient way of implementing tileNumToCoord and coordToTileNum,
   I suspect that's sufficient to solve the problem.
@@ -102,6 +112,8 @@ mkTiles n =
 
   - find the positive solution n for  3*n*n - 3*n + 2 = <tileNum>,
     take the floor, hopefully this gives us circle number.
+
+  - note: let f t = (3 + sqrt (12*t-15)) / 6 seems to do it.
 
   - condition around anchors, like what we are planning to do with coordToTileNum.
 
@@ -125,4 +137,5 @@ computePDs n = foldMap go coords
     coords = M.keys tiles
     tiles = mkTiles n
 
-result = filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
+result = show (mkHexCorners 0, mkHexCorners 1, mkHexCorners 2, mkHexCorners 3)
+  -- filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
