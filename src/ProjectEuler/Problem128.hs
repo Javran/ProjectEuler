@@ -52,8 +52,6 @@ problem = pureProblem 128 Unsolved result
 type AxialCoord = (Int, Int) -- coordinate
 type AxialDir = (Int, Int)
 
-data HexCorners a = HC a a a a a a deriving (Functor, Show) -- start from top, counter-clockwise
-
 -- unit directions following tiles' growing direction.
 -- TODO: notice that we can generete a infinite list of diffs, from which
 -- we can build up <coordinate, tile number> pairs without using any formula.
@@ -68,7 +66,18 @@ unitDirs =
   , (-1, 0)
   ]
 
+plus :: AxialDir -> AxialDir -> AxialDir
 plus (x,y) (a,b) = (x+a, y+b)
+
+mul :: Int -> AxialDir -> AxialDir
+mul c (x,y) = (c*x, c*y)
+
+dist :: AxialCoord -> AxialCoord -> Int
+dist (ax, az) (bx, bz) =
+    abs (ax - bx) `max` abs (ay - by) `max` abs (az - bz)
+  where
+    ay = -ax - az
+    by = -bx - bz
 
 {-
   If we number the center cell "circle 0",
@@ -88,12 +97,11 @@ mkTiles n =
   M.unions $
     uncurry M.singleton (head (genTiles n)) : fmap (M.fromList . genTiles) [0..n-1]
 
-mkHexCorners :: Int -> HexCorners (AxialCoord, Int)
-mkHexCorners 0 = let z = ((0,0), 1) in HC z z z z z z
+mkHexCorners :: Int -> [] (AxialCoord, Int)
+mkHexCorners 0 = replicate 6 ((0,0), 1)
 mkHexCorners n =
   let vInit = 3*n*n - 3*n + 2
-      a:b:c:d:e:f:_ = iterate (+ n) vInit
-  in HC ((0,-n), a) ((-n,0), b) ((-n,n), c) ((0,n), d) ((n,0), e) ((n, -n), f)
+  in zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
 
 {-
   TODO: Now, if we can have an efficient way of implementing tileNumToCoord and coordToTileNum,
@@ -122,7 +130,17 @@ tileNumToCoord :: Int -> AxialCoord
 tileNumToCoord = undefined
 
 coordToTileNum :: AxialCoord -> Int
-coordToTileNum = undefined
+coordToTileNum pt = case lookup pt hcs of
+    Just v -> v
+    _ ->
+      let dists = fmap (dist pt . fst) hcs
+          (cornerInd,_):_ =
+            filter ((== n) . snd)  $ zip [0..] $ zipWith (+) dists (tail (cycle dists))
+          ((_, tileNum0), offset) = (hcs !! cornerInd, dists !! cornerInd)
+      in tileNum0 + offset
+  where
+    n = dist pt (0,0)
+    hcs = mkHexCorners n
 
 computePDs :: Int -> [(Int, Int)]
 computePDs n = foldMap go coords
@@ -137,5 +155,5 @@ computePDs n = foldMap go coords
     coords = M.keys tiles
     tiles = mkTiles n
 
-result = show (mkHexCorners 0, mkHexCorners 1, mkHexCorners 2, mkHexCorners 3)
+result = all (\(c,expect) -> expect == coordToTileNum c) (M.toList (mkTiles 1000))
   -- filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
