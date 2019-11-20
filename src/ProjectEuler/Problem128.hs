@@ -7,7 +7,8 @@ import Data.List
 import Data.Ord
 import Data.Maybe
 import Data.Monoid
-import Math.NumberTheory.Primes.Testing
+import Math.NumberTheory.Primes
+import Data.MemoTrie
 
 import qualified Data.Map.Strict as M
 
@@ -150,10 +151,26 @@ computePDs n = foldMap go coords
       let tileNums = mapMaybe ((tiles M.!?) . plus cur) unitDirs
       ys@[_,_,_,_,_,_] <- pure tileNums
       let diffs = (\y -> abs (y - x)) <$> ys
-      pure (x, getSum $ foldMap (\v -> if isPrime (fromIntegral v) then 1 else 0) diffs)
+      pure (x, getSum $ foldMap (\v -> case isPrime v of Just _ -> 1; _ -> 0) diffs)
 
     coords = M.keys tiles
     tiles = mkTiles n
 
-result = all (\(c,expect) -> expect == coordToTileNum c) (M.toList (mkTiles 1000))
+isPrimeMemo :: Int -> Bool
+isPrimeMemo = memo (\v -> case isPrime v of Just _ -> True; _ -> False)
+
+computePD :: AxialCoord -> Int
+computePD c = getSum $ foldMap (\v -> if isPrimeMemo v then 1 else 0) diffs
+  where
+    x = coordToTileNum c
+    ys = fmap (coordToTileNum . plus c) unitDirs
+    diffs = (\y -> abs (y - x)) <$> ys
+
+result =
+    take 100
+      $ fmap fst $ filter ((== 3) . snd)
+      $ concatMap (fmap ((\x -> (coordToTileNum x, computePD x)) . fst) . genTiles) [0..]
+  where
+    target = 10
+  -- all (\(c,expect) -> expect == coordToTileNum c) (M.toList (mkTiles 1000))
   -- filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
