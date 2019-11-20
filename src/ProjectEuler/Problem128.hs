@@ -160,17 +160,18 @@ isPrimeMemo :: Int -> Bool
 isPrimeMemo = memo (\v -> case isPrime v of Just _ -> True; _ -> False)
 
 computePD :: AxialCoord -> Int
-computePD c = getSum $ foldMap (\v -> if isPrimeMemo v then 1 else 0) diffs
+computePD c = -- getSum $ foldMap (\v -> if isPrimeMemo v then 1 else 0) diffs
+    getSum $ foldMap (\v -> case isPrime v of Just _ -> 1; _ -> 0) diffs
   where
     x = coordToTileNum c
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
 result =
-    take 100
+    (!! (target - 1))
       $ fmap fst $ filter ((== 3) . snd)
       $ concatMap (fmap ((\x -> (coordToTileNum x, computePD x)) . fst) . genTiles) [0..]
   where
-    target = 10
+    target = 2000
   -- all (\(c,expect) -> expect == coordToTileNum c) (M.toList (mkTiles 1000))
   -- filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
