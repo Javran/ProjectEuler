@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
 module ProjectEuler.Problem128
   ( problem
   ) where
@@ -10,6 +10,7 @@ import Data.Monoid
 import Math.NumberTheory.Primes
 import Data.MemoTrie
 import Data.Functor
+import Data.Foldable
 
 import qualified Data.Map.Strict as M
 
@@ -94,16 +95,29 @@ genTiles n = zip coords $ take (6*n) [vInit..]
     dirs = concatMap (replicate n) unitDirs
     vInit = 3*n*n - 3*n + 2
 
-mkTiles :: Int -> M.Map AxialCoord Int
-mkTiles n =
-  M.unions $
-    uncurry M.singleton (head (genTiles n)) : fmap (M.fromList . genTiles) [0..n-1]
+data HC a = HC !a !a !a !a !a !a deriving (Functor, Foldable)
 
-mkHexCorners :: Int -> [] (AxialCoord, Int)
-mkHexCorners 0 = replicate 6 ((0,0), 1)
+hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
+  0 -> v0
+  1 -> v1
+  2 -> v2
+  3 -> v3
+  4 -> v4
+  5 -> v5
+  _ -> error "out of bound"
+
+-- mkHexCorners :: Int -> [] (AxialCoord, Int)
+mkHexCorners 0 = let z = ((0,0), 1) in HC z z z z z z
 mkHexCorners n =
   let vInit = 3*n*n - 3*n + 2
-  in zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
+  in HC ((0, -n), vInit)
+        ((-n,0), vInit+n)
+        ((-n,n), vInit+n*2)
+        ((0,n), vInit+n*3)
+        ((n,0), vInit+n*4)
+        ((n, -n), vInit+n*5)
+
+    -- zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
 
 {-
   TODO: Now, if we can have an efficient way of implementing tileNumToCoord and coordToTileNum,
@@ -131,38 +145,34 @@ mkHexCorners n =
 tileNumToCoord :: Int -> AxialCoord
 tileNumToCoord = undefined
 
+mkPairs op (HC v0 v1 v2 v3 v4 v5) =
+  HC (op v0 v1) (op v1 v2) (op v2 v3) (op v3 v4) (op v4 v5) (op v5 v0)
+
 coordToTileNum :: AxialCoord -> Int
-coordToTileNum pt = case lookup pt hcs of
+coordToTileNum pt = case lookup pt (toList hcs) of
     Just v -> v
     _ ->
       let dists = fmap (dist pt . fst) hcs
           (cornerInd,_):_ =
-            filter ((== n) . snd)  $ zip [0..] $ zipWith (+) dists (tail (cycle dists))
-          ((_, tileNum0), offset) = (hcs !! cornerInd, dists !! cornerInd)
+            filter ((== n) . snd) $ zip [0..] $ toList $ mkPairs (+) dists -- zipWith (+) dists (tail dists <> [head dists])
+          ((_, tileNum0), offset) = (hcInd hcs cornerInd, hcInd dists cornerInd)
       in tileNum0 + offset
   where
     n = dist pt (0,0)
-    hcs = mkHexCorners n
-
-computePDs :: Int -> [(Int, Int)]
-computePDs n = foldMap go coords
-  where
-    go cur = do
-      let x = tiles M.! cur
-      let tileNums = mapMaybe ((tiles M.!?) . plus cur) unitDirs
-      ys@[_,_,_,_,_,_] <- pure tileNums
-      let diffs = (\y -> abs (y - x)) <$> ys
-      pure (x, getSum $ foldMap (\v -> case isPrime v of Just _ -> 1; _ -> 0) diffs)
-
-    coords = M.keys tiles
-    tiles = mkTiles n
+    hcs@(HC v0 v1 v2 v3 v4 v5) = mkHexCorners n
 
 isPrimeMemo :: Int -> Maybe ()
 isPrimeMemo = memo (void . isPrime)
 
 computePdGreaterEqual3 :: AxialCoord -> Bool
 computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
-    (_:_:_:_) -> True
+    (_:_:_:_) ->
+      {-
+        Since we know that PD(_) <= 3, we can stop at 3 and claim PD(c) = 3,
+        this pattern just look for that particular shape and avoids some computation.
+        (since we don't really care about what exactly is that prime)
+       -}
+      True
     _ -> False
   where
     x = coordToTileNum c
@@ -174,4 +184,4 @@ result =
       $ fmap fst $ filter snd
       $ concatMap (fmap ((\x -> (coordToTileNum x, computePdGreaterEqual3 x)) . fst) . genTiles) [0..]
   where
-    target = 100
+    target = 200
