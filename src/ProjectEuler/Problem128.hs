@@ -9,6 +9,7 @@ import Data.Maybe
 import Data.Monoid
 import Math.NumberTheory.Primes
 import Data.MemoTrie
+import Data.Functor
 
 import qualified Data.Map.Strict as M
 
@@ -156,12 +157,13 @@ computePDs n = foldMap go coords
     coords = M.keys tiles
     tiles = mkTiles n
 
-isPrimeMemo :: Int -> Bool
-isPrimeMemo = memo (\v -> case isPrime v of Just _ -> True; _ -> False)
+isPrimeMemo :: Int -> Maybe ()
+isPrimeMemo = memo (void . isPrime)
 
-computePD :: AxialCoord -> Int
-computePD c = -- getSum $ foldMap (\v -> if isPrimeMemo v then 1 else 0) diffs
-    getSum $ foldMap (\v -> case isPrime v of Just _ -> 1; _ -> 0) diffs
+computePdGreaterEqual3 :: AxialCoord -> Bool
+computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
+    (_:_:_:_) -> True
+    _ -> False
   where
     x = coordToTileNum c
     ys = fmap (coordToTileNum . plus c) unitDirs
@@ -169,9 +171,7 @@ computePD c = -- getSum $ foldMap (\v -> if isPrimeMemo v then 1 else 0) diffs
 
 result =
     (!! (target - 1))
-      $ fmap fst $ filter ((== 3) . snd)
-      $ concatMap (fmap ((\x -> (coordToTileNum x, computePD x)) . fst) . genTiles) [0..]
+      $ fmap fst $ filter snd
+      $ concatMap (fmap ((\x -> (coordToTileNum x, computePdGreaterEqual3 x)) . fst) . genTiles) [0..]
   where
-    target = 2000
-  -- all (\(c,expect) -> expect == coordToTileNum c) (M.toList (mkTiles 1000))
-  -- filter ((== 3) . snd ) $  sortOn fst $ computePDs 500
+    target = 100
