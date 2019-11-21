@@ -50,6 +50,13 @@ problem = pureProblem 128 Unsolved result
     if we plug in b = (0,0,0) as origin, we can figure out which circle are we in,
     this helps us in finding the mapping between axial coordinate and the number on that grid.
 
+  Update: despite some optimizations, it is still too slow to produce a result,
+  we'll need some improvement on the algorithm itself to go further.
+
+  we could try to maintain just "the most recent 3 circles (rings, actually)", which
+  has sufficient info for computing the middle ring of them, but this still takes linear time
+  to do - so unless something is significantly faster, this is as far as I'm willing to go.
+
  -}
 
 type AxialCoord = (Int, Int) -- coordinate
@@ -95,6 +102,13 @@ genTiles n = zip coords $ take (6*n) [vInit..]
     dirs = concatMap (replicate n) unitDirs
     vInit = 3*n*n - 3*n + 2
 
+genCoords :: Int -> [AxialCoord]
+genCoords 0 = [(0,0)]
+genCoords n = take (6*n) coords
+  where
+    coords = scanl plus (0,-n) dirs
+    dirs = concatMap (replicate n) unitDirs
+
 data HC a = HC !a !a !a !a !a !a deriving (Functor, Foldable)
 
 hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
@@ -115,7 +129,7 @@ mkHexCorners n =
         ((-n,n), vInit+n*2)
         ((0,n), vInit+n*3)
         ((n,0), vInit+n*4)
-        ((n, -n), vInit+n*5)
+        ((n,-n), vInit+n*5)
 
     -- zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
 
@@ -154,17 +168,17 @@ coordToTileNum pt = case lookup pt (toList hcs) of
     _ ->
       let dists = fmap (dist pt . fst) hcs
           (cornerInd,_):_ =
-            filter ((== n) . snd) $ zip [0..] $ toList $ mkPairs (+) dists -- zipWith (+) dists (tail dists <> [head dists])
+            filter ((== n) . snd) $ zip [0..] $ toList $ mkPairs (+) dists
           ((_, tileNum0), offset) = (hcInd hcs cornerInd, hcInd dists cornerInd)
       in tileNum0 + offset
   where
     n = dist pt (0,0)
-    hcs@(HC v0 v1 v2 v3 v4 v5) = mkHexCorners n
+    hcs = mkHexCorners n
 
 isPrimeMemo :: Int -> Maybe ()
 isPrimeMemo = memo (void . isPrime)
 
-computePdGreaterEqual3 :: AxialCoord -> Bool
+computePdGreaterEqual3 :: AxialCoord -> Maybe Int
 computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
     (_:_:_:_) ->
       {-
@@ -172,16 +186,15 @@ computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
         this pattern just look for that particular shape and avoids some computation.
         (since we don't really care about what exactly is that prime)
        -}
-      True
-    _ -> False
+      Just x
+    _ -> Nothing
   where
     x = coordToTileNum c
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
-result =
-    (!! (target - 1))
-      $ fmap fst $ filter snd
-      $ concatMap (fmap ((\x -> (coordToTileNum x, computePdGreaterEqual3 x)) . fst) . genTiles) [0..]
+result = answers !! (target - 1)
   where
+    answers :: [Int]
+    answers = foldMap (mapMaybe computePdGreaterEqual3 . genCoords) [0..]
     target = 200
