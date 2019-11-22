@@ -18,7 +18,7 @@ import qualified Data.Map.Strict as M
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 128 Unsolved run
+problem = pureProblem 128 Unsolved result
 
 {-
   Idea:
@@ -112,11 +112,6 @@ genCoords n = take (6*n) coords
 
 data HC a = HC !a !a !a !a !a !a deriving (Functor, Foldable)
 
-data Corner a
-  = CornerTop a a {- prev cur -}
-  | CornerOthers a {- cur -}
-    deriving (Show)
-
 hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
   0 -> v0
   1 -> v1
@@ -137,13 +132,12 @@ mkHexCorners n =
         ((n,0), vInit+n*4)
         ((n,-n), vInit+n*5)
 
-checkAroundHexCorners :: Int -> [Corner (Maybe Int)]
-checkAroundHexCorners n = CornerTop (computePdGreaterEqual3 tcPrevCoord) tcCur : xs
+checkAroundHexCorners :: Int -> [Int]
+checkAroundHexCorners n =
+    maybeToList (computePdGreaterEqual3 tcPrevCoord) <> mapMaybe (computePdGreaterEqual3 . fst) [tc,c1,c2,c3,c4,c5]
   where
     tcPrevCoord = fst tc `plus` (0,1) `plus` (1,0)
-    CornerOthers tcCur : xs = zipWith goOthers [tc,c1,c2,c3,c4,c5] unitDirs
     HC tc c1 c2 c3 c4 c5 = mkHexCorners n
-    goOthers (c, _) dir = CornerOthers (computePdGreaterEqual3 c) 
 
     -- zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
 
@@ -207,13 +201,11 @@ computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
-{-
-result = take (target - 1) answers
+result = and $ zipWith (==) (take 200 answers) fastCompute
   where
     answers :: [Int]
     answers = foldMap (mapMaybe computePdGreaterEqual3 . genCoords) [0..]
-    target = 100
- -}
+    target = 2000
 
 {-
 
@@ -283,5 +275,5 @@ _runDebug =
     logText $ T.pack $ "Ring #" <> show ringInd <> ":"
     logText $ T.pack $ "  " <> show (checkAroundHexCorners ringInd)
 
-run :: PEM ()
-run = _runDebug
+fastCompute :: [Int]
+fastCompute = [1,2,8,19,20] <> concatMap checkAroundHexCorners [4..]
