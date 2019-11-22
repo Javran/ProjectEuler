@@ -5,14 +5,8 @@ module ProjectEuler.Problem128
 
 import Data.Foldable
 import Data.Functor
-import Data.List
 import Data.Maybe
-import Data.Monoid
-import Data.Ord
 import Math.NumberTheory.Primes
-
-import qualified Data.Text as T
-import qualified Data.Map.Strict as M
 
 import ProjectEuler.Types
 
@@ -20,8 +14,6 @@ problem :: Problem
 problem = pureProblem 128 Solved result
 
 {-
-  TODO: cleanup.
-
   Idea:
 
   Let's again begin with what we can do:
@@ -33,31 +25,59 @@ problem = pureProblem 128 Solved result
     + f(0) = 1
     + f(n) = 3*n*n - 3*n + 2
 
-  - now let's setup a coordinate system so that we can:
+  - now let's setup a coordinate system so that when we are
+    given a coordinate, the tile numbers of its 6 neighborhoods can be easily computed.
 
-    + given a number, compute its coordinate in the system.
-    + given a coordinate, compute its 6 neighborhoods.
-
-  - a flat "Cube coordinate" seems like what we want, let's go with that
+  - Here we'll go with "Axial Coordinate" (flat version) as demonstrated in:
     
-    See https://www.redblobgames.com/grids/hexagons/ regarding "Cube coordinate".
+    https://www.redblobgames.com/grids/hexagons/
 
-  - note that for the actial representation we'll use Axial Coordinate since
-    one axis is redundant.
+  - to figure out ring id for a given cell, we can simply compute the distance between it and (0,0)
+    (note: the center cell is ring #0, and then we have ring #1 around the center one,
+    and ring #2, #3, ... growing outwards)
 
-  - for two cells a & b in cube coordinates, the distance between them is:
+  - It is too slow to go from tile #1, tile #2, ... all the way up, we got to find some optimizations.
 
-    (abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z)) / 2
+  - Now if we print out 6 differences for each cell for each ring, we can easily spot some patterns:
 
-    if we plug in b = (0,0,0) as origin, we can figure out which circle are we in,
-    this helps us in finding the mapping between axial coordinate and the number on that grid.
+    (1) we notice that all edge cells *not* next to any corner cells are simply repeating all 6 differences from
+        previous cell, this does make sense, say if we are moving from B to B+1:
 
-  Update: despite some optimizations, it is still too slow to produce a result,
-  we'll need some improvement on the algorithm itself to go further.
+         A     A+1
+       D   D+1     D+2
+         B     B+1
+       E   E+1     E+2
+         C     C+1
 
-  we could try to maintain just "the most recent 3 circles (rings, actually)", which
-  has sufficient info for computing the middle ring of them, but this still takes linear time
-  to do - so unless something is significantly faster, this is as far as I'm willing to go.
+      ----- direction of growth ----->
+
+      It is now obvious that this move does not change any of those 6 differences,
+      so actually, for each ring, we simply need to test those around corner cells.
+
+    (2) further, we can observe that for the edge cells *not* next to any corner cells,
+        there are always two 1s and two pairs of consective numbers
+        (so there are exactly 2 even number within those 4 numbers), e.g.:
+
+      - 15: [1,1,9,10,15,16]
+      - 17: [1,1,10,11,16,17]
+      - 21: [1,1,12,13,18,19]
+      - 25: [1,1,13,14,19,20]
+      - 31: [1,1,15,16,21,22]
+
+      This allows us to conclude that the PD values for those numbers are always <= 2,
+      therefore we can skip them all.
+
+    (3) by excluding those edges described in (2), we have only few cells to check for each ring:
+
+      - all corner cells
+      - the cell after corner cell, but it is unnecessary to check this one, due to (2):
+        since those edge cells following a corner cell are always a repetition of previous cell,
+        that means the cell right next to the corner cell is also one of those cells whose PD value is <= 2.
+      - the cell prior to the top corner cell.
+
+      By "prior" and "after" I meant cell with number -1 or +1 to the cell in question.
+
+  - With those discoveries above, we managed to get the correct answer - more optimization could follow.
 
  -}
 
@@ -65,9 +85,6 @@ type AxialCoord = (Int, Int) -- coordinate
 type AxialDir = (Int, Int)
 
 -- unit directions following tiles' growing direction.
--- TODO: notice that we can generete a infinite list of diffs, from which
--- we can build up <coordinate, tile number> pairs without using any formula.
--- this might be slow but my hope is that this gives us some insights.
 unitDirs :: [] AxialDir
 unitDirs =
   [ (-1, 1)
@@ -81,9 +98,6 @@ unitDirs =
 plus :: AxialDir -> AxialDir -> AxialDir
 plus (x,y) (a,b) = (x+a, y+b)
 
-mul :: Int -> AxialDir -> AxialDir
-mul c (x,y) = (c*x, c*y)
-
 dist :: AxialCoord -> AxialCoord -> Int
 dist (ax, az) (bx, bz) =
     abs (ax - bx) `max` abs (ay - by) `max` abs (az - bz)
@@ -92,18 +106,10 @@ dist (ax, az) (bx, bz) =
     by = -bx - bz
 
 {-
-  If we number the center cell "circle 0",
+  If we number the center cell / ring as "ring #0",
   and walk our way outwards around,
-  "genTiles n" generates "circle n" for us.
+  "genCoords n" generates coordinates for "ring #n" for us.
  -}
-genTiles :: Int -> [(AxialCoord, Int)]
-genTiles 0 = [((0,0), 1)]
-genTiles n = zip coords $ take (6*n) [vInit..]
-  where
-    coords = scanl plus (0,-n) dirs
-    dirs = concatMap (replicate n) unitDirs
-    vInit = 3*n*n - 3*n + 2
-
 genCoords :: Int -> [AxialCoord]
 genCoords 0 = [(0,0)]
 genCoords n = take (6*n) coords
@@ -113,6 +119,7 @@ genCoords n = take (6*n) coords
 
 data HC a = HC !a !a !a !a !a !a deriving (Functor, Foldable)
 
+hcInd :: HC a -> Int -> a
 hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
   0 -> v0
   1 -> v1
@@ -135,39 +142,13 @@ mkHexCorners n =
 
 checkAroundHexCorners :: Int -> [Int]
 checkAroundHexCorners n =
-    maybeToList (computePdGreaterEqual3 tcPrevCoord) <> mapMaybe (computePdGreaterEqual3 . fst) [tc,c1,c2,c3,c4,c5]
+    maybeToList (computePdGreaterEqual3 tcPrevCoord)
+    <> mapMaybe (computePdGreaterEqual3 . fst) [tc,c1,c2,c3,c4,c5]
   where
     tcPrevCoord = fst tc `plus` (0,1) `plus` (1,0)
     HC tc c1 c2 c3 c4 c5 = mkHexCorners n
 
-    -- zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
-
-{-
-  TODO: Now, if we can have an efficient way of implementing tileNumToCoord and coordToTileNum,
-  I suspect that's sufficient to solve the problem.
-
-  coordToTileNum: we can easily figure out the circle of that coord, but its exact location
-  is a bit tricky to do.
-
-  - define "anchors" to be 6 angle tiles on that circle
-  - if coord in question is one of those anchors, we already know how to produce a result
-  - pair anchors in counter-clockwise order, and compute distance between that coord and pairs,
-    there must be one pair that the coord sits in between (and with total distance being n),
-    we can then figure out the offset therefore compute the tile number.
-
-  tileNumToCoord:
-
-  - find the positive solution n for  3*n*n - 3*n + 2 = <tileNum>,
-    take the floor, hopefully this gives us circle number.
-
-  - note: let f t = (3 + sqrt (12*t-15)) / 6 seems to do it.
-
-  - condition around anchors, like what we are planning to do with coordToTileNum.
-
- -}
-tileNumToCoord :: Int -> AxialCoord
-tileNumToCoord = undefined
-
+mkPairs :: (t -> t -> a) -> HC t -> HC a
 mkPairs op (HC v0 v1 v2 v3 v4 v5) =
   HC (op v0 v1) (op v1 v2) (op v2 v3) (op v3 v4) (op v4 v5) (op v5 v0)
 
@@ -199,78 +180,12 @@ computePdGreaterEqual3 c = case mapMaybe (void . isPrime) diffs of
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
-result :: Int
-result = fastCompute !! (target - 1)
-  where
-    target = 2000
-
-{-
-
-Some outputs:
-
-Ring #0:
-  1: [1,2,3,4,5,6] corner
-Ring #1:
-  2: [1,1,5,6,7,17] corner
-  3: [1,1,2,6,7,8] corner
-  4: [1,1,3,7,8,9] corner
-  5: [1,1,4,8,9,10] corner
-  6: [1,1,5,9,10,11] corner
-  7: [1,5,6,10,11,12] corner
-Ring #2:
-  8: [1,6,11,12,13,29] corner
-  9: [1,1,6,7,12,13]
-  10: [1,1,7,12,13,14] corner
-  11: [1,1,7,8,13,14]
-  12: [1,1,8,13,14,15] corner
-  13: [1,1,8,9,14,15]
-  14: [1,1,9,14,15,16] corner
-  15: [1,1,9,10,15,16]
-  16: [1,1,10,15,16,17] corner
-  17: [1,1,10,11,16,17]
-  18: [1,1,11,16,17,18] corner
-  19: [1,11,12,17,17,18]
-Ring #3:
-  20: [1,12,17,18,19,41] corner
-  21: [1,1,12,13,18,19]
-  22: [1,1,12,13,18,19]
-  23: [1,1,13,18,19,20] corner
-  24: [1,1,13,14,19,20]
-  25: [1,1,13,14,19,20]
-  26: [1,1,14,19,20,21] corner
-  27: [1,1,14,15,20,21]
-  28: [1,1,14,15,20,21]
-  29: [1,1,15,20,21,22] corner
-  30: [1,1,15,16,21,22]
-  31: [1,1,15,16,21,22]
-  32: [1,1,16,21,22,23] corner
-  33: [1,1,16,17,22,23]
-  34: [1,1,16,17,22,23]
-  35: [1,1,17,22,23,24] corner
-  36: [1,1,17,18,23,24]
-  37: [1,17,18,23,24,29]
-
-So there are actually lots of repetitive computations on edge cells,
-actually, the list of cell number differences only changes in following cells:
-
- - all corner cells
- - the cell after corner cell
- - the cell prior to the top corner cell.
-
-By "prior" and "after" I meant cell with number -1 or +1 to the cell in question.
-
-This allows us to reduce search space drastically, as we now have only 6*2 + 1 = 13 cells to check for each ring.
-
-In addition, we can observe that all those edge cells come after corner are always consists of two 1s and two pairs
-of consecutive numbers, in other words, their PD values are <= 2,
-meaning whatever come after the corner cell can never be a candidate.
-
- -}
-_runDebug :: PEM ()
-_runDebug =
-  forM_ [4..100] $ \ringInd -> do
-    logText $ T.pack $ "Ring #" <> show ringInd <> ":"
-    logText $ T.pack $ "  " <> show (checkAroundHexCorners ringInd)
-
 fastCompute :: [Int]
-fastCompute = [1,2,8,19,20] <> concatMap checkAroundHexCorners [4..]
+fastCompute =
+  -- here "init" is used to exclude last generated coordinate because
+  -- it will be handled by ring #4's top corner.
+  mapMaybe computePdGreaterEqual3 (init $ concatMap genCoords [0..3])
+  <> concatMap checkAroundHexCorners [4..]
+
+result :: Int
+result = fastCompute !! (2000 - 1)
