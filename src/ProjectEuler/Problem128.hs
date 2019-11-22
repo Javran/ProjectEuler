@@ -18,9 +18,11 @@ import qualified Data.Map.Strict as M
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 128 Unsolved result
+problem = pureProblem 128 Solved result
 
 {-
+  TODO: cleanup.
+
   Idea:
 
   Let's again begin with what we can do:
@@ -201,10 +203,9 @@ computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
-result = and $ zipWith (==) (take 200 answers) fastCompute
+result :: Int
+result = fastCompute !! (target - 1)
   where
-    answers :: [Int]
-    answers = foldMap (mapMaybe computePdGreaterEqual3 . genCoords) [0..]
     target = 2000
 
 {-
