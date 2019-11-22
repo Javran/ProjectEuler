@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, OverloadedStrings #-}
 module ProjectEuler.Problem128
   ( problem
   ) where
@@ -12,12 +12,13 @@ import Data.MemoTrie
 import Data.Functor
 import Data.Foldable
 
+import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 128 Unsolved result
+problem = Problem 128 Unsolved run
 
 {-
   Idea:
@@ -193,8 +194,22 @@ computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
     ys = fmap (coordToTileNum . plus c) unitDirs
     diffs = (\y -> abs (y - x)) <$> ys
 
-result = answers !! (target - 1)
+{-
+result = take (target - 1) answers
   where
     answers :: [Int]
     answers = foldMap (mapMaybe computePdGreaterEqual3 . genCoords) [0..]
-    target = 200
+    target = 100
+ -}
+
+run :: PEM ()
+run =
+  forM_ [0..10] $ \ringInd -> do
+    logText $ T.pack $ "Ring #" <> show ringInd <> ":"
+    let coords = genCoords ringInd
+        hcs = toList $ fmap fst $ mkHexCorners ringInd
+    forM_ coords $ \c -> do
+      let x = coordToTileNum c
+          ys = fmap (coordToTileNum . plus c) unitDirs
+          diffs = (\y -> abs (y - x)) <$> ys
+      logText $ T.pack $ "  " <> show x  <> ": " <> show (sort diffs) <> if c `elem` hcs then " corner" else ""
