@@ -3,14 +3,13 @@ module ProjectEuler.Problem128
   ( problem
   ) where
 
+import Data.Foldable
+import Data.Functor
 import Data.List
-import Data.Ord
 import Data.Maybe
 import Data.Monoid
+import Data.Ord
 import Math.NumberTheory.Primes
-import Data.MemoTrie
-import Data.Functor
-import Data.Foldable
 
 import qualified Data.Text as T
 import qualified Data.Map.Strict as M
@@ -185,11 +184,8 @@ coordToTileNum pt = case lookup pt (toList hcs) of
     n = dist pt (0,0)
     hcs = mkHexCorners n
 
-isPrimeMemo :: Int -> Maybe ()
-isPrimeMemo = memo (void . isPrime)
-
 computePdGreaterEqual3 :: AxialCoord -> Maybe Int
-computePdGreaterEqual3 c = case mapMaybe isPrimeMemo diffs of
+computePdGreaterEqual3 c = case mapMaybe (void . isPrime) diffs of
     (_:_:_:_) ->
       {-
         Since we know that PD(_) <= 3, we can stop at 3 and claim PD(c) = 3,
