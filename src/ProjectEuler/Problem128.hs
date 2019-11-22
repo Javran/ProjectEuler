@@ -112,6 +112,11 @@ genCoords n = take (6*n) coords
 
 data HC a = HC !a !a !a !a !a !a deriving (Functor, Foldable)
 
+data Corner a
+  = CornerTop a a {- prev cur -}
+  | CornerOthers a {- cur -}
+    deriving (Show)
+
 hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
   0 -> v0
   1 -> v1
@@ -121,7 +126,7 @@ hcInd (HC v0 v1 v2 v3 v4 v5) i = case i of
   5 -> v5
   _ -> error "out of bound"
 
--- mkHexCorners :: Int -> [] (AxialCoord, Int)
+mkHexCorners :: Int -> HC (AxialCoord, Int)
 mkHexCorners 0 = let z = ((0,0), 1) in HC z z z z z z
 mkHexCorners n =
   let vInit = 3*n*n - 3*n + 2
@@ -131,6 +136,14 @@ mkHexCorners n =
         ((0,n), vInit+n*3)
         ((n,0), vInit+n*4)
         ((n,-n), vInit+n*5)
+
+checkAroundHexCorners :: Int -> [Corner (Maybe Int)]
+checkAroundHexCorners n = CornerTop (computePdGreaterEqual3 tcPrevCoord) tcCur : xs
+  where
+    tcPrevCoord = fst tc `plus` (0,1) `plus` (1,0)
+    CornerOthers tcCur : xs = zipWith goOthers [tc,c1,c2,c3,c4,c5] unitDirs
+    HC tc c1 c2 c3 c4 c5 = mkHexCorners n
+    goOthers (c, _) dir = CornerOthers (computePdGreaterEqual3 c) 
 
     -- zip [(0,-n), (-n,0), (-n,n), (0,n), (n,0), (n, -n)] [vInit, vInit+n ..]
 
@@ -202,14 +215,73 @@ result = take (target - 1) answers
     target = 100
  -}
 
-run :: PEM ()
-run =
-  forM_ [0..10] $ \ringInd -> do
+{-
+
+Some outputs:
+
+Ring #0:
+  1: [1,2,3,4,5,6] corner
+Ring #1:
+  2: [1,1,5,6,7,17] corner
+  3: [1,1,2,6,7,8] corner
+  4: [1,1,3,7,8,9] corner
+  5: [1,1,4,8,9,10] corner
+  6: [1,1,5,9,10,11] corner
+  7: [1,5,6,10,11,12] corner
+Ring #2:
+  8: [1,6,11,12,13,29] corner
+  9: [1,1,6,7,12,13]
+  10: [1,1,7,12,13,14] corner
+  11: [1,1,7,8,13,14]
+  12: [1,1,8,13,14,15] corner
+  13: [1,1,8,9,14,15]
+  14: [1,1,9,14,15,16] corner
+  15: [1,1,9,10,15,16]
+  16: [1,1,10,15,16,17] corner
+  17: [1,1,10,11,16,17]
+  18: [1,1,11,16,17,18] corner
+  19: [1,11,12,17,17,18]
+Ring #3:
+  20: [1,12,17,18,19,41] corner
+  21: [1,1,12,13,18,19]
+  22: [1,1,12,13,18,19]
+  23: [1,1,13,18,19,20] corner
+  24: [1,1,13,14,19,20]
+  25: [1,1,13,14,19,20]
+  26: [1,1,14,19,20,21] corner
+  27: [1,1,14,15,20,21]
+  28: [1,1,14,15,20,21]
+  29: [1,1,15,20,21,22] corner
+  30: [1,1,15,16,21,22]
+  31: [1,1,15,16,21,22]
+  32: [1,1,16,21,22,23] corner
+  33: [1,1,16,17,22,23]
+  34: [1,1,16,17,22,23]
+  35: [1,1,17,22,23,24] corner
+  36: [1,1,17,18,23,24]
+  37: [1,17,18,23,24,29]
+
+So there are actually lots of repetitive computations on edge cells,
+actually, the list of cell number differences only changes in following cells:
+
+ - all corner cells
+ - the cell after corner cell
+ - the cell prior to the top corner cell.
+
+By "prior" and "after" I meant cell with number -1 or +1 to the cell in question.
+
+This allows us to reduce search space drastically, as we now have only 6*2 + 1 = 13 cells to check for each ring.
+
+In addition, we can observe that all those edge cells come after corner are always consists of two 1s and two pairs
+of consecutive numbers, in other words, their PD values are <= 2,
+meaning whatever come after the corner cell can never be a candidate.
+
+ -}
+_runDebug :: PEM ()
+_runDebug =
+  forM_ [4..100] $ \ringInd -> do
     logText $ T.pack $ "Ring #" <> show ringInd <> ":"
-    let coords = genCoords ringInd
-        hcs = toList $ fmap fst $ mkHexCorners ringInd
-    forM_ coords $ \c -> do
-      let x = coordToTileNum c
-          ys = fmap (coordToTileNum . plus c) unitDirs
-          diffs = (\y -> abs (y - x)) <$> ys
-      logText $ T.pack $ "  " <> show x  <> ": " <> show (sort diffs) <> if c `elem` hcs then " corner" else ""
+    logText $ T.pack $ "  " <> show (checkAroundHexCorners ringInd)
+
+run :: PEM ()
+run = _runDebug
