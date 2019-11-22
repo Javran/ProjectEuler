@@ -4,7 +4,6 @@ module ProjectEuler.Problem12
 
 import Control.Arrow
 import ProjectEuler.Types
-import Math.NumberTheory.Primes.Testing (isPrime)
 import Math.NumberTheory.Primes.Factorisation
 import Petbox
 

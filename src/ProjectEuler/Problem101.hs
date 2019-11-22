@@ -1,8 +1,8 @@
+{-# LANGUAGE TypeApplications #-}
 module ProjectEuler.Problem101
   ( problem
   ) where
 
-import Data.List
 import Data.Ratio
 import Data.Monoid
 import Petbox
@@ -30,7 +30,7 @@ uValues = u <$> [1..]
   Lagrange polynomial: https://en.wikipedia.org/wiki/Lagrange_polynomial
  -}
 lagrangePoly :: [(Int,Integer)] -> Int -> Integer
-lagrangePoly xs n = round . sum $ do
+lagrangePoly xs n = round @(Ratio Integer) . sum $ do
   ((i,v),ys) <- pick xs
   pure $
     fromIntegral v *

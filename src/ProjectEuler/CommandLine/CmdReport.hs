@@ -21,7 +21,6 @@ import qualified Data.Map.Strict as M
 import ProjectEuler.AllProblems
 import ProjectEuler.CommandLine.Common
 import ProjectEuler.GetData
-import ProjectEuler.Types
 
 -- Result type for generating final reports
 {-

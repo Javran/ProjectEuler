@@ -7,7 +7,6 @@ import Petbox
 
 import qualified Data.List.Match as LMatch
 
-import ProjectEuler.SolCommon
 import ProjectEuler.Types
 
 {-

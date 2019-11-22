@@ -180,5 +180,5 @@ updateGetDataModule prjHome = do
 cmdSync :: [String] -> IO ()
 cmdSync _ = do
   prjHome <- getProjectHome
-  pIds <- updateAllProblems prjHome
+  _pIds <- updateAllProblems prjHome
   updateGetDataModule prjHome

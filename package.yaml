@@ -65,9 +65,12 @@ _exec-ghc-options: &exe-ghc-options
   - -O2
   - -rtsopts
   - -with-rtsopts=-N
+  - -Wall
 
 library:
   source-dirs: src
+  ghc-options:
+  - -Wall
 
 executables:
   pet:
@@ -91,4 +94,5 @@ tests:
       - -O2
       - -rtsopts
       - -with-rtsopts=-N
+      - -Wall
       - -main-is Spec
