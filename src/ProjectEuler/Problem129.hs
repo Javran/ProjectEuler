@@ -49,12 +49,14 @@ problem = Problem 129 Unsolved run
   A(3) = 3
   A(7) = 6
   A(9) = 8
-  A(11) = 4
+  A(11) = 2
   A(13) = 6
   A(17) = 16, exceeds 10.
 
   Only those end with 1,3,7,9 are included, as we are only looking at
   those n s.t. GCD(n, 10) = 1.
+
+  some interpretation: A(n) is the number of 1's in the repunit.
 
  -}
 
