@@ -6,13 +6,15 @@ module ProjectEuler.Problem129
 -- import Math.NumberTheory.Primes
 import Control.Monad
 import Petbox
+import Data.List
 
 import qualified Data.Text as T
+import Debug.Trace
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 129 Unsolved run
+problem = pureProblem 129 Unsolved result
 
 {-
   Well, I really hoped that the description is something
@@ -61,17 +63,17 @@ problem = Problem 129 Unsolved run
 
  -}
 
-repunits :: [(Int, Integer)]
-repunits = zip [1..] $ iterate (\x -> x * 10 + 1) 1
+repunits :: [Integer]
+repunits = (\x -> ((10 :: Integer) ^ x - 1) `quot` 9) <$> [1 :: Int ..]
 
--- generate inputs that are coprime to 10.
-inputs :: [Int]
-inputs = concat $ iterate (fmap (+10)) [1,3,7,9]
+genInput :: Integer -> [Integer]
+genInput base =
+  concat $ iterate (fmap (+10)) (fmap (+base) [1,3,7,9])
 
 -- result = take 10 repunits
-computeA :: Int -> Int
-computeA n = fst $ firstSuchThat ((\x -> x `rem` fromIntegral n == 0) . snd) repunits
+computeA :: Integer -> Int
+computeA n = i+1
+  where
+    Just i = findIndex (\x -> x `rem` n == 0) repunits
 
-run :: PEM ()
-run = forM_ (take 200 inputs) $ \i ->
-  logT $ "A(" <> T.pack (show i) <> ") = " <> T.pack (show (computeA i))
+result = fmap (\x -> (x, computeA x)) $ take 20 $ genInput 1000000
