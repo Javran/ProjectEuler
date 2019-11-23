@@ -3,8 +3,9 @@ module ProjectEuler.Problem129
   ( problem
   ) where
 
-import Math.NumberTheory.Primes
+-- import Math.NumberTheory.Primes
 import Control.Monad
+import Petbox
 
 import qualified Data.Text as T
 
@@ -60,12 +61,17 @@ problem = Problem 129 Unsolved run
 
  -}
 
-repunits :: [Integer]
-repunits = iterate (\x -> x * 10 + 1) 1
+repunits :: [(Int, Integer)]
+repunits = zip [1..] $ iterate (\x -> x * 10 + 1) 1
 
+-- generate inputs that are coprime to 10.
+inputs :: [Int]
+inputs = concat $ iterate (fmap (+10)) [1,3,7,9]
 
 -- result = take 10 repunits
+computeA :: Int -> Int
+computeA n = fst $ firstSuchThat ((\x -> x `rem` fromIntegral n == 0) . snd) repunits
 
 run :: PEM ()
-run = forM_ (take 20 repunits) $ \ru -> do
-  logT $ T.pack (show ru) <> ": " <> T.pack (show (factorise ru))
+run = forM_ (take 200 inputs) $ \i ->
+  logT $ "A(" <> T.pack (show i) <> ") = " <> T.pack (show (computeA i))
