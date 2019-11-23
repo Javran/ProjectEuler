@@ -9,12 +9,11 @@ import Petbox
 import Data.List
 
 import qualified Data.Text as T
-import Debug.Trace
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 129 Unsolved result
+problem = pureProblem 129 Solved result
 
 {-
   Well, I really hoped that the description is something
@@ -61,6 +60,15 @@ problem = pureProblem 129 Unsolved result
 
   some interpretation: A(n) is the number of 1's in the repunit.
 
+  So there's an opportunity of sharing results:
+  say we computed that R(k) `mod` n = r:
+
+  R(k+1) `mod` n
+  > (R(k) * 10 + 1) `mod` n
+  > ((R(k) `mod` n) * 10 + 1) `mod` n (since GCD(n, 10) = 1)
+
+  This allows us to reuse r to check for R(k+1) `mod` n.
+
  -}
 
 repunits :: [Integer]
@@ -76,4 +84,11 @@ computeA n = i+1
   where
     Just i = findIndex (\x -> x `rem` n == 0) repunits
 
-result = fmap (\x -> (x, computeA x)) $ take 20 $ genInput 1000000
+computeAFast n = go 1 1
+  where
+    go 0 acc = acc
+    go x acc = go ((x * 10 + 1) `rem` n) (acc+1)
+
+-- TODO: cleanup to follow.
+
+result = firstSuchThat ((> 1000000) . computeAFast) $ genInput 1000000
