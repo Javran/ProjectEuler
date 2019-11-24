@@ -1,5 +1,7 @@
 module ProjectEuler.Problem129
   ( problem
+  , genInput
+  , computeA
   ) where
 
 import Petbox
