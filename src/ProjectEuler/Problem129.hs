@@ -1,14 +1,8 @@
-{-# LANGUAGE OverloadedStrings #-}
 module ProjectEuler.Problem129
   ( problem
   ) where
 
--- import Math.NumberTheory.Primes
-import Control.Monad
 import Petbox
-import Data.List
-
-import qualified Data.Text as T
 
 import ProjectEuler.Types
 
@@ -71,24 +65,15 @@ problem = pureProblem 129 Solved result
 
  -}
 
-repunits :: [Integer]
-repunits = (\x -> ((10 :: Integer) ^ x - 1) `quot` 9) <$> [1 :: Int ..]
-
-genInput :: Integer -> [Integer]
+genInput :: Int -> [Int]
 genInput base =
   concat $ iterate (fmap (+10)) (fmap (+base) [1,3,7,9])
 
--- result = take 10 repunits
-computeA :: Integer -> Int
-computeA n = i+1
-  where
-    Just i = findIndex (\x -> x `rem` n == 0) repunits
-
-computeAFast n = go 1 1
+computeA :: Int -> Int
+computeA n = go 1 1
   where
     go 0 acc = acc
     go x acc = go ((x * 10 + 1) `rem` n) (acc+1)
 
--- TODO: cleanup to follow.
-
-result = firstSuchThat ((> 1000000) . computeAFast) $ genInput 1000000
+result :: Int
+result = firstSuchThat ((> 1000000) . computeA) $ genInput 1000000
