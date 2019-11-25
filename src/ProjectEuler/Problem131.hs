@@ -29,6 +29,7 @@ _doSearch = reverse $ do
   Just _ <- pure $ isPrime q
   pure q
 
+-- TODO: perhaps put some explanation here as I don't feel it is actually thoughtfully solved.
 result :: Int
 result =
     getSum
