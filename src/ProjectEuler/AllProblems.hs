@@ -141,6 +141,7 @@ import ProjectEuler.Problem129
 import ProjectEuler.Problem130
 import ProjectEuler.Problem131
 import ProjectEuler.Problem132
+import ProjectEuler.Problem133
 import ProjectEuler.Problem206
 
 allProblems :: IM.IntMap Problem
@@ -278,5 +279,6 @@ allProblems =
     , (130, ProjectEuler.Problem130.problem)
     , (131, ProjectEuler.Problem131.problem)
     , (132, ProjectEuler.Problem132.problem)
+    , (133, ProjectEuler.Problem133.problem)
     , (206, ProjectEuler.Problem206.problem)
     ]
