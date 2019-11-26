@@ -4,12 +4,13 @@ module ProjectEuler.Problem133
 
 import Math.NumberTheory.Primes
 import Math.NumberTheory.Powers.Modular
+import Data.List
 import Control.Monad
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 133 Unsolved result
+problem = pureProblem 133 Solved result
 
 divisibleSmall :: Integer -> Bool
 divisibleSmall p = not . null $ do
@@ -26,4 +27,22 @@ divisibleSmall p = not . null $ do
 _doSearch :: [Integer]
 _doSearch = take 10 $ filter divisibleSmall (fmap unPrime primes)
 
-result = ()
+findMultOrder :: Int -> Int
+findMultOrder p = go 1 (10 `rem` p)
+  where
+    go k 1 = k
+    go k acc = go (k+1) ((acc * 10) `rem` p)
+
+-- make sure that p > 5 (or, in other words, gcd(p, 10) = 1), otherwise this function will never return.
+couldDivide :: Int -> Bool
+couldDivide p = case factorise (findMultOrder p) of
+  [(pa, _)] ->
+    unPrime pa `elem` [2,5] -- 2^? or 5^?
+  [(pa, _), (pb, _)] ->
+    null ([2,5] \\ [unPrime pa, unPrime pb]) -- 2^i * 5^j where i > 0 and j > 0
+  _ -> False
+
+result :: Int
+result = 2 + 3 + 5 + sum
+  [ p | p <- takeWhile (< 100000) . dropWhile (<= 5) $ fmap unPrime primes, not . couldDivide $ p ]
+
