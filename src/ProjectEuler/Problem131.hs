@@ -29,7 +29,12 @@ _doSearch = reverse $ do
   Just _ <- pure $ isPrime q
   pure q
 
--- TODO: perhaps put some explanation here as I don't feel it is actually thoughtfully solved.
+{-
+  TODO: Perhaps at some point in future I'll go back and find a proof
+  (or some more intuitive ideas on its correctness),
+  but let's move on for now - the detective work is done, we have the right answer
+  and we are not copying and pasting it from somewhere else - I'd say this is good enough.
+ -}
 result :: Int
 result =
     getSum
