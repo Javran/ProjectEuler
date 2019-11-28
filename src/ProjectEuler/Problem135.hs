@@ -57,7 +57,6 @@ findSameDiffs n = do
     therefore we can safely start with lo+1.
    -}
   m <- IS.toList ds
-  guard $ n `rem` m == 0
   let numer = n + m * m
       denom = 4 * m
   (d, 0) <- pure $ numer `quotRem` denom
