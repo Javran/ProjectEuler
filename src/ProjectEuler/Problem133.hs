@@ -57,7 +57,7 @@ couldDivide' p = go0 kInit
     go0 k
       | (q,r) <- k `quotRem` 2 = if r == 0 then go0 q else go1 k
     go1 1 = True
-    go1 k | (q,r) <- k `quotRem` 5 = if r == 0 then go1 q else False
+    go1 k | (q,r) <- k `quotRem` 5 = (r == 0) && go1 q
 
 result :: Int
 result = 2 + 3 + 5 + sum
