@@ -5,13 +5,15 @@ module ProjectEuler.Problem135
 import Data.Monoid
 import Control.Monad
 import Math.NumberTheory.Powers.Squares
+import Math.NumberTheory.ArithmeticFunctions
 
 import qualified Data.List.Match
+import qualified Data.IntSet as IS
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 135 Unsolved result
+problem = pureProblem 135 Solved result
 
 {-
   Let's get some symbol pushing going:
@@ -46,13 +48,15 @@ problem = pureProblem 135 Unsolved result
 
  -}
 
+findSameDiffs :: Int -> [] (Int, Int)
 findSameDiffs n = do
   let lo = integerSquareRoot' (n `quot` 3)
+      (_, ds) = IS.split lo $ divisorsSmall n
   {-
     m > sqrt(n / 3) >= floor( sqrt(n / 3) ),
     therefore we can safely start with lo+1.
    -}
-  m <- [lo+1 .. n]
+  m <- IS.toList ds
   guard $ n `rem` m == 0
   let numer = n + m * m
       denom = 4 * m
@@ -67,5 +71,5 @@ result =
   getSum $
     foldMap
       (\n -> if exactly10 . findSameDiffs $ n then 1 else 0)
-      [1155 :: Int .. 100000-1]
+      [1155 :: Int .. 1000000-1]
 
