@@ -2,6 +2,12 @@ module ProjectEuler.Problem135
   ( problem
   ) where
 
+import Data.Monoid
+import Control.Monad
+import Math.NumberTheory.Powers.Squares
+
+import qualified Data.List.Match
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -34,9 +40,32 @@ problem = pureProblem 135 Unsolved result
   >  n < 3 * m^2
 
   This gives us a tighter range on m.
+  Also note that since d can be expressed directly using only m and n,
+  we only need to search for m and verify that d is valid.
   Let's try this idea out.
 
  -}
 
-result = ()
+findSameDiffs n = do
+  let lo = integerSquareRoot' (n `quot` 3)
+  {-
+    m > sqrt(n / 3) >= floor( sqrt(n / 3) ),
+    therefore we can safely start with lo+1.
+   -}
+  m <- [lo+1 .. n]
+  guard $ n `rem` m == 0
+  let numer = n + m * m
+      denom = 4 * m
+  (d, 0) <- pure $ numer `quotRem` denom
+  pure (m, d)
+
+exactly10 :: [a] -> Bool
+exactly10 = Data.List.Match.equalLength (replicate 10 ())
+
+result :: Int
+result =
+  getSum $
+    foldMap
+      (\n -> if exactly10 . findSameDiffs $ n then 1 else 0)
+      [1155 :: Int .. 100000-1]
 
