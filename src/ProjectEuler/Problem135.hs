@@ -65,6 +65,8 @@ findSameDiffs n = do
 exactly10 :: [a] -> Bool
 exactly10 = Data.List.Match.equalLength (replicate 10 ())
 
+{- TODO: yup, we can do faster by avoiding divisorsSmall repeatly and count in the other direction -}
+
 result :: Int
 result =
   getSum $
