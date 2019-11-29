@@ -1,5 +1,6 @@
 module ProjectEuler.Problem135
   ( problem
+  , countSameDiffs
   ) where
 
 import Control.Monad
