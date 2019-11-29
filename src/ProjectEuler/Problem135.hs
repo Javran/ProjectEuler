@@ -6,9 +6,13 @@ import Data.Monoid
 import Control.Monad
 import Math.NumberTheory.Powers.Squares
 import Math.NumberTheory.ArithmeticFunctions
+import Data.Word
+import Control.Monad.ST
 
 import qualified Data.List.Match
 import qualified Data.IntSet as IS
+import qualified Data.Vector.Unboxed as VU
+import qualified Data.Vector.Unboxed.Mutable as VUM
 
 import ProjectEuler.Types
 
@@ -62,6 +66,18 @@ findSameDiffs n = do
   (d, 0) <- pure $ numer `quotRem` denom
   pure (m, d)
 
+countSameDiffs :: Int -> VU.Vector Word16
+countSameDiffs maxN = runST $ do
+  vec <- VUM.replicate (maxN+1) (0 :: Word16)
+  forM_ [2 .. maxN] $ \m ->
+    forM_ (takeWhile (<= maxN) [m, m+m..]) $ \n -> do
+      let numer = n + m * m
+          denom = 4 * m
+      case numer `quotRem` denom of
+        (d, 0) | d < m -> VUM.modify vec succ n
+        _ -> pure ()
+  VU.unsafeFreeze vec
+
 exactly10 :: [a] -> Bool
 exactly10 = Data.List.Match.equalLength (replicate 10 ())
 
@@ -71,6 +87,6 @@ result :: Int
 result =
   getSum $
     foldMap
-      (\n -> if exactly10 . findSameDiffs $ n then 1 else 0)
-      [1155 :: Int .. 1000000-1]
+      (\n -> if n == 10 then 1 else 0)
+      $ VU.toList $ countSameDiffs (1000000-1)
 
