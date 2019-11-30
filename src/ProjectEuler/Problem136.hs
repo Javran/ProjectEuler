@@ -37,9 +37,18 @@ problem = pureProblem 136 Solved result
 
   "when is the solution (m,d) unique, given n?"
 
-  TODO: I believe there should be a better way:
-  instead of counting, we can stop trying on a specific n
-  when it has more than 1 solution.
+  Few more updates:
+
+  - Maintaining two IntSets, one for those that has exactly one solution,
+    and the other for those that has more than one.
+    But this plan does not go too far: I've attempted to factor out
+    generation of n (if all conditions are satisfied, return n in a List monad),
+    and by simply doing so we get a significant slowdown - I doubt this plan will
+    get us anywhere.
+
+  - I guess we can only do faster by doing some actual math - there are existing
+    explanations but I've prefer to write them down and see if I can explain those
+    in my own words.
 
  -}
 
@@ -73,6 +82,6 @@ result :: Int
 result =
   getSum
   . foldMap (\n -> if n == 1 then 1 else 0)
-  $ VU.toList
+  . VU.toList
   $ countSameDiffs (50000000-1)
 
