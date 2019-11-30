@@ -2,14 +2,7 @@ module ProjectEuler.Problem136
   ( problem
   ) where
 
-import Control.Monad
-import Control.Monad.ST
-import Data.Monoid
-import Data.Word
 import Petbox
-
-import qualified Data.Vector.Unboxed as VU
-import qualified Data.Vector.Unboxed.Mutable as VUM
 
 import ProjectEuler.Types
 
@@ -65,10 +58,7 @@ countSameDiffs :: Int -> Int
 countSameDiffs maxN = 2 + case1 + case2 + case3
   where
     oddPrimes = takeWhile (<= maxN) $ tail primes
-    case1 =
-      getSum
-      . foldMap (\v -> if v `rem` 4 == 3 then 1 else 0)
-      $ oddPrimes
+    case1 = length . filter (\v -> v `rem` 4 == 3) $ oddPrimes
     case2 = length $ takeWhile (<= (maxN `quot` 4)) oddPrimes
     case3 = length $ takeWhile (<= (maxN `quot` 16)) oddPrimes
 
