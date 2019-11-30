@@ -17,38 +17,39 @@ problem = pureProblem 136 Solved result
 
 {-
   Using same method as in Problem135 works,
-  but it is a bit slow than I like, let's try to speed it up.
+  but it is a bit slower than I like.
+
+  There are various ways that we can do a better job based on the brute force
+  we established in Problem135,
+  but I don't think we can have any significant improvement along that path.
+
+  The following is mostly done after I've solved the problem,
+  to both convince myself and whoever reading this that a solution
+  better than brute force exists.
 
   Carrying over from Problem135:
 
   (m+d)^2 - m^2 - (m-d)^2 = n > 0.
 
-  w.l.o.g.: m > d > 0 & m > 1.
+  w.l.o.g.: m > d > 0
 
-  (m+d)^2 - m^2 - (m-d)^2
-  = (m+d+m-d)(m+d-m+d) - m^2
-  = 4 m d - m^2
-  = (4 d - m) * m = n > 0
-
-  - d = (n + m^2) / (4 * m) must be an integer.
-  - from d < m we have: n < 3 * m^2.
+  - m > 1.
+  - (m+d)^2 - m^2 - (m-d)^2 = (4 d - m) * m = n > 0
 
   And for Problem136, we want to explore:
-
   "when is the solution (m,d) unique, given n?"
 
-  Few more updates:
+  Let's focus on `n = (4d - m) * m` for now:
 
-  - Maintaining two IntSets, one for those that has exactly one solution,
-    and the other for those that has more than one.
-    But this plan does not go too far: I've attempted to factor out
-    generation of n (if all conditions are satisfied, return n in a List monad),
-    and by simply doing so we get a significant slowdown - I doubt this plan will
-    get us anywhere.
+  - let v = 4d - m, we have n = v * m && m + v = 4d
+    (N.B. I'm not sure why we define v in the first place,
+    my guess is that it makes the writing a bit easier)
+  - here the idea is to explore all pairs (v, m)
+    and find those m + v = 4d and check their validities.
+  - let n = 2^u * r, where u >= 0 and r is an odd number.
+    In other words, 2^u is all the "even-ness" of n.
 
-  - I guess we can only do faster by doing some actual math - there are existing
-    explanations but I've prefer to write them down and see if I can explain those
-    in my own words.
+  TODO: finish this.
 
  -}
 
