@@ -6,6 +6,7 @@ import Control.Monad
 import Control.Monad.ST
 import Data.Monoid
 import Data.Word
+import Petbox
 
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
@@ -35,6 +36,7 @@ problem = pureProblem 136 Solved result
 
   - m > 1.
   - (m+d)^2 - m^2 - (m-d)^2 = (4 d - m) * m = n > 0
+  - d < m, or equivalently n < 3 * m^2
 
   And for Problem136, we want to explore:
   "when is the solution (m,d) unique, given n?"
@@ -54,35 +56,21 @@ problem = pureProblem 136 Solved result
  -}
 
 {-
-  Note the difference between this one and the one in Problem135:
-  for this one we are only interested in those that has exactly one
-  solution, therefore we can stop when we have a counting more than one,
-  this cuts out memory consumption as the value we store for each element
-  is at most 2.
+  n = 4, 16, p === 3 (mod 4), 4*p, 16*p are all the solutions (p > 2 therefore is odd)
+  (TODO: proof pending)
+
+  note: maxN > 16
  -}
-countSameDiffs :: Int -> VU.Vector Word8
-countSameDiffs maxN = runST $ do
-  vec <- VUM.replicate (maxN+1) (0 :: Word8)
-  forM_ [2 .. maxN] $ \m -> do
-    {-
-      Since demanding that d < m is the same as demanding n < 3 * m^2,
-      we might as well do this in the first place and don't bother checking
-      d < m.
-     -}
-    let maxN' = min maxN (3 * m * m-1)
-    forM_ [m, m+m .. maxN'] $ \n -> do
-      let numer = n + m * m
-          denom = 4 * m
-      when (numer `rem` denom == 0) $ do
-        v <- VUM.read vec n
-        when (v < 2) $
-          VUM.write vec n (v+1)
-  VU.unsafeFreeze vec
+countSameDiffs :: Int -> Int
+countSameDiffs maxN = 2 + case1 + case2 + case3
+  where
+    oddPrimes = takeWhile (<= maxN) $ tail primes
+    case1 =
+      getSum
+      . foldMap (\v -> if v `rem` 4 == 3 then 1 else 0)
+      $ oddPrimes
+    case2 = length $ takeWhile (<= (maxN `quot` 4)) oddPrimes
+    case3 = length $ takeWhile (<= (maxN `quot` 16)) oddPrimes
 
 result :: Int
-result =
-  getSum
-  . foldMap (\n -> if n == 1 then 1 else 0)
-  . VU.toList
-  $ countSameDiffs (50000000-1)
-
+result = countSameDiffs (50000000-1)
