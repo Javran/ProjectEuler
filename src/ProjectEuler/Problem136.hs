@@ -72,6 +72,56 @@ problem = pureProblem 136 Solved result
     To make sure that m > d, notice this condition is the same as n < 3 * m^2,
     plug in n = m = p, we have p < 3 * p^2, which trivially holds.
 
+  - case #4: n = 4p.
+
+    (m, v) = (p, 4) or (2p, 2) or (4p, 1) or (1, 4p) or (2, 2p) or (4, p).
+    - m > 1 eliminates (1, 4p)
+    - p + 4 === p === 0 (mod 4), which is impossible, eliminating (p,4) and (4,p)
+    - 4p + 1 === 1 === 0 (mod 4), impossible, eliminating (4p, 1) and (1, 4p)
+    - for (m, v) = (2, 2p), plug in n < 3*m^2, 4p < 3*4, p < 3, impossible.
+
+    Now we have only (m, v) = (2p, 2). m + v = 2p + 2 = 2*(p + 1).
+    since p is odd, 2*(p+1) === 0 (mod 4) holds. we have one solution in this case.
+
+  - case #5: n = 16p.
+
+    (m, v) = (1, 16p) or (2, 8p) or (4, 4p) or (8, 2p) or (16, p)
+          or (16p, 1) or (8p, 2) or (4p, 4) or (2p, 8) or (p, 16).
+
+    - 16p + 1, 8p + 2, 2p + 8, p + 16 are all impossible by some modular reasoning,
+      leaving us (m, v) = (4, 4p) and (4p, 4)
+    - with further constraint n < 3*m^2, we have only (m, v) = (4p, 4), which is a valid solution.
+
+  Now for case #1 ~ #5, we have exactly one solutions, which happens to be all the cases that we need to include,
+  for the rest of the section, let's consider all the other possibilities:
+
+  - case #6: n = 2^u * r, u = 1. (i.e. n = 2 * r where r is odd)
+
+    (m, v) = (1, 2r) or (2, r) or (r, 2) or (2r, 1).
+
+    - 1 + 2r and 2 + r are always odd, therefore all of those are impossible.
+
+  - case #7: n = 2^u * r, u = 3. (i.e. n = 8 * r where r is odd)
+
+    - 8r + 1 , 4r + 2, 2r + 4, r + 8 are all impossible to be _ === 0 (mod 4).
+
+  - case #8: n = 4 * r, where r is a composite.
+
+    let r = r_0 * r_1. and we know both r_0 and r_1 are odd numbers.
+
+    try all combinations of (m, v), we'll end up with two possibilities:
+
+    (m,v) = (2r_0, 2r_1) or (2r_0, 2r_1)
+
+    Note that these two are symmetric, either both holds or none of them holds.
+    since both r_0 and r_1 are odd, 2r_0 + 2r_1 === 0 (mod 4) is always true,
+    so we have two solutions, not one.
+
+    (TODO:)
+    plug in (m,v) = (2r_0, 2r_1) to n < 3*m^2:
+    4 * r_0 * r_1 < 3 * 4 * r_0 * r_0
+    > r_1 < 3 * r_0  (here I haven't convinced myself that this always holds)
+
   TODO: finish this.
 
  -}
