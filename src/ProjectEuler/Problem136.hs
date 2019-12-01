@@ -44,6 +44,34 @@ problem = pureProblem 136 Solved result
   - let n = 2^u * r, where u >= 0 and r is an odd number.
     In other words, 2^u is all the "even-ness" of n.
 
+  TODO: the following is mostly based on euler@'s comment - I'll still need to
+  see how to go between steps and steps, but I think for now it doesn't hurt to write down
+  what we have for now.
+
+  - case #1: n = 4.
+
+    We have a bunch of choices: (m, v) = (1, 4) or (2, 2) or (4, 1).
+    but since we want m + v === 0 (mod 4) and m > 1, we only have one choice, which is (2, 2),
+    which corresponds to 3^2 - 2^2 - 1^2 = 4.
+
+  - case #2: n = 16.
+
+    Similar to case #1, we have (m, v) = (1, 16) or (2, 8), or (4, 4) or (8, 2) or (16, 1).
+    But again we have only one valid choice: (m, v) = (4, 4),
+    which corresponds to 6^2 - 4^2 - 2^2 = 16.
+
+  - case #3: n = p where p is an odd prime.
+
+    We have (m, v) = (1, p) or (p, 1) in this case,
+    since m > 1, only (p, 1) could be valid.
+
+    m + v === 0 (mod 4)
+    > p + 1 === 0 (mod 4)
+    > p === 3 (mod 4)
+
+    To make sure that m > d, notice this condition is the same as n < 3 * m^2,
+    plug in n = m = p, we have p < 3 * p^2, which trivially holds.
+
   TODO: finish this.
 
  -}
