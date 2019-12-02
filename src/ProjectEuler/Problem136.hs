@@ -127,6 +127,18 @@ problem = pureProblem 136 Solved result
     r_1 >= 3*r_0 && r_0 >= 3*r_1, which would imply r_1 >= 3*r_1, which can never hold.
     Therefore we have at least two solutions for this case.
 
+  - case #9: n = 2^u * r, where u > 3 and r is composite. (TODO)
+
+  Making a table for all the cases we've covered so far:
+
+           n = 1                 | n = 2^u * p | n = 2^u * r_0 * r_1
+  u = 0  | impossible, m > 1     | #3          | ?
+  u = 1  | (m + v) =/= 0 (mod 4) | #6          | #6
+  u = 2  | #1                    | #4          | #8
+  u = 3  | #7                    | #7          | #7
+  u = 4  | #2                    | #5          | #9
+  u > 4  | #9                    | ?           | #9
+
   TODO: finish this.
 
  -}
