@@ -109,18 +109,23 @@ problem = pureProblem 136 Solved result
 
     let r = r_0 * r_1. and we know both r_0 and r_1 are odd numbers.
 
-    try all combinations of (m, v), we'll end up with two possibilities:
+    try all combinations of (m, v), we'll end up with 3 possibilities:
 
-    (m,v) = (2r_0, 2r_1) or (2r_0, 2r_1)
+    (m,v) = (2r_0, 2r_1) or (2r_1, 2r_0) or (2r, 2)
 
-    Note that these two are symmetric, either both holds or none of them holds.
-    since both r_0 and r_1 are odd, 2r_0 + 2r_1 === 0 (mod 4) is always true,
-    so we have two solutions, not one.
+    plug (m, v) = (2r, 2) into n < 3*m^2 => 4*r < 3*4*r*r, which always holds.
 
-    (TODO:)
+    Note that the remaining two are symmetric,
     plug in (m,v) = (2r_0, 2r_1) to n < 3*m^2:
+
     4 * r_0 * r_1 < 3 * 4 * r_0 * r_0
-    > r_1 < 3 * r_0  (here I haven't convinced myself that this always holds)
+    > r_1 < 3 * r_0
+
+    and by symmetricity we know r_0 < 3 * r_1 needs to hold for (2r_1, 2r_0).
+
+    To invalidate both of them we have to verify
+    r_1 >= 3*r_0 && r_0 >= 3*r_1, which would imply r_1 >= 3*r_1, which can never hold.
+    Therefore we have at least two solutions for this case.
 
   TODO: finish this.
 
