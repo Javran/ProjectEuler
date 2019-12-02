@@ -136,21 +136,25 @@ problem = pureProblem 136 Solved result
 
     this is sufficient to show that more than one solution exists.
 
+  - case #10: n = 2^u * p where u > 4.
+
+    (m, v) = (2^(u-4)*4p, 4) or (2^(u-5)*4p, 8), at least.
+
+  - case #11: n is odd and composite. (TODO)
+
   Making a table for all the cases we've covered so far:
 
            n = 1                 | n = 2^u * p | n = 2^u * r_0 * r_1
-  u = 0  | impossible, m > 1     | #3          | ?
+  u = 0  | impossible, m > 1     | #3          | #11
   u = 1  | (m + v) =/= 0 (mod 4) | #6          | #6
   u = 2  | #1                    | #4          | #8
   u = 3  | #7                    | #7          | #7
   u = 4  | #2                    | #5          | #9
-  u > 4  | #9                    | ?           | #9
+  u > 4  | #9                    | #10         | #9
 
-  - from the table we can tell that there are still two cases missing:
-    - n is odd and composite.
-    - n = 2^u * p where u > 4
 
   TODO: finish this.
+  TODO: messy, needs cleanup.
 
  -}
 
