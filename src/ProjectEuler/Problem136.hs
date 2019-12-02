@@ -140,7 +140,12 @@ problem = pureProblem 136 Solved result
 
     (m, v) = (2^(u-4)*4p, 4) or (2^(u-5)*4p, 8), at least.
 
-  - case #11: n is odd and composite. (TODO)
+  - case #11: n is odd and composite. let n = r_0 * r_1.
+
+    for (m + v) === 0 (mod 4), it must be that
+    (m === 1 (mod 4) and v === 3 (mod 4)) or the other way around.
+    which suggests (m, v) = (n, 1) is also a valid solution.
+    Therefore we either have more than one solution or have no solution at all.
 
   Making a table for all the cases we've covered so far:
 
@@ -152,8 +157,6 @@ problem = pureProblem 136 Solved result
   u = 4  | #2                    | #5          | #9
   u > 4  | #9                    | #10         | #9
 
-
-  TODO: finish this.
   TODO: messy, needs cleanup.
 
  -}
