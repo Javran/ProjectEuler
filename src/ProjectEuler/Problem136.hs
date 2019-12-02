@@ -127,7 +127,14 @@ problem = pureProblem 136 Solved result
     r_1 >= 3*r_0 && r_0 >= 3*r_1, which would imply r_1 >= 3*r_1, which can never hold.
     Therefore we have at least two solutions for this case.
 
-  - case #9: n = 2^u * r, where u > 3 and r is composite. (TODO)
+  - case #9: n = 2^u * r, where u > 3 and r is composite (r = r_0 * r1)
+
+    - since u > 3, we can always put 2^2 on both side of (m, v),
+      it's easy to see that
+      - (m, v) = (2^(u-4) * 4 * r_0, 4 * r_1) or (2^(u-4) * 4 * r_1, 4 * r_o) gives at least one solution
+      - so does (m, v) = (4 * r_0, 2^(u-4) * 4 * r_1) or (4 * r_1, 2^(u-4) * 4 * r_2)
+
+    this is sufficient to show that more than one solution exists.
 
   Making a table for all the cases we've covered so far:
 
@@ -138,6 +145,10 @@ problem = pureProblem 136 Solved result
   u = 3  | #7                    | #7          | #7
   u = 4  | #2                    | #5          | #9
   u > 4  | #9                    | ?           | #9
+
+  - from the table we can tell that there are still two cases missing:
+    - n is odd and composite.
+    - n = 2^u * p where u > 4
 
   TODO: finish this.
 
