@@ -10,6 +10,10 @@ a bit easier (the "workspace" bit).
   commonly shared. In particular, `ProblemX.hs` where `X` is a number,
   is the program for the corresponding problem.
 
+## Warning
+
+Be warned that this repo contains spoilers.
+
 ## Executables
 
 `pet` is the binary handles everything:
