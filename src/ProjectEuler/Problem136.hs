@@ -177,12 +177,16 @@ problem = pureProblem 136 Solved result
   so we don't need to write conditions around n = 4 or 16.
  -}
 countSameDiffs :: Int -> Int
-countSameDiffs maxN = 2 + case1 + case2 + case3
+countSameDiffs maxN =
+    2 -- those two are for n = 4 and n = 16
+    + caseA -- when n = p, p === 3 (mod 4)
+    + caseB -- when n = 4*p
+    + caseC -- when n = 16*p
   where
     oddPrimes = takeWhile (<= maxN) $ tail primes
-    case1 = length . filter (\v -> v `rem` 4 == 3) $ oddPrimes
-    case2 = length $ takeWhile (<= (maxN `quot` 4)) oddPrimes
-    case3 = length $ takeWhile (<= (maxN `quot` 16)) oddPrimes
+    caseA = length . filter (\v -> v `rem` 4 == 3) $ oddPrimes
+    caseB = length $ takeWhile (<= (maxN `quot` 4)) oddPrimes
+    caseC = length $ takeWhile (<= (maxN `quot` 16)) oddPrimes
 
 result :: Int
 result = countSameDiffs (50000000-1)
