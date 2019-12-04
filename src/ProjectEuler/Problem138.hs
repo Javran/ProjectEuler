@@ -92,3 +92,15 @@ result :: Word64
 result = sum $ f <$> [1..12]
   where
     f n = fibs !! (6*n+3) `quot` 2
+
+{-
+  The following solution is given by https://www.alpertron.com.ar/QUAD.HTM,
+  should be the same solution.
+ -}
+_resultAlt :: Int
+_resultAlt =
+    sum . fmap (abs . snd)
+    . take 12 . tail
+    $ iterate next (0, 1)
+  where
+    next (x, y) = (-9 * x - 8 * y - 8, -10 * x  - 9 * y - 8)
