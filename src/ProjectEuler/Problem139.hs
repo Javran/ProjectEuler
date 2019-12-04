@@ -31,16 +31,27 @@ problem = pureProblem 139 Solved result
  -}
 
 result :: Int
-result = length $ do
+result = sum $ do
   -- was 5000, but then we have (m, n, k) = (5741,2378,1) ...
-  m <- [1 .. 5800 :: Int]
-  n <- [1 .. m-1]
+  m <- [1 .. 5800]
+  {-
+    by generating n this way, we make sure that m and n are not both odd
+    without guarding.
+   -}
+  n <- if even m
+         then [1 .. m-1]
+         else [2,4 .. m-1]
   -- it is important that m and n are not both odd.
-  guard $ gcd m n == 1 && (even m || even n)
-  let p' = 2 * m * (m + n)
-  k <- takeWhile (\k' -> p' * k' < 100000000) [1..]
+  guard $ gcd m n == 1
   let a = m * m - n * n
       b = 2 * m * n
       c = m * m + n * n
-  guard $ c `mod` abs (a - b) == 0
+  guard $ c `rem` (a - b) == 0
+  let k = 100000000 `quot` (a + b + c)
+  {-
+    at this point this list monad is generating primitive pythagorean triples.
+    as we only cares about how many of them are valid,
+    we choose to only return the counting k,
+    so that we can get the final answer by simply doing summation on the resulting list.
+   -}
   pure k
