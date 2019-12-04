@@ -40,6 +40,34 @@ problem = pureProblem 138 Solved result
   > 2 sqrt(5L^2 - 1) === ± 4 (mod 5)
   > 3 * 2 sqrt(5L^2 - 1) === 3 * (± 4) (mod 5)
   > sqrt(5L^2 - 1) === 2 or 3 (mod 5)
+
+  So to do this properly, we'll need to deal with some Pell's equations:
+
+  (b/2)^2 + h^2 = L^2
+  > 5 b^2 ± 8 b + 4 - 4 L^2 = 0
+
+  Plug in this to: https://www.alpertron.com.ar/QUAD.HTM
+
+  When d = 8: (5 x^2 - 4 y^2 + 8 x + 4 = 0)
+
+  - x = 0, y = 1
+  - solutions:
+    + x_{n+1} = -9 x_n - 8 y_n - 8
+    + y_{n+1} = -10 x_n - 9 y_n - 8
+  - and also:
+    + x_{n+1} = 9 x_n + 8 y_n - 8
+    + y_{n+1} = 10 x_n - 9 y_n + 8
+
+  When d = -8: (5 ⁢x^2 - 4 ⁢y^2 - 8 ⁢x + 4 = 0)
+
+  - x = 0, y = -1
+  - solutions:
+    + x_{n+1} = -9 x_n + 8 y_n + 8
+    + y_{n+1} = -10 x_n - 9 y_n + 8
+  - and also:
+    + x_{n+1} = - 9 x_n + 8 y_n + 8
+    + y_{n+1} = 10 x_n - 9 y_n - 8
+
  -}
 
 {-
