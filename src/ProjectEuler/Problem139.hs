@@ -7,7 +7,7 @@ import Control.Monad
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 139 Unsolved result
+problem = pureProblem 139 Solved result
 
 {-
   Get some initial search going.
@@ -33,13 +33,14 @@ problem = pureProblem 139 Unsolved result
 result :: Int
 result = length $ do
   -- was 5000, but then we have (m, n, k) = (5741,2378,1) ...
-  m <- [1 .. 6000 :: Int]
+  m <- [1 .. 5800 :: Int]
   n <- [1 .. m-1]
   -- it is important that m and n are not both odd.
   guard $ gcd m n == 1 && (even m || even n)
-  k <- takeWhile (\k' -> 2 * m * (m+n) * k' < 100000000) [1..]
+  let p' = 2 * m * (m + n)
+  k <- takeWhile (\k' -> p' * k' < 100000000) [1..]
   let a = m * m - n * n
       b = 2 * m * n
       c = m * m + n * n
   guard $ c `mod` abs (a - b) == 0
-  pure (a*k, b*k, c*k)
+  pure k
