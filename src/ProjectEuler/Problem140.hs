@@ -2,10 +2,12 @@ module ProjectEuler.Problem140
   ( problem
   ) where
 
+import qualified Data.List.Ordered as LOrdered
+
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 140 Unsolved result
+problem = pureProblem 140 Solved result
 
 {-
   Idea: This one is very similar to Problem137, let's do the same thing.
@@ -45,5 +47,13 @@ problem = pureProblem 140 Unsolved result
 
  -}
 
-result = ()
-
+result :: Int
+result =
+    sum
+    . take 30
+    . foldl1 LOrdered.union
+    $ [ filter (> 0) . fmap fst $ iterate next (t,z) | next <- [next0,next1], (t,z) <- initSols ]
+  where
+    initSols = [(2,-7), (0,-1), (0,1), (-4,5), (-3,2), (-3,-2)]
+    next0 (t,z) = (-9*t - 4*z - 14, -20*t - 9*z - 28)
+    next1 (t,z) = (-9*t + 4*z - 14, 20*t - 9*z + 28)
