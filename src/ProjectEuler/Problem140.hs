@@ -2,6 +2,8 @@ module ProjectEuler.Problem140
   ( problem
   ) where
 
+import Data.List
+
 import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
@@ -43,16 +45,20 @@ problem = pureProblem 140 Solved result
     + z_{n+1} = -20*t_n - 9*z_n - 28
   - and:
     + t_{n+1} = -9*t_n + 4*z_n - 14
-    + z_{n+1} = 20*t_n - 9*z_n + 28)
+    + z_{n+1} = 20*t_n - 9*z_n + 28
+
+  As there are many families of solutions to the equation,
+  we can simply generate all of them (it so happens that they are all in ascending order
+  if we ignore all negative terms) lazily, and take first 30 to form the solution.
 
  -}
 
 result :: Int
-result =
-    sum
-    . take 30
-    . foldl1 LOrdered.union
-    $ [ filter (> 0) . fmap fst $ iterate next (t,z) | next <- [next0,next1], (t,z) <- initSols ]
+result = sum . take 30 . foldl1 LOrdered.union $ do
+    sol <- initSols
+    next <- [next0, next1]
+    let go s = let s'@(t',_) = next s in (t', s')
+    pure $ filter (> 0) $ unfoldr (Just . go) sol
   where
     initSols = [(2,-7), (0,-1), (0,1), (-4,5), (-3,2), (-3,-2)]
     next0 (t,z) = (-9*t - 4*z - 14, -20*t - 9*z - 28)
