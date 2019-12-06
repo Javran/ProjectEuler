@@ -2,6 +2,8 @@ module ProjectEuler.Problem141
   ( problem
   ) where
 
+import Math.NumberTheory.Powers.Squares
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -42,5 +44,10 @@ problem = pureProblem 141 Unsolved result
 
  -}
 
-result = ()
-
+result = do
+  r <- [1..1000 :: Int]
+  k <- [1..1000 :: Int]
+  let tk = k * k * k
+  (x,0) <- [tk `quotRem` r]
+  Just _ <- [exactSquareRoot $ x + r]
+  pure (r, k)
