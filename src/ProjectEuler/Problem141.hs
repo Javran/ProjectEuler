@@ -8,7 +8,7 @@ import Math.NumberTheory.Powers.Squares
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 141 Unsolved result
+problem = pureProblem 141 Solved result
 
 {-
   Looks like this will be one of those difficult ones.
@@ -34,10 +34,6 @@ problem = pureProblem 141 Unsolved result
     + therefore we can let a,b positive integers s.t. c = a / b (further, gcd(a,b) = 1 and a > b)
     + d = r * a / b
 
-  n = d^3 / r + r
-    = (r*a/b)^3 / r + r
-    = (r^2 a^3) / b^3 + r (hm ... goes nowhere.)
-
   q = r * c^2 = (r a^2) / (b^2). since gcd(a,b) = 1, we must have r === 0 (mod b^2) for q to be an integer.
   let e be an integer s.t. r = e * b^2:
 
@@ -50,10 +46,13 @@ problem = pureProblem 141 Unsolved result
 
 result :: Word64
 result = sum $ do
-    a <- [1 .. 10000-1]
+    a <- [2 .. 10000-1]
     let aCube = a * a * a
     b <- [ b' | b' <- [1 .. a-1], gcd a b' == 1 ]
-    n <- takeWhile (< maxN) [e * b * (e * aCube + b) | e <- [1..]]
+    n <-
+      takeWhile
+        (< maxN)
+        [e * e * b * aCube + e * b * b | e <- [1..]]
     Just _ <- [exactSquareRoot n]
     pure n
   where
