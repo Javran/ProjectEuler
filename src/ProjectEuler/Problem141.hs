@@ -3,9 +3,6 @@ module ProjectEuler.Problem141
   ) where
 
 import Math.NumberTheory.Powers.Squares
-import Math.NumberTheory.ArithmeticFunctions
-
-import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
 
@@ -30,20 +27,39 @@ problem = pureProblem 141 Unsolved result
   n = q * d + r = d^3 / r + r, which needs to be a perfect square.
 
   - Since r is an integer, so must be d^3 / r, which means d^3 === 0 (mod r)
+  - as r,d,q form a geometric sequence, we might as well give common ratio a name: c.
+    + r < d < q => c > 1
+    + c needs to be a rational since r, d, q are all integers.
+    + therefore we can let a,b positive integers s.t. c = a / b (further, gcd(a,b) = 1 and a > b)
+    + d = r * a / b
+
+  n = d^3 / r + r
+    = (r*a/b)^3 / r + r
+    = (r^2 a^3) / b^3 + r (hm ... goes nowhere.)
+
+  q = r * c^2 = (r a^2) / (b^2). since gcd(a,b) = 1, we must have r === 0 (mod b^2) for q to be an integer.
+  let e be an integer s.t. r = e * b^2:
+
+  r = e * b^2
+  d = e * b^2 * a / b = e * a * b
+  q = e * b^2 * a^2 / b^2 = e * a * a
+  n = q * d + r = e^2 a^3 b + e b^2, which must also be a perfect square.
 
  -}
 
-result :: Integer
-result = sum xs
+result = sum $ fmap fst xs
   where
-    xs = LOrdered.nubSort $ fmap fst $ do
-      d <- [1 .. 1000000 :: Integer]
-      let dCube = d * d * d
-      r <- divisorsList dCube
-      let n = (dCube `quot` r) + r
-      True <- pure $ n < 10 ^12
+    xs = do
+      a <- [1 .. 10000 :: Integer]
+      -- let aCube = a * a * a
+      b <- filter (\b' -> gcd a b' == 1)[1.. a-1]
+      let u = a * a * a * b
+          v = b * b
+      e <- takeWhile (\e' -> e' * e' * u + e' * v < 10^12) [1..]
+      let n = e * e * u + e * v
       Just _ <- pure $ exactSquareRoot n
-      (q, 0) <- pure $ (d * d) `quotRem` r
-      True <- pure $ r < d && d < q
+      let r = e * b * b
+          d = e * a * b
+          q = e * a * a
       pure (n, (r,d,q))
 
