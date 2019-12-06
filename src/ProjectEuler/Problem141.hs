@@ -2,6 +2,7 @@ module ProjectEuler.Problem141
   ( problem
   ) where
 
+import Data.Word
 import Math.NumberTheory.Powers.Squares
 
 import ProjectEuler.Types
@@ -47,19 +48,14 @@ problem = pureProblem 141 Unsolved result
 
  -}
 
-result = sum $ fmap fst xs
+result :: Word64
+result = sum $ do
+    a <- [1 .. 10000-1]
+    let aCube = a * a * a
+    b <- [ b' | b' <- [1 .. a-1], gcd a b' == 1 ]
+    n <- takeWhile (< maxN) [e * b * (e * aCube + b) | e <- [1..]]
+    Just _ <- [exactSquareRoot n]
+    pure n
   where
-    xs = do
-      a <- [1 .. 10000 :: Integer]
-      -- let aCube = a * a * a
-      b <- filter (\b' -> gcd a b' == 1)[1.. a-1]
-      let u = a * a * a * b
-          v = b * b
-      e <- takeWhile (\e' -> e' * e' * u + e' * v < 10^12) [1..]
-      let n = e * e * u + e * v
-      Just _ <- pure $ exactSquareRoot n
-      let r = e * b * b
-          d = e * a * b
-          q = e * a * a
-      pure (n, (r,d,q))
-
+    maxN :: Word64
+    maxN = 10 ^ (12 :: Int)
