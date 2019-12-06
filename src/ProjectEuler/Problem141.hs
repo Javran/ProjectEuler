@@ -49,20 +49,30 @@ problem = pureProblem 141 Unsolved result
   equation: n = a^3 / r + r, and the problem limits n < 10^12,
   it is probably sufficient to search inside a < 10^4 to find all the solutions.
 
+  Update: I don't think we've got the right way to put an upperbound on things,
+  given that r could be large.
+
+  Update: got the right answer, but it's a guessed upperbound & slow.
+  not as good as solved.
+
  -}
 
-result = sum $ takeWhile (< 100000) $ LOrdered.nubSort $ fmap fst $ do
-  a <- [1 .. 10000 :: Integer]
-  let aCube = a * a * a
-  r <- divisorsList aCube
-  let n = (aCube `quot` r) + r
-  Just _ <- pure $ exactSquareRoot n
-  [ (n, (r,k,q))
-    | let k = a, (q, 0) <- [(k * k) `quotRem` r]
-    , r < k && k < q
-    ] <> [
-    (n, (r,q,k))
-    | let q = a
-    , (k, 0) <- [(q * q) `quotRem` r]
-    , r < q && q < k
-    ]
+result :: Integer
+result = sum xs
+  where
+    xs = LOrdered.nubSort $ fmap fst $ do
+      a <- [1 .. 1000000 :: Integer]
+      let aCube = a * a * a
+      r <- divisorsList aCube
+      let n = (aCube `quot` r) + r
+      True <- pure $ n < 10 ^12
+      Just _ <- pure $ exactSquareRoot n
+      [ (n, (r,k,q))
+        | let k = a, (q, 0) <- [(k * k) `quotRem` r]
+        , r < k && k < q
+        ] <> [
+        (n, (r,q,k))
+        | let q = a
+        , (k, 0) <- [(q * q) `quotRem` r]
+        , r < q && q < k
+        ]
