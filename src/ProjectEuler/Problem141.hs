@@ -3,6 +3,9 @@ module ProjectEuler.Problem141
   ) where
 
 import Math.NumberTheory.Powers.Squares
+import Math.NumberTheory.ArithmeticFunctions
+
+import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
 
@@ -42,12 +45,24 @@ problem = pureProblem 141 Unsolved result
 
     n = q * k + r = q^3 / r + r, which needs to be a perfect square.
 
+  Given that the analysis of case #2 and case #3 ends up in basically the same
+  equation: n = a^3 / r + r, and the problem limits n < 10^12,
+  it is probably sufficient to search inside a < 10^4 to find all the solutions.
+
  -}
 
-result = do
-  r <- [1..1000 :: Int]
-  k <- [1..1000 :: Int]
-  let tk = k * k * k
-  (x,0) <- [tk `quotRem` r]
-  Just _ <- [exactSquareRoot $ x + r]
-  pure (r, k)
+result = sum $ takeWhile (< 100000) $ LOrdered.nubSort $ fmap fst $ do
+  a <- [1 .. 10000 :: Integer]
+  let aCube = a * a * a
+  r <- divisorsList aCube
+  let n = (aCube `quot` r) + r
+  Just _ <- pure $ exactSquareRoot n
+  [ (n, (r,k,q))
+    | let k = a, (q, 0) <- [(k * k) `quotRem` r]
+    , r < k && k < q
+    ] <> [
+    (n, (r,q,k))
+    | let q = a
+    , (k, 0) <- [(q * q) `quotRem` r]
+    , r < q && q < k
+    ]
