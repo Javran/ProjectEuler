@@ -12,7 +12,7 @@ import qualified Data.IntSet as IS
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 142 Unsolved result
+problem = pureProblem 142 Solved result
 
 {-
   We can start manipulating some equations
@@ -69,8 +69,9 @@ doSearch2Squares maxN = IM.filter (\xs -> length xs >= 2) $ IM.fromListWith (<>)
   Just _ <- [exactSquareRoot r]
   pure (r, [[y*y,x*x]])
 
-result = sortOn fst $ do
-  let maxN = 5000
+result :: Int
+result = fst $ head $ sortOn fst $ do
+  let maxN = 1000
       results3Sq = doSearch3Squares maxN
       results2Sq = doSearch2Squares maxN
       commons =
