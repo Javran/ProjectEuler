@@ -3,6 +3,7 @@ module ProjectEuler.Problem142
   ) where
 
 import Control.Monad
+import Data.List
 import Math.NumberTheory.Powers.Squares
 
 import qualified Data.IntMap.Strict as IM
@@ -57,7 +58,7 @@ doSearch3Squares maxN = IM.fromListWith (<>) $ do
   z <- [1..y-1]
   let r = part1 + z * z
   Just _ <- [exactSquareRoot r]
-  pure (r, [[z,y,x]])
+  pure (r, [[z*z,y*y,x*x]])
 
 doSearch2Squares :: Int -> IM.IntMap ([] [Int])
 doSearch2Squares maxN = IM.filter (\xs -> length xs >= 2) $ IM.fromListWith (<>) $ do
@@ -66,18 +67,29 @@ doSearch2Squares maxN = IM.filter (\xs -> length xs >= 2) $ IM.fromListWith (<>)
   y <- [1..x-1]
   let r = part0 + y * y
   Just _ <- [exactSquareRoot r]
-  pure (r, [[y,x]])
+  pure (r, [[y*y,x*x]])
 
-result = do
-  let results3Sq = doSearch3Squares 1000
-      results2Sq = doSearch2Squares 1000
+result = sortOn fst $ do
+  let maxN = 5000
+      results3Sq = doSearch3Squares maxN
+      results2Sq = doSearch2Squares maxN
       commons =
         IS.toAscList $ IS.intersection (IM.keysSet results3Sq) (IM.keysSet results2Sq)
   aSq <- commons
   sq3List <- results3Sq IM.! aSq -- a^2 = b^2 + e^2 + f^2
   sq2List0 <- results2Sq IM.! aSq -- d^2 = b^2 + f^2
   sq2List1 <- results2Sq IM.! aSq -- c^2 = b^2 + e^2
-  guard $ sq2List0 /= sq2List1
-  guard $ any (`elem` sq2List0) sq3List
-  guard $ any (`elem` sq2List1) sq3List
-  pure (aSq, sq3List, sq2List0, sq2List1)
+  guard $ null $ intersect sq2List0 sq2List1
+  [bSq, eSq, fSq] <- permutations sq3List
+  [eSq', dSq] <- permutations sq2List0
+  guard $ eSq == eSq'
+  [cSq, fSq'] <- permutations sq2List1
+  guard $ fSq == fSq'
+  guard $ dSq == bSq + fSq
+  guard $ cSq == bSq + eSq
+  (x, 0) <- [(aSq + bSq) `quotRem` 2]
+  (y, 0) <- [(eSq + fSq) `quotRem` 2]
+  (z, 0) <- [(cSq - dSq) `quotRem` 2]
+  guard $ x > y && y > z && z > 0
+  guard $ x + y == aSq && x - y == bSq && x + z == cSq && x - z == dSq && y + z == eSq && y - z == fSq
+  pure (x+y+z,(aSq, bSq, cSq, dSq, eSq, fSq))
