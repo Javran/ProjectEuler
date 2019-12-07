@@ -7,7 +7,6 @@ import Data.List
 import Math.NumberTheory.Powers.Squares
 
 import qualified Data.IntMap.Strict as IM
-import qualified Data.IntSet as IS
 
 import ProjectEuler.Types
 
@@ -45,9 +44,24 @@ problem = pureProblem 142 Solved result
     therefore e^2 + d^2 = c^2 + f^2 cannot be the same pair of perfect square.
   - some simple reasoning allows us to say b /= e, e /= f, b /= f,
     so a^2 is sum of three different perfect squares, I guess this is where
-    we can begin the search
+    we can begin the search.
+
+  After this is solved:
+  - maxN can be 1000.
+  - parity concerns.
+
+    let p~q denote that p and q has the same parity.
+
+    + u+v ~ u-v, u ~ u^2, we can skip some steps based on this.
+    + a^2 + b^2 = 2x => a ~ b, similarly: c ~ d, e ~ f.
 
  -}
+
+{-
+  Silencing this lint.
+  I'll call this "reduce duplication" an overengineering.
+ -}
+{-# ANN module "HLint: ignore Reduce duplication" #-}
 
 doSearch3Squares :: Int -> IM.IntMap ([] [Int])
 doSearch3Squares maxN = IM.fromListWith (<>) $ do
@@ -58,39 +72,39 @@ doSearch3Squares maxN = IM.fromListWith (<>) $ do
   z <- [1..y-1]
   let r = part1 + z * z
   Just _ <- [exactSquareRoot r]
-  pure (r, [[z*z,y*y,x*x]])
+  pure (r, [[z*z,y*y,part0]])
 
 doSearch2Squares :: Int -> IM.IntMap ([] [Int])
-doSearch2Squares maxN = IM.filter (\xs -> length xs >= 2) $ IM.fromListWith (<>) $ do
+doSearch2Squares maxN = IM.filter ((> 2) . length) $ IM.fromListWith (<>) $ do
   x <- [1..maxN]
   let part0 = x * x
   y <- [1..x-1]
   let r = part0 + y * y
   Just _ <- [exactSquareRoot r]
-  pure (r, [[y*y,x*x]])
+  pure (r, [[y*y,part0]])
 
 result :: Int
 result = fst $ head $ sortOn fst $ do
   let maxN = 1000
       results3Sq = doSearch3Squares maxN
       results2Sq = doSearch2Squares maxN
-      commons =
-        IS.toAscList $ IS.intersection (IM.keysSet results3Sq) (IM.keysSet results2Sq)
-  aSq <- commons
-  sq3List <- results3Sq IM.! aSq -- a^2 = b^2 + e^2 + f^2
-  sq2List0 <- results2Sq IM.! aSq -- d^2 = b^2 + f^2
-  sq2List1 <- results2Sq IM.! aSq -- c^2 = b^2 + e^2
+      commonResultPairs =
+        IM.intersectionWith (,) results3Sq results2Sq
+  (aSq, (sq3Lists, sq2Lists)) <- IM.toList commonResultPairs
+  sq3List <- sq3Lists
+  sq2List0 <- sq2Lists -- d^2 = b^2 + f^2
+  sq2List1 <- sq2Lists -- c^2 = b^2 + e^2
   guard $ null $ intersect sq2List0 sq2List1
   [bSq, eSq, fSq] <- permutations sq3List
-  [eSq', dSq] <- permutations sq2List0
-  guard $ eSq == eSq'
-  [cSq, fSq'] <- permutations sq2List1
-  guard $ fSq == fSq'
+  guard $ eSq > fSq -- this makes sure that we have z > 0
+  guard $ even (aSq + bSq)
+  guard $ even (eSq + fSq)
+  dSq <- delete eSq sq2List0
   guard $ dSq == bSq + fSq
+  cSq <- delete fSq sq2List1
+  guard $ even (cSq + dSq)
   guard $ cSq == bSq + eSq
-  (x, 0) <- [(aSq + bSq) `quotRem` 2]
-  (y, 0) <- [(eSq + fSq) `quotRem` 2]
-  (z, 0) <- [(cSq - dSq) `quotRem` 2]
-  guard $ x > y && y > z && z > 0
-  guard $ x + y == aSq && x - y == bSq && x + z == cSq && x - z == dSq && y + z == eSq && y - z == fSq
-  pure (x+y+z,(aSq, bSq, cSq, dSq, eSq, fSq))
+  let x = (aSq + bSq) `quot` 2
+      y = (eSq + fSq) `quot` 2
+      z = (cSq - dSq) `quot` 2
+  pure (x + y + z, [x,y,z])
