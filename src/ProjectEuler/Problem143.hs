@@ -28,6 +28,10 @@ problem = pureProblem 143 Unsolved result
   > sqrt it
   784.0
 
- -}
+  Or for a more copy-and-paste friendly version:
 
+  sqrt((a^2+b^2+c^2 + sqrt(3) * sqrt(-a^4-b^4-c^4 +2*a^2*b^2+2*a^2*c^2+2*b^2*c^2)) / 2)
+  > sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(a^4+b^4+c^4-(a^2-b^2)^2-(b^2-c^2)^2-(a^2-c^2)^2))/2)
+
+ -}
 result = ()
