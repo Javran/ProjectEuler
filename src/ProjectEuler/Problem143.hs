@@ -47,6 +47,14 @@ problem = pureProblem 143 Unsolved result
   - Another tricky problem: the bound is on p + q + r, I'm not sure how should I put bound on
     triangles.
 
+  Cosine rule: for 3 edges of triangle a,b,c (corners are A,B,C):
+
+  - a^2 + b^2 - 2*a*b*cosC == c^2 => cosC = (a^2 + b^2 - c^2) / (2*a*b)
+  - C > 2pi/3 => cosC > -1/2 (since 0 < C < pi)
+    => (a^2 + b^2 - c^2) / (2*a*b) > -1/2
+    => (a^2 + b^2 - c^2) / (  a*b) > -1
+    =>  a^2 + b^2 - c^2 > -a*b
+    =>  a^2 + b^2 + a*b > c^2
  -}
 
 -- http://oeis.org/A089025 looks promising for only primitives. (not exactly the same sequence it seems)
