@@ -62,19 +62,38 @@ problem = pureProblem 143 Unsolved result
 -- test on numbers, this could work.
 result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   -- search a,b,c: 0 < a < b < c
-  c <- [1..2000]
+  c <- [1..3000]
   b <- [1..c]
   let gcb = gcd c b
       aMax = integerSquareRoot (c*c + b*b + c*b) - 1
   -- lower bound encodes c < b + a => a > c - b
   -- upper bound encodes  c*c + b*b + c*b > a*a (i.e. largest corner < 2 pi / 3)
-  a <- [c-b+1 .. min aMax b]
-  guard $ gcd gcb a == 1
-  guard $ a*a + b*b + a*b > c*c
+  let aMin = ((integerSquareRoot (4*c*c - 3*b*b) - b) `quot` 2) + 1
+  a <-
+    -- dropWhile (\a' -> a'*a' + a'*b <= c*c - b*b)
+    filter (\a' -> gcd gcb a' == 1) [max (c-b+1) aMin .. min aMax b]
+  -- guard $ gcd gcb a == 1
+  -- guard $ a*a + b*b + a*b > c*c
+  {-
+    a*a + a*b + b*b - c*c > 0
+
+    A=1
+    B=b
+    C=b*b - c*c
+
+    DELTA = B^2 - 4AC = b^2 - 4*1*(b*b - c*c) = b^2 - 4*b*b + 4*c*c = 4*c*c - 3*b*b
+    If we solve a => a = (-B + sqrt DELTA) / 2 (dropping negative solution as a > 0)
+    a > (-B + sqrt DELTA) / 2 >= (-B + intSqrt DELTA) / 2 >= floor((-B + intSqrt DELTA) / 2)
+
+   -}
   -- guard $ b*b + c*c + b*c > a*a
-  guard $ a*a + c*c + a*c > b*b
+
+  -- We want to verify that: a*a + c*c + a*c > b*b <=> a*a + a*c > b*b - c*c
+  -- well, b < c, therefore b*b - c*c < 0, while a*a + a*c > 0, no need of checking.
+  -- guard $ a*a + c*c + a*c > b*b
+
   -- (i.e. largest corner < 2 pi / 3)
-  -- guard $ a < b + c -- no need of testing (b < a + c && c < a + b) because a >= b >= c >= 1
+  -- guard $ a < b + c -- no need of testing (b < a + c && c < a + b) because c >= b >= a >= 1
   let t :: Int
       t = a^!4+b^!4+c^!4-(a^!2-b^!2)^!2-(b^!2-c^!2)^!2-(a^!2-c^!2)^!2
   Just tR <- [exactSquareRoot (3*t)]
@@ -84,4 +103,4 @@ result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   guard $ even t1
   -- l = sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(t))/2)
   -- l = sqrt((a^2+b^2+c^2 + tR)/2)
-  pure ((c,b,a),l)
+  pure ((a,b,c),l)
