@@ -61,15 +61,18 @@ problem = pureProblem 143 Unsolved result
 -- http://oeis.org/A061281: this one seems to have some that doesn't qualify, but if we can find a way to
 -- test on numbers, this could work.
 result = LOrdered.nub $ fmap snd $ sortOn snd $ do
-  a <- [1..2000]
-  b <- [1..a]
-  let gab = gcd a b
-      cMax = integerSquareRoot (a*a + b*b + a*b) - 1
-  -- lower bound encodes a < b + c => c > a - b
-  -- upper bound encodes  a*a + b*b + a*b > c * c (i.e. largest corner < 2 pi / 3)
-  c <- [a-b+1 .. b]
-  guard $ gcd gab c == 1
-  guard $ a*a + b*b + a*b > c * c && b*b + c*c + b*c > a*a && a*a + c*c + a*c > b*b
+  -- search a,b,c: 0 < a < b < c
+  c <- [1..2000]
+  b <- [1..c]
+  let gcb = gcd c b
+      aMax = integerSquareRoot (c*c + b*b + c*b) - 1
+  -- lower bound encodes c < b + a => a > c - b
+  -- upper bound encodes  c*c + b*b + c*b > a*a (i.e. largest corner < 2 pi / 3)
+  a <- [c-b+1 .. min aMax b]
+  guard $ gcd gcb a == 1
+  guard $ a*a + b*b + a*b > c*c
+  -- guard $ b*b + c*c + b*c > a*a
+  guard $ a*a + c*c + a*c > b*b
   -- (i.e. largest corner < 2 pi / 3)
   -- guard $ a < b + c -- no need of testing (b < a + c && c < a + b) because a >= b >= c >= 1
   let t :: Int
