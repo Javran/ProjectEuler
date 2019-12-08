@@ -2,7 +2,14 @@ module ProjectEuler.Problem143
   ( problem
   ) where
 
+import Petbox
+import Control.Monad
+import Data.List
+
+import qualified Data.List.Ordered as LOrdered
+
 import ProjectEuler.Types
+import Math.NumberTheory.Powers.Squares
 
 problem :: Problem
 problem = pureProblem 143 Unsolved result
@@ -33,5 +40,36 @@ problem = pureProblem 143 Unsolved result
   sqrt((a^2+b^2+c^2 + sqrt(3) * sqrt(-a^4-b^4-c^4 +2*a^2*b^2+2*a^2*c^2+2*b^2*c^2)) / 2)
   > sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(a^4+b^4+c^4-(a^2-b^2)^2-(b^2-c^2)^2-(a^2-c^2)^2))/2)
 
+  - We can probably begin with searching primitive pairs gcd(a,b,c) = 1
+    and scale them up to get a bunch of solutions.
+
+  - Now the problem is to find a strategy for searching edges.
+
+  - assume a >= b >= c, a triangle with 2*pi / 3 corner:
+
+    2*(2 + sqrt(3))*h < 120000, a = 2*sqrt(3)*h
+    a <= 55692
+    ... well, bounding the other two edges got to be tricky.
+    this is kind of complicated, let's just try searching from one..
+
  -}
-result = ()
+
+-- http://oeis.org/A229839 sounds related.
+result = LOrdered.nub $ fmap snd $ sortOn snd $ do
+  a <- [1..600]
+  b <- [1..a]
+  c <- [1..b]
+  -- be a triangle
+  guard $ a < b + c && b < a + c && c < a + b
+  -- largest corner < 2 pi / 3
+  guard $ a*a + b*b + a*b > c * c
+  let t :: Int
+      t = a^!4+b^!4+c^!4-(a^!2-b^!2)^!2-(b^!2-c^!2)^!2-(a^!2-c^!2)^!2
+  Just tR <- [exactSquareRoot (3*t)]
+  let t1 = a*a + b*b + c*c + tR
+  (lSq, 0) <- [t1 `quotRem` 2]
+  Just l <- [exactSquareRoot lSq]
+  guard $ even t1
+  -- l = sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(t))/2)
+  -- l = sqrt((a^2+b^2+c^2 + tR)/2)
+  pure ((c,b,a),l)
