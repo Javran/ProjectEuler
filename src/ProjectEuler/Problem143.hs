@@ -39,7 +39,7 @@ problem = pureProblem 143 Unsolved result
 
   sqrt((a^2+b^2+c^2 + sqrt(3) * sqrt(-a^4-b^4-c^4 +2*a^2*b^2+2*a^2*c^2+2*b^2*c^2)) / 2)
   > sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(a^4+b^4+c^4-(a^2-b^2)^2-(b^2-c^2)^2-(a^2-c^2)^2))/2)
-
+  > sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt((a^2 + b^2 + c^2)^2 - 2*(a^4 + b^4 + c^4)))/2)
   - We can probably begin with searching primitive pairs gcd(a,b,c) = 1
     and scale them up to get a bunch of solutions.
 
@@ -62,7 +62,7 @@ problem = pureProblem 143 Unsolved result
 -- test on numbers, this could work.
 result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   -- search a,b,c: 0 < a < b < c
-  c <- [1..3000]
+  c <- [1..1000]
   b <- [1..c]
   let gcb = gcd c b
       aMax = integerSquareRoot (c*c + b*b + c*b) - 1
@@ -95,12 +95,14 @@ result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   -- (i.e. largest corner < 2 pi / 3)
   -- guard $ a < b + c -- no need of testing (b < a + c && c < a + b) because c >= b >= a >= 1
   let t :: Int
-      t = a^!4+b^!4+c^!4-(a^!2-b^!2)^!2-(b^!2-c^!2)^!2-(a^!2-c^!2)^!2
+      -- t = a^!4+b^!4+c^!4-(a^!2-b^!2)^!2-(b^!2-c^!2)^!2-(a^!2-c^!2)^!2
+      -- t = 2*a*a*b*b - b*b*b*b + 2*b*b*c*c - c*c*c*c + 2*c*c*a*a - a*a*a*a
+      t = sqSum^!2 - 2*(a^!4 + b^!4 + c^!4)
+      sqSum = a*a + b*b + c*c
   Just tR <- [exactSquareRoot (3*t)]
-  let t1 = a*a + b*b + c*c + tR
+  let t1 = sqSum + tR
   (lSq, 0) <- [t1 `quotRem` 2]
   Just l <- [exactSquareRoot lSq]
-  guard $ even t1
   -- l = sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(t))/2)
   -- l = sqrt((a^2+b^2+c^2 + tR)/2)
   pure ((a,b,c),l)
