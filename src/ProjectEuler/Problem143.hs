@@ -60,10 +60,20 @@ problem = pureProblem 143 Unsolved result
 -- http://oeis.org/A089025 looks promising for only primitives. (not exactly the same sequence it seems)
 -- http://oeis.org/A061281: this one seems to have some that doesn't qualify, but if we can find a way to
 -- test on numbers, this could work.
+{-
+  Now I'm wondering how to make this more efficient:
+  - skip some small values of b, not sure how to bound those yet.
+  - generate integer triples? if we can make this construction to only generate
+    triangles that does not have a >= 2pi / 3 corner, this will be ideal to
+    perform some filtering.
+ -}
 result = LOrdered.nub $ fmap snd $ sortOn snd $ do
-  -- search a,b,c: 0 < a < b < c
-  c <- [1..1000]
-  b <- [1..c]
+  -- search a,b,c: 0 < a <= b <= c
+  c <- [1..2000]
+  -- say a need to have at least one value to take between c-b+1 and b
+  -- b - (c-b+1) + 1 > 0
+  -- > b - c + b - 1 + 1 = 2b - c > 0 => b > c/2 >= floor(c/2)
+  b <- [quot c 2+1 ..c]
   let gcb = gcd c b
       aMax = integerSquareRoot (c*c + b*b + c*b) - 1
   -- lower bound encodes c < b + a => a > c - b
