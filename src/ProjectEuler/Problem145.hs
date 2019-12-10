@@ -35,12 +35,22 @@ problem = pureProblem 145 Solved result
 
   When n is even, we expect no pair of digits to carry, otherwise it introduces an inconsistency:
   For example, say the number is [abcd].
+
    [abcd]
   +[dcba]
+
   if a + d is odd and carries, c + b must be even, but since (b,c) is next to (c,b), c+b should carry,
   which will make a+d an even number.
 
-  (TODO: work out the formula)
+  For the most & least siginificant pair of digits, it can't be 0:
+  > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, a /= 0, b /= 0]
+  20
+
+  And for those "inner" ones:
+  > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, n /= 0]
+  30
+
+  There are in total (n/2) pairs, so the count is 20 * 30^(n/2).
 
   Then we can realize, when n is odd, carrying must happen for the number to be reversible,
   say the number is [abc]:
@@ -59,7 +69,12 @@ isReversible x = x `rem` 10 /= 0 && all odd xs
 
 result :: Int
 result =
-  getSum
-  . foldMap (\x -> if isReversible x then 1 else 0) $
-    [1..10^!8-1]
-
+    (evenCasesCount +)
+    . getSum
+    . foldMap (\x -> if isReversible x then 1 else 0)
+    . concatMap genNums
+    $ [1,3..7]
+  where
+    genNums len = [10^!(len-1) .. 10^!len-1]
+    computeEvenDigitNums n = 20 * 30 ^! (quot n 2 - 1)
+    evenCasesCount = getSum . foldMap computeEvenDigitNums $ [2,4..8]
