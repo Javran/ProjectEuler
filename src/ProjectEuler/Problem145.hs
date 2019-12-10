@@ -33,32 +33,45 @@ problem = pureProblem 145 Solved result
   and this reasoning works for all cases: if the most / least significant pair of digits does not carry,
   none of the other parts will.
 
-  When n is even, we expect no pair of digits to carry, otherwise it introduces an inconsistency:
-  For example, say the number is [abcd].
+  - When n is even, we expect no pair of digits to carry, otherwise it introduces an inconsistency:
+    For example, say the number is [abcd].
 
-   [abcd]
-  +[dcba]
+     [abcd]
+    +[dcba]
 
-  if a + d is odd and carries, c + b must be even, but since (b,c) is next to (c,b), c+b should carry,
-  which will make a+d an even number.
+    if a + d is odd and carries, c + b must be even, but since (b,c) is next to (c,b), c+b should carry,
+    which will make a+d an even number.
 
-  For the most & least siginificant pair of digits, it can't be 0:
-  > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, a /= 0, b /= 0]
-  20
+    For the most & least siginificant pair of digits, it can't be 0:
+    > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, a /= 0, b /= 0]
+    20
 
-  And for those "inner" ones:
-  > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, n /= 0]
-  30
+    And for those "inner" ones:
+    > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, n /= 0]
+    30
 
-  There are in total (n/2) pairs, so the count is 20 * 30^(n/2).
+    There are in total (n/2) pairs, so the count is 20 * 30^(n/2).
 
-  Then we can realize, when n is odd, carrying must happen for the number to be reversible,
-  say the number is [abc]:
+  - When n is odd, carrying must happen for the middle digit in order for the number to be reversible,
+    this is because, say the number is [abc]:
 
-   [abc]
-  +[cba]
+     [abc]
+    +[cba]
 
-  The middle digit can only be even if no carrying can happen.
+    The middle digit can only be even (since it's adding two same numbers)
+    if no carrying of its previous pair of digits can happen. From this we know n = 1 is impossible.
+
+    Now since we've already looking at n=3 case, might as well look further:
+
+    - c+a is odd, and must carry
+    - 2b+1 < 10 to prevent the middle digit from carrying.
+
+    > length [(a,c) | a <- [1..9], c <- [1..9], let n = a + c, odd n, n >= 10]
+    20
+    > length [ b | b <- [0..9], b + b + 1 < 10 ]
+    5
+
+    That's 20*5=100 choices in total.
 
  -}
 
@@ -69,12 +82,13 @@ isReversible x = x `rem` 10 /= 0 && all odd xs
 
 result :: Int
 result =
-    (evenCasesCount +)
+    ((someOddCasesCount + evenCasesCount) +)
     . getSum
     . foldMap (\x -> if isReversible x then 1 else 0)
     . concatMap genNums
-    $ [1,3..7]
+    $ [5,7]
   where
     genNums len = [10^!(len-1) .. 10^!len-1]
     computeEvenDigitNums n = 20 * 30 ^! (quot n 2 - 1)
     evenCasesCount = getSum . foldMap computeEvenDigitNums $ [2,4..8]
+    someOddCasesCount = 100 -- when n = 3
