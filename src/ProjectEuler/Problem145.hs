@@ -42,7 +42,7 @@ problem = pureProblem 145 Solved result
     if a + d is odd and carries, c + b must be even, but since (b,c) is next to (c,b), c+b should carry,
     which will make a+d an even number.
 
-    For the most & least siginificant pair of digits, it can't be 0:
+    For the most & least significant pair of digits, it can't be 0:
     > length [(a,b) | a <- [0..9], b <- [0..9], let n = a + b, odd n, n < 10, a /= 0, b /= 0]
     20
 
@@ -73,6 +73,17 @@ problem = pureProblem 145 Solved result
 
     That's 20*5=100 choices in total.
 
+    When n = 5:
+
+     [abcde]
+    +[edcba]
+
+    We know (from least significant pair to most significant one)
+    - e+a is odd and must carry
+    - d+b is even and d+b+1 must carry
+    - c+c+1 must carry
+    However, if b+d+1 carries to the most significant digit,
+    it will make that digit even - therefore this is impossible for when n = 5.
  -}
 
 isReversible :: Int -> Bool
