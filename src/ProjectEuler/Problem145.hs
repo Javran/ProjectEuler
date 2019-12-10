@@ -64,10 +64,12 @@ problem = pureProblem 145 Solved result
     Now since we've already looking at n=3 case, might as well look further:
 
     - c+a is odd, and must carry
-    - 2b+1 < 10 to prevent the middle digit from carrying.
 
     > length [(a,c) | a <- [1..9], c <- [1..9], let n = a + c, odd n, n >= 10]
     20
+
+    - 2b+1 < 10 to prevent the middle digit from carrying.
+
     > length [ b | b <- [0..9], b + b + 1 < 10 ]
     5
 
@@ -84,22 +86,38 @@ problem = pureProblem 145 Solved result
     - c+c+1 must carry
     However, if b+d+1 carries to the most significant digit,
     it will make that digit even - therefore this is impossible for when n = 5.
+
+    When n = 7:
+
+     [abcdefg]
+    +[gfedcba]
+
+    Again we know:
+    - a+g is odd and must carry, a /= 0, g /= 0: 20 pairs to choose from.
+    - f+b is even, and f+b+1 should not carry (otherwise we will carry 1 to the most significant a+g.
+
+    > length [() | f <- [0..9], b <- [0..9], let n = f + b, even n, n +1 < 10 ]
+    25
+
+    - e+c is odd and must carry: 20 cases.
+    - d+d+1 must not carry: 5 cases.
+
+    In total: 20*25*20*5.
+
+    When n = 9, an analysis similar to when n = 5 indicates that this is impossible.
  -}
 
-isReversible :: Int -> Bool
-isReversible x = x `rem` 10 /= 0 && all odd xs
+_isReversible :: Int -> Bool
+_isReversible x = x `rem` 10 /= 0 && all odd xs
   where
     xs = intToDigitsRev (x + numReverseInBase 10 x)
 
 result :: Int
-result =
-    ((someOddCasesCount + evenCasesCount) +)
-    . getSum
-    . foldMap (\x -> if isReversible x then 1 else 0)
-    . concatMap genNums
-    $ [5,7]
+result = oddCasesCount + evenCasesCount
   where
-    genNums len = [10^!(len-1) .. 10^!len-1]
     computeEvenDigitNums n = 20 * 30 ^! (quot n 2 - 1)
     evenCasesCount = getSum . foldMap computeEvenDigitNums $ [2,4..8]
-    someOddCasesCount = 100 -- when n = 3
+    -- n = 1, 5, 7 are impossible.
+    oddCasesCount =
+      100 -- when n = 3
+      + 20*25*20*5 -- when n = 7
