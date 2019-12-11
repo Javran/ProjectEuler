@@ -44,6 +44,12 @@ point1 = (14 % 10, -96 % 10)
 
 {-
   Requires that pointB to be on the ellipse.
+
+  TODO:
+  - figure out unit vector for A -> B (call this u)
+  - figure out unit vector for tangent at B (call this t)
+  - u x t gives an angle (could be negative), if we rotate t by that angle,
+    the resulting vector has the slope of the reflected line.
  -}
 nextPoint :: Point -> Point -> Point
 nextPoint pointA pointB = undefined
