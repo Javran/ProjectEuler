@@ -2,6 +2,8 @@ module ProjectEuler.Problem144
   ( problem
   ) where
 
+import Data.Ratio
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -34,4 +36,18 @@ problem = pureProblem 144 Unsolved result
 
  -}
 
-result = ()
+type Point = (Rational, Rational)
+
+point0, point1 :: Point
+point0 = (0, 101 % 10)
+point1 = (14 % 10, -96 % 10)
+
+{-
+  Requires that pointB to be on the ellipse.
+ -}
+nextPoint :: Point -> Point -> Point
+nextPoint pointA pointB = undefined
+
+result = 4 * x * x + y * y
+  where
+    (x,y) = point1
