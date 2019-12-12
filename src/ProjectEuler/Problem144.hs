@@ -2,8 +2,6 @@ module ProjectEuler.Problem144
   ( problem
   ) where
 
-import Data.Ratio
-
 import ProjectEuler.Types
 
 problem :: Problem
@@ -36,11 +34,17 @@ problem = pureProblem 144 Unsolved result
 
  -}
 
-type Point = (Rational, Rational)
+type Point = (Double, Double)
+type V2 = (Double, Double)
 
 point0, point1 :: Point
-point0 = (0, 101 % 10)
-point1 = (14 % 10, -96 % 10)
+point0 = (0, 10.1)
+point1 = (1.4, -9.6)
+
+toUnit :: V2 -> V2
+toUnit (x,y) = (x / d,y / d)
+  where
+    d = sqrt $ x*x + y*y
 
 {-
   Requires that pointB to be on the ellipse.
