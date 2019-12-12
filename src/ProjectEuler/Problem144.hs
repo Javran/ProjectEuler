@@ -46,6 +46,12 @@ toUnit (x,y) = (x / d,y / d)
   where
     d = sqrt $ x*x + y*y
 
+diff :: Point -> Point -> V2
+diff (a0,b0) (a1,b1) = (a0-a1,b0-b1)
+
+cross :: V2 -> V2 -> Double
+cross (a0,b0) (a1,b1) = a0 * b1 - a1 * b0
+
 {-
   Requires that pointB to be on the ellipse.
 
@@ -56,7 +62,14 @@ toUnit (x,y) = (x / d,y / d)
     the resulting vector has the slope of the reflected line.
  -}
 nextPoint :: Point -> Point -> Point
-nextPoint pointA pointB = undefined
+nextPoint pointA pointB@(xB,yB) = undefined
+  where
+    vecU = toUnit $ diff pointB pointA
+    vecT@(dxT,dyT) = toUnit (1, -4 * xB / yB) -- convert from slope
+    sineTheta = cross vecU vecT -- the direction of reflection is vector t rotated by theta.
+    cosineTheta = sqrt (1 - sineTheta * sineTheta)
+    vecU'@(dxU',dyU') = (dxT * cosineTheta - dyT * sineTheta, dxT * sineTheta + dyT * cosineTheta)
+    slopeU' = dyU' / dxU'
 
 result = 4 * x * x + y * y
   where
