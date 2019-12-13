@@ -2,6 +2,7 @@ module ProjectEuler.Problem144
   ( problem
   ) where
 
+import Data.List
 import ProjectEuler.Types
 
 problem :: Problem
@@ -94,4 +95,8 @@ nextPoint pointA pointB@(xB,yB) =
 
      -}
 
-result = nextPoint point0 point1
+result = take 5 $ unfoldr (Just . go) (point0, point1)
+  where
+    go (pt0, pt1) = (pt1, (pt1, pt2))
+      where
+        pt2 = nextPoint pt0 pt1
