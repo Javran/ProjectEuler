@@ -24,6 +24,7 @@ dependencies:
 - combinat
 - containers
 - criterion
+- cyclotomic
 - data-ordlist
 - deepseq
 - directory
