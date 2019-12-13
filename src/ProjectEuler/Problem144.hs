@@ -5,10 +5,7 @@ module ProjectEuler.Problem144
 import Data.List
 import Petbox
 
-import qualified Data.Text as T
-
 import ProjectEuler.Types
-
 
 problem :: Problem
 problem = pureProblem 144 Solved result
@@ -59,7 +56,7 @@ dot :: V2 -> V2 -> Double
 dot (a0,b0) (a1,b1) = a0 * a1 + b0 * b1
 
 distSq :: Point -> Point -> Double
-distSq (xA,yA) (xB,yB) = (xA-xB)^(2 :: Int) + (yA-yB)^(2 :: Int)
+distSq (xA,yA) (xB,yB) = (xA-xB) ^! 2 + (yA-yB) ^! 2
 
 {-
   Compute next point of impact inside 4 x^2 + y^2 = 100.
@@ -97,9 +94,9 @@ nextPoint pointA pointB@(xB,yB) =
     -- m is slope of u'
     m = dyU' / dxU'
     b = yB - m * xB
-    delta = 400 * m * m - 16 * b * b + 1600
-    x0 = (-2*m*b + sqrt delta) / (2 * (4 + m*m))
-    x1 = (-2*m*b - sqrt delta) / (2 * (4 + m*m))
+    delta = 100 * m * m - 4 * b * b + 400
+    x0 = (-m*b + sqrt delta) / (4 + m*m)
+    x1 = (-m*b - sqrt delta) / (4 + m*m)
     pt0 = (x0, m*x0 + b)
     pt1 = (x1, m*x1 + b)
     {-
@@ -108,8 +105,7 @@ nextPoint pointA pointB@(xB,yB) =
       - 4x^2 + y^2 = 100
       - y = m * x + b
 
-      discriminant = 400 m^2 - 16 b^2 + 1600
-
+      delta (discriminant) = 400 m^2 - 16 b^2 + 1600 = 4 * (100 m^2 - 4 b^2 + 400)
      -}
 
 {-
@@ -167,10 +163,17 @@ nextPoint pointA pointB@(xB,yB) =
   -4.995629667644142 -0.4180154243741523
 
  -}
-result = fst $ firstSuchThat (\(_,(x,y)) -> x >= -0.01 && x <= 0.01 && y > 0) $
-    zip [0 :: Int ..] (unfoldr (Just . go) (point0, point1))
+
+result :: Int
+result =
+    fst
+    . firstSuchThat
+        (\(_,(x,y)) ->
+            -- this range of x is distinctive so that simply checking sign on y is efficient and correct.
+            x >= -0.01 && x <= 0.01 && y > 0)
+    . zip [0..] -- If the beam leaves at iteration n, there are (n-1) hits on wall, therefore we begin with 0.
+    $ unfoldr (Just . go) (point0, point1)
   where
-    fmt (x,y) = T.pack $ show x <> " " <> show y
     go (pt0, pt1) = (pt1, (pt1, pt2))
       where
         pt2 = nextPoint pt0 pt1
