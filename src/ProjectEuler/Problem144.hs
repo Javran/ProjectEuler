@@ -3,13 +3,15 @@ module ProjectEuler.Problem144
   ) where
 
 import Data.List
+import Petbox
 
 import qualified Data.Text as T
 
 import ProjectEuler.Types
 
+
 problem :: Problem
-problem = Problem 144 Unsolved run
+problem = pureProblem 144 Unsolved result
 
 {-
   Idea:
@@ -68,7 +70,7 @@ distSq (xA,yA) (xB,yB) = (xA-xB)^(2 :: Int) + (yA-yB)^(2 :: Int)
   - u x t gives an angle (could be negative), if we rotate t by that angle,
     the resulting vector has the slope of the reflected line.
  -}
--- nextPoint :: Point -> Point -> Point
+nextPoint :: Point -> Point -> Point
 nextPoint pointA pointB@(xB,yB) =
     if distSq pt0 pointB < distSq pt1 pointB
       then pt1
@@ -153,7 +155,8 @@ nextPoint pointA pointB@(xB,yB) =
   -4.995629667644142 -0.4180154243741523
 
  -}
-run = mapM_ (logText . fmt) $ take 50 $ unfoldr (Just . go) (point0, point1)
+result = fst $ firstSuchThat (\(_,(x,y)) -> x >= -0.01 && x <= 0.01 && y > 0) $
+    zip [0 :: Int ..] (unfoldr (Just . go) (point0, point1))
   where
     fmt (x,y) = T.pack $ show x <> " " <> show y
     go (pt0, pt1) = (pt1, (pt1, pt2))
