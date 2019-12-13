@@ -49,28 +49,38 @@ point0, point1 :: Point
 point0 = (0, 10.1)
 point1 = (1.4, -9.6)
 
-toUnit :: V2 -> V2
-toUnit (x,y) = (x / d,y / d)
-  where
-    d = sqrt $ x*x + y*y
-
 diff :: Point -> Point -> V2
 diff (a0,b0) (a1,b1) = (a0-a1,b0-b1)
 
 cross :: V2 -> V2 -> Double
 cross (a0,b0) (a1,b1) = a0 * b1 - a1 * b0
 
+dot :: V2 -> V2 -> Double
+dot (a0,b0) (a1,b1) = a0 * a1 + b0 * b1
+
 distSq :: Point -> Point -> Double
 distSq (xA,yA) (xB,yB) = (xA-xB)^(2 :: Int) + (yA-yB)^(2 :: Int)
 
 {-
+  Compute next point of impact inside 4 x^2 + y^2 = 100.
   Requires that pointB to be on the ellipse.
 
-  TODO:
-  - figure out unit vector for A -> B (call this u)
-  - figure out unit vector for tangent at B (call this t)
-  - u x t gives an angle (could be negative), if we rotate t by that angle,
-    the resulting vector has the slope of the reflected line.
+  Implementation detail:
+  - first compute vector for A -> B (call this u)
+  - then compute vector for tangent at B (call this t)
+  - by computing cross product and dot product of u and t,
+    we get the information about the angle turning from u to t (could be negative),
+    if we rotate t by that angle, the resulting vector has the slope of the reflected line.
+  - note that:
+
+    + sine(theta) = |cross product| / (|u| * |t|)
+    + cosine(theta) = dot product / (|u| * |t|)
+
+    since both cross product and dot product contains |u| * |t|,
+    we can construct the un-normalized rotation matrix by
+    pretending that cross product is sin(theta) and dot product is cos(theta).
+    We'll get a scaled result but all we care about is the slope of the reflected line,
+    which stays unchanged when scaling.
  -}
 nextPoint :: Point -> Point -> Point
 nextPoint pointA pointB@(xB,yB) =
@@ -78,11 +88,11 @@ nextPoint pointA pointB@(xB,yB) =
       then pt1
       else pt0
   where
-    vecU = toUnit $ diff pointB pointA
-    vecT@(dxT,dyT) = toUnit (yB, -4 * xB) -- convert from slope
-    sineTheta = cross vecU vecT -- the direction of reflection is vector t rotated by theta.
-    cosineTheta = sqrt (1 - sineTheta * sineTheta)
-    vecU'@(dxU',dyU') = (dxT * cosineTheta - dyT * sineTheta, dxT * sineTheta + dyT * cosineTheta)
+    vecU = diff pointB pointA
+    vecT@(dxT,dyT) = (yB, -4 * xB) -- convert from slope
+    crossProd = cross vecU vecT -- the direction of reflection is vector t rotated by theta.
+    dotProd = dot vecU vecT
+    (dxU',dyU') = (dxT * dotProd - dyT * crossProd, dxT * crossProd + dyT * dotProd)
     -- it should be the case that cross vecU vecT == cross vecT vecU'
     -- m is slope of u'
     m = dyU' / dxU'
