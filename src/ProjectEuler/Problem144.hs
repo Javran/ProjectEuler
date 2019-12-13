@@ -11,7 +11,7 @@ import ProjectEuler.Types
 
 
 problem :: Problem
-problem = pureProblem 144 Unsolved result
+problem = pureProblem 144 Solved result
 
 {-
   Idea:
@@ -37,6 +37,8 @@ problem = pureProblem 144 Unsolved result
     + on the reflected line, find point C on the ellipse.
       (we should just need the resulting slope to figure out the line,
       this is because we have assumed that B is on the ellipse.)
+
+  TODO: some cleanup is definitely needed.
 
  -}
 
