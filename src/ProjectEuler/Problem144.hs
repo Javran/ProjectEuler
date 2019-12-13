@@ -52,6 +52,9 @@ diff (a0,b0) (a1,b1) = (a0-a1,b0-b1)
 cross :: V2 -> V2 -> Double
 cross (a0,b0) (a1,b1) = a0 * b1 - a1 * b0
 
+distSq :: Point -> Point -> Double
+distSq (xA,yA) (xB,yB) = (xA-xB)^(2 :: Int) + (yA-yB)^(2 :: Int)
+
 {-
   Requires that pointB to be on the ellipse.
 
@@ -61,16 +64,34 @@ cross (a0,b0) (a1,b1) = a0 * b1 - a1 * b0
   - u x t gives an angle (could be negative), if we rotate t by that angle,
     the resulting vector has the slope of the reflected line.
  -}
-nextPoint :: Point -> Point -> Point
-nextPoint pointA pointB@(xB,yB) = undefined
+-- nextPoint :: Point -> Point -> Point
+nextPoint pointA pointB@(xB,yB) =
+    if distSq pt0 pointB < distSq pt1 pointB
+      then pt1
+      else pt0
   where
     vecU = toUnit $ diff pointB pointA
-    vecT@(dxT,dyT) = toUnit (1, -4 * xB / yB) -- convert from slope
+    vecT@(dxT,dyT) = toUnit (yB, -4 * xB) -- convert from slope
     sineTheta = cross vecU vecT -- the direction of reflection is vector t rotated by theta.
     cosineTheta = sqrt (1 - sineTheta * sineTheta)
     vecU'@(dxU',dyU') = (dxT * cosineTheta - dyT * sineTheta, dxT * sineTheta + dyT * cosineTheta)
-    slopeU' = dyU' / dxU'
+    -- it should be the case that cross vecU vecT == cross vecT vecU'
+    -- m is slope of u'
+    m = dyU' / dxU'
+    b = yB - m * xB
+    delta = 400 * m * m - 16 * b * b + 1600
+    x0 = (-2*m*b + sqrt delta) / (2 * (4 + m*m))
+    x1 = (-2*m*b - sqrt delta) / (2 * (4 + m*m))
+    pt0 = (x0, m*x0 + b)
+    pt1 = (x1, m*x1 + b)
+    {-
+      yB = m * xB + b => b = yB - m * xB
 
-result = 4 * x * x + y * y
-  where
-    (x,y) = point1
+      - 4x^2 + y^2 = 100
+      - y = m * x + b
+
+      discriminant = 400 m^2 - 16 b^2 + 1600
+
+     -}
+
+result = nextPoint point0 point1
