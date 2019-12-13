@@ -3,10 +3,13 @@ module ProjectEuler.Problem144
   ) where
 
 import Data.List
+
+import qualified Data.Text as T
+
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 144 Unsolved result
+problem = Problem 144 Unsolved run
 
 {-
   Idea:
@@ -95,8 +98,9 @@ nextPoint pointA pointB@(xB,yB) =
 
      -}
 
-result = take 5 $ unfoldr (Just . go) (point0, point1)
+run = mapM_ (logText . fmt) $ take 50 $ unfoldr (Just . go) (point0, point1)
   where
+    fmt (x,y) = T.pack $ show x <> " " <> show y
     go (pt0, pt1) = (pt1, (pt1, pt2))
       where
         pt2 = nextPoint pt0 pt1
