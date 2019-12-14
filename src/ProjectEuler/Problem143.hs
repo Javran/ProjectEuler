@@ -77,7 +77,8 @@ problem = pureProblem 143 Unsolved result
     triangles that does not have a >= 2pi / 3 corner, this will be ideal to
     perform some filtering.
  -}
-result = LOrdered.nub $ fmap snd $ sortOn snd $ do
+
+_result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   -- search a,b,c: 0 < a <= b <= c
   c <- [1..2000]
   -- say a need to have at least one value to take between c-b+1 and b
@@ -126,3 +127,17 @@ result = LOrdered.nub $ fmap snd $ sortOn snd $ do
   -- l = sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt(t))/2)
   -- l = sqrt((a^2+b^2+c^2 + tR)/2)
   pure ((a,b,c),l)
+
+{-
+  Brute force but with p,q,r rather than a,b,c - for now this looks promising.
+ -}
+result = do
+  -- assume that p <= q <= r
+  r <- [1 :: Int ..120000]
+  q <- [1..r]
+  let gcdRQ = gcd r q
+  Just a <- [exactSquareRoot (r*r + q*q + r*q)]
+  p <- filter ((== 1) . gcd gcdRQ) [1..q]
+  Just b <- [exactSquareRoot (p*p + q*q + p*q)]
+  Just c <- [exactSquareRoot (p*p + r*r + p*r)]
+  pure ((a,b,c),p+q+r)
