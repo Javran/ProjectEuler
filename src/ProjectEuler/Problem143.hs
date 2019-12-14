@@ -55,6 +55,16 @@ problem = pureProblem 143 Unsolved result
     => (a^2 + b^2 - c^2) / (  a*b) > -1
     =>  a^2 + b^2 - c^2 > -a*b
     =>  a^2 + b^2 + a*b > c^2
+
+  Alternative approach:
+  Reading some part of https://en.wikipedia.org/wiki/Fermat_point gives me the idea that,
+  in our case where all angles are less than 2pi / 3, angle ATB = BTC = CTA = 2 pi / 3.
+
+  From this insight, we can:
+  - start from a "barebone" that divides 2 pi evenly into 3 parts with segment p, q and r
+    (by doing so, we can bound on p+q+r more easily)
+  - connect their other sides to form the triangle, and check whether a,b,c are all integers.
+
  -}
 
 -- http://oeis.org/A089025 looks promising for only primitives. (not exactly the same sequence it seems)
