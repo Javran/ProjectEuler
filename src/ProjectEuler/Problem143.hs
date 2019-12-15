@@ -1,11 +1,13 @@
+{-# LANGUAGE LambdaCase #-}
 module ProjectEuler.Problem143
   ( problem
   ) where
 
 import Data.List
-
+import Petbox
 import Math.NumberTheory.Powers.Squares
 import Control.Monad
+import Debug.Trace
 
 import qualified Data.DList as DL
 import qualified Data.IntMap.Strict as IM
@@ -68,7 +70,7 @@ maxSum = 120000
 genTuples :: [Int]
 genTuples = do
   -- assume that p <= q <= r
-  r <- [1 :: Int ..maxSum]
+  r <- [1 :: Int .. maxSum]
   q <- [1..r]
   let gcdRQ = gcd r q
   -- we are at most computing 120000^2 * 3, using Int will not blow up.
@@ -94,17 +96,26 @@ _result = sum $ nub $ concatMap dup genTuples
   Note that here we know r > q and r > p, but both p > q and p < q are possible.
  -}
 
-type PrimTuple = ((Int, Int), Int)
+type PrimTuple = (Int, Int, Int) -- p <= q <= r
 
 {-
   Build up primitive tuples indexed by two shorter sides of the triangle.
  -}
 prims :: IM.IntMap [PrimTuple]
 prims =
-    IM.map DL.toList
+    -- this filter rules out values that are singleton lists.
+    -- since we want to pick 3 triangles that can join together to form a larger one,
+    -- those singletons are never useful.
+    {-
+    IM.filter (\case
+                  -- no case for empty list.
+                  -- due to the fact that this is a dictionary, there's no need of that.
+                  [_] -> False
+                  _ -> True)
+    . -} IM.map DL.toList
     . IM.fromListWith (<>)
     $ concatMap
-        (\t@((p,q), _) -> let d = DL.singleton t in [(p,d),(q,d)])
+        (\t@(p,q,_) -> let d = DL.singleton t in [(p,d),(q,d)])
         primTuples
   where
     {-
@@ -128,12 +139,27 @@ prims =
     primTuples = do
       m <- [1..maxM]
       n <- [1..m-1]
-      guard $ gcd m n == 1
-      guard $ (m - n) `rem` 3 /= 0
+      -- Note: p,q,r here is confusing myself.
       let p = 2*m*n + n*n
           q = m*m - n*n
           r = m*m + m*n + n*n
-      guard $ p+q+r <= maxSum
-      pure ((p,q),r)
+      {-
+        Note: this generation only generates primitive tuples,
+        we'll need to include those scaled as well.
+       -}
+      pure $ if p <= q then (p,q,r) else (q,p,r)
 
-result = IM.size prims
+doSearch = do
+  (p, tsPre) <- IM.toAscList prims
+  -- assume p is the shortest of three.
+  let ts = filter (\(u,v,_) -> u >= p && v >= p) tsPre
+  -- pick two tuples from the list
+  ((x0,y0,_),ts0) <- pickInOrder ts
+  ((x1,y1,_),_) <- pickInOrder ts0
+  let q = if x0 == p then y0 else x0
+      r = if x1 == p then y1 else x1
+  Just vs <- [prims IM.!? min q r]
+  guard $ any (\(x,y,_z) -> (x,y) == if q <= r then (q,r) else (r,q)) vs
+  pure (p,q,r)
+
+result = _result -- show prims
