@@ -4,8 +4,13 @@ module ProjectEuler.Problem143
 
 import Data.List
 
-import ProjectEuler.Types
 import Math.NumberTheory.Powers.Squares
+import Control.Monad
+
+import qualified Data.DList as DL
+import qualified Data.IntMap.Strict as IM
+
+import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 143 Unsolved result
@@ -49,11 +54,17 @@ problem = pureProblem 143 Unsolved result
 
   p + q + r = sqrt((a^2+b^2+c^2 + sqrt(3)*sqrt((a^2 + b^2 + c^2)^2 - 2*(a^4 + b^4 + c^4)))/2)
 
-  TODO: now we have the correct answer, try to get faster.
+  The efficient method is described in the overview after solving the problem.
+
  -}
 
+maxSum :: Int
 maxSum = 120000
 
+{-
+  Below is the brute force approach.
+  Sufficiently fast to get an answer, but the speed isn't impressive.
+ -}
 genTuples :: [Int]
 genTuples = do
   -- assume that p <= q <= r
@@ -67,6 +78,62 @@ genTuples = do
   Just _c <- [exactSquareRoot (p*p + r*r + p*r)]
   pure $ p+q+r
 
-result = sum $ nub $ concatMap dup genTuples
+_result :: Int
+_result = sum $ nub $ concatMap dup genTuples
   where
     dup x = takeWhile (<= maxSum) $ iterate (+ x) x
+
+{-
+  This is the "overview" method:
+
+  - p = 2 m n + n^2
+  - q = m^2 - n^2
+  - r = m^2 + m n + n^2
+
+  With m > n, gcd(m,n) = 1 and (m - n) `mod` 3 /= 0.
+  Note that here we know r > q and r > p, but both p > q and p < q are possible.
+ -}
+
+type PrimTuple = ((Int, Int), Int)
+
+{-
+  Build up primitive tuples indexed by two shorter sides of the triangle.
+ -}
+prims :: IM.IntMap [PrimTuple]
+prims =
+    IM.map DL.toList
+    . IM.fromListWith (<>)
+    $ concatMap
+        (\t@((p,q), _) -> let d = DL.singleton t in [(p,d),(q,d)])
+        primTuples
+  where
+    {-
+      p + q + r <= maxSum
+
+      Here we can relax this constraint to make it a bit easier:
+
+      p + q + 1 <= maxSum
+
+      p + q + 1
+      = 2 m n + n^2 + m^2 - n^2
+      = 2 m n + m^2 + 1 <= 2m^2 + m^2 + 1 == 3m^2 + 1 <= maxSum
+
+      3m^2 < maxSum
+
+      Well, let's just say m <= integerSquareRoot (maxSum / 3),
+      once we have the triple, fine-grain checks can be applied.
+     -}
+    maxM = integerSquareRoot' (div maxSum  3)
+    primTuples :: [] PrimTuple
+    primTuples = do
+      m <- [1..maxM]
+      n <- [1..m-1]
+      guard $ gcd m n == 1
+      guard $ (m - n) `rem` 3 /= 0
+      let p = 2*m*n + n*n
+          q = m*m - n*n
+          r = m*m + m*n + n*n
+      guard $ p+q+r <= maxSum
+      pure ((p,q),r)
+
+result = IM.size prims
