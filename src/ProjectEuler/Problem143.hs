@@ -99,6 +99,18 @@ _result = sum $ nub $ concatMap dup genTuples
 type PrimTuple = (Int, Int, Int) -- p <= q <= r
 
 {-
+  Analysis on the example given in problem's description:
+
+  a = 399, b = 455, c = 511
+  p = 195, q = 264, r = 325
+
+  p,q,a forms a triangle: (195,264,399) = 3 * (65,88,133)
+  q,r,c forms a triangle: (264,325,511) (primitive)
+  r,p,b forms a triangle: (325,195,511) (primitive)
+
+ -}
+
+{-
   Build up primitive tuples indexed by two shorter sides of the triangle.
  -}
 prims :: IM.IntMap [PrimTuple]
@@ -134,20 +146,23 @@ prims =
       Well, let's just say m <= integerSquareRoot (maxSum / 3),
       once we have the triple, fine-grain checks can be applied.
      -}
+    -- TODO: this bound is wrong.
     maxM = integerSquareRoot' (div maxSum  3)
     primTuples :: [] PrimTuple
     primTuples = do
-      m <- [1..maxM]
+      m <- [1..350]
       n <- [1..m-1]
       -- Note: p,q,r here is confusing myself.
       let p = 2*m*n + n*n
           q = m*m - n*n
           r = m*m + m*n + n*n
+          (p',q') = if p <= q then (p,q) else (q,p)
+          maxK = maxSum `quot` (p+1)
       {-
         Note: this generation only generates primitive tuples,
         we'll need to include those scaled as well.
        -}
-      pure $ if p <= q then (p,q,r) else (q,p,r)
+      [(p'*k,q'*k,r*k) | k <- [1..maxK] ] -- pure $ if p <= q then (p,q,r) else (q,p,r)
 
 doSearch = do
   (p, tsPre) <- IM.toAscList prims
@@ -162,4 +177,4 @@ doSearch = do
   guard $ any (\(x,y,_z) -> (x,y) == if q <= r then (q,r) else (r,q)) vs
   pure (p,q,r)
 
-result = _result -- show prims
+result = show (prims IM.!? 195, prims IM.!? 264, prims IM.!? 325)
