@@ -3,10 +3,9 @@ module ProjectEuler.Problem143
   ( problem
   ) where
 
-import Data.List
-import Petbox
-import Math.NumberTheory.Powers.Squares
 import Control.Monad
+import Math.NumberTheory.Powers.Squares
+import Petbox
 
 import qualified Data.DList as DL
 import qualified Data.IntMap.Strict as IM
@@ -62,28 +61,6 @@ problem = pureProblem 143 Unsolved result
 
 maxSum :: Int
 maxSum = 120000
-
-{-
-  Below is the brute force approach.
-  Sufficiently fast to get an answer, but the speed isn't impressive.
- -}
-genTuples :: [Int]
-genTuples = do
-  -- assume that p <= q <= r
-  r <- [1 :: Int .. maxSum]
-  q <- [1..r]
-  let gcdRQ = gcd r q
-  -- we are at most computing 120000^2 * 3, using Int will not blow up.
-  Just _a <- [exactSquareRoot (r*r + q*q + r*q)]
-  p <- filter ((== 1) . gcd gcdRQ) [1.. min q (maxSum - r - q)]
-  Just _b <- [exactSquareRoot (p*p + q*q + p*q)]
-  Just _c <- [exactSquareRoot (p*p + r*r + p*r)]
-  pure $ p+q+r
-
-_result :: Int
-_result = sum $ nub $ concatMap dup genTuples
-  where
-    dup x = takeWhile (<= maxSum) $ iterate (+ x) x
 
 {-
   This is the "overview" method:
@@ -160,11 +137,7 @@ prims =
           r = m*m + m*n + n*n
           (p',q') = if p <= q then (p,q) else (q,p)
           maxK = maxSum `quot` (p+q)
-      {-
-        Note: this generation only generates primitive tuples,
-        we'll need to include those scaled as well.
-       -}
-      [(p'*k,q'*k,r*k) | k <- [1..maxK] ] -- pure $ if p <= q then (p,q,r) else (q,p,r)
+      [(p'*k,q'*k,r*k) | k <- [1..maxK] ]
 
 doSearch :: [] (Int, Int, Int)
 doSearch = do
@@ -180,7 +153,10 @@ doSearch = do
   -- let's assign q,r so that q <= r.
   let (q,r) = if y0 <= y1 then (y0, y1) else (y1, y0)
   guard $ p+q+r <= maxSum
+  -- now we have q and r, what we need to do is to simple look it up.
   Just vs <- [prims IM.!? q]
+  -- just simply need to check whether it's possible,
+  -- no need of actually getting that value.
   guard $ any (\(x,y,_z) -> (x,y) == (q,r)) vs
   pure (p,q,r)
 
