@@ -65,15 +65,17 @@ maxSum = 120000
 {-
   This is the "overview" method:
 
-  - p = 2 m n + n^2
-  - q = m^2 - n^2
-  - r = m^2 + m n + n^2
+  - i = 2 m n + n^2
+  - j = m^2 - n^2
+  - k = m^2 + m n + n^2
 
   With m > n, gcd(m,n) = 1 and (m - n) `mod` 3 /= 0.
-  Note that here we know r > q and r > p, but both p > q and p < q are possible.
+  Note that here we know k > i and k > j, but both i > j and i < j are possible.
+  to make things a bit easier, (i,j,k) :: PrimTuple assumes that i <= j <= k.
+
  -}
 
-type PrimTuple = (Int, Int, Int) -- p <= q <= r
+type PrimTuple = (Int, Int, Int) -- i <= j <= k
 
 {-
   Analysis on the example given in problem's description:
@@ -103,7 +105,7 @@ prims =
     . IM.map DL.toList
     . IM.fromListWith (<>)
     $ concatMap
-        (\t@(p,q,_) -> let d = DL.singleton t in [(p,d),(q,d)])
+        (\t@(i,j,_) -> let d = DL.singleton t in [(i,d),(j,d)])
         primTuples
   where
     {-
@@ -131,13 +133,12 @@ prims =
       n <- [1..m-1]
       guard $ (m-n) `rem` 3 /= 0
       guard $ gcd m n == 1
-      -- Note: p,q,r here is confusing myself.
-      let p = 2*m*n + n*n
-          q = m*m - n*n
-          r = m*m + m*n + n*n
-          (p',q') = if p <= q then (p,q) else (q,p)
-          maxK = maxSum `quot` (p+q)
-      [(p'*k,q'*k,r*k) | k <- [1..maxK] ]
+      let i = 2*m*n + n*n
+          j = m*m - n*n
+          k = m*m + m*n + n*n
+          (i',j') = if i <= j then (i,j) else (j,i)
+          maxScale = maxSum `quot` (i+j)
+      [(i'*s,j'*s,k*s) | s <- [1..maxScale] ]
 
 doSearch :: [] (Int, Int, Int)
 doSearch = do
