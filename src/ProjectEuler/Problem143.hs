@@ -152,12 +152,14 @@ prims =
     primTuples = do
       m <- [1..350]
       n <- [1..m-1]
+      guard $ (m-n) `rem` 3 /= 0
+      guard $ gcd m n == 1
       -- Note: p,q,r here is confusing myself.
       let p = 2*m*n + n*n
           q = m*m - n*n
           r = m*m + m*n + n*n
           (p',q') = if p <= q then (p,q) else (q,p)
-          maxK = maxSum `quot` (p+1)
+          maxK = maxSum `quot` (p+q)
       {-
         Note: this generation only generates primitive tuples,
         we'll need to include those scaled as well.
@@ -169,12 +171,14 @@ doSearch = do
   -- assume p is the shortest of three.
   let ts = filter (\(u,v,_) -> u >= p && v >= p) tsPre
   -- pick two tuples from the list
-  ((x0,y0,_),ts0) <- pickInOrder ts
-  ((x1,y1,_),_) <- pickInOrder ts0
+  ((x0,y0,_),ts0) <- pick ts
+  ((x1,y1,_),_) <- pick ts0
   let q = if x0 == p then y0 else x0
       r = if x1 == p then y1 else x1
-  Just vs <- [prims IM.!? min q r]
-  guard $ any (\(x,y,_z) -> (x,y) == if q <= r then (q,r) else (r,q)) vs
+  guard $ q < r
+  guard $ p+q+r <= 120000
+  Just vs <- [prims IM.!? q]
+  guard $ any (\(x,y,_z) -> (x,y) == (q,r)) vs
   pure (p,q,r)
 
-result = show (prims IM.!? 195, prims IM.!? 264, prims IM.!? 325)
+result = sum $ nub $ fmap (\(p,q,r) -> p+q+r) doSearch
