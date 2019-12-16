@@ -7,10 +7,10 @@ import Data.List
 import Petbox
 import Math.NumberTheory.Powers.Squares
 import Control.Monad
-import Debug.Trace
 
 import qualified Data.DList as DL
 import qualified Data.IntMap.Strict as IM
+import qualified Data.IntSet as IS
 
 import ProjectEuler.Types
 
@@ -118,19 +118,19 @@ prims =
     -- this filter rules out values that are singleton lists.
     -- since we want to pick 3 triangles that can join together to form a larger one,
     -- those singletons are never useful.
-    {-
     IM.filter (\case
                   -- no case for empty list.
                   -- due to the fact that this is a dictionary, there's no need of that.
                   [_] -> False
                   _ -> True)
-    . -} IM.map DL.toList
+    . IM.map DL.toList
     . IM.fromListWith (<>)
     $ concatMap
         (\t@(p,q,_) -> let d = DL.singleton t in [(p,d),(q,d)])
         primTuples
   where
     {-
+      TODO: update doc.
       p + q + r <= maxSum
 
       Here we can relax this constraint to make it a bit easier:
@@ -147,10 +147,10 @@ prims =
       once we have the triple, fine-grain checks can be applied.
      -}
     -- TODO: this bound is wrong.
-    maxM = integerSquareRoot' (div maxSum  3)
+    maxM = integerSquareRoot' maxSum
     primTuples :: [] PrimTuple
     primTuples = do
-      m <- [1..350]
+      m <- [1..maxM]
       n <- [1..m-1]
       guard $ (m-n) `rem` 3 /= 0
       guard $ gcd m n == 1
@@ -166,19 +166,27 @@ prims =
        -}
       [(p'*k,q'*k,r*k) | k <- [1..maxK] ] -- pure $ if p <= q then (p,q,r) else (q,p,r)
 
+doSearch :: [] (Int, Int, Int)
 doSearch = do
+  -- here we assume that p <= q <= r, and pick p in the first step.
   (p, tsPre) <- IM.toAscList prims
-  -- assume p is the shortest of three.
+  -- now that p is the shortest,
+  -- we are only interested in those greater than p
   let ts = filter (\(u,v,_) -> u >= p && v >= p) tsPre
   -- pick two tuples from the list
-  ((x0,y0,_),ts0) <- pick ts
-  ((x1,y1,_),_) <- pick ts0
-  let q = if x0 == p then y0 else x0
-      r = if x1 == p then y1 else x1
-  guard $ q < r
-  guard $ p+q+r <= 120000
+  ((_,y0,_),ts0) <- pickInOrder ts
+  ((_,y1,_),_) <- pickInOrder ts0
+  -- we now have two "other sides",
+  -- let's assign q,r so that q <= r.
+  let (q,r) = if y0 <= y1 then (y0, y1) else (y1, y0)
+  guard $ p+q+r <= maxSum
   Just vs <- [prims IM.!? q]
   guard $ any (\(x,y,_z) -> (x,y) == (q,r)) vs
   pure (p,q,r)
 
-result = sum $ nub $ fmap (\(p,q,r) -> p+q+r) doSearch
+result :: Int
+result =
+  IS.foldr' (+) 0
+  . IS.fromList
+  . fmap (\(p,q,r) -> p+q+r)
+  $ doSearch
