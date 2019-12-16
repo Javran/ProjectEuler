@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase, BangPatterns #-}
 module ProjectEuler.Problem143
   ( problem
   ) where
@@ -75,6 +75,10 @@ maxSum = 120000
 
  -}
 
+{-
+  Note: actually it is not necessary to keep the longest side k in PrimTuple,
+  but somehow the program runs slower without k, so let's just leave it be.
+ -}
 type PrimTuple = (Int, Int, Int) -- i <= j <= k
 
 {-
@@ -136,32 +140,32 @@ prims =
           k = m*m + m*n + n*n
           (i',j') = if i <= j then (i,j) else (j,i)
           maxScale = maxSum `quot` (i+j)
-      [(i'*s,j'*s,k*s) | s <- [1..maxScale] ]
+      [ (i'*s,j'*s,k*s) | s <- [1..maxScale] ]
 
-doSearch :: [] (Int, Int, Int)
+doSearch :: [] Int
 doSearch = do
   -- here we assume that p <= q <= r, and pick p in the first step.
   (p, tsPre) <- IM.toAscList prims
   -- now that p is the shortest,
   -- we are only interested in those greater than p
-  let ts = filter (\(u,v,_) -> u >= p && v >= p) tsPre
+  let ts = filter (\(!u,!v,_) -> u >= p && v >= p) tsPre
   -- pick two tuples from the list
   ((_,y0,_),ts0) <- pickInOrder ts
-  ((_,y1,_),_) <- pickInOrder ts0
+  ~((_,y1,_),_) <- pickInOrder ts0
   -- we now have two "other sides",
   -- let's assign q,r so that q <= r.
   let (q,r) = if y0 <= y1 then (y0, y1) else (y1, y0)
-  guard $ p+q+r <= maxSum
+      s = p+q+r
+  guard $ s <= maxSum
   -- now we have q and r, what we need to do is to simple look it up.
   Just vs <- [prims IM.!? q]
   -- just simply need to check whether it's possible,
   -- no need of actually getting that value.
   guard $ any (\(x,y,_z) -> (x,y) == (q,r)) vs
-  pure (p,q,r)
+  pure s
 
 result :: Int
 result =
   IS.foldr' (+) 0
   . IS.fromList
-  . fmap (\(p,q,r) -> p+q+r)
   $ doSearch
