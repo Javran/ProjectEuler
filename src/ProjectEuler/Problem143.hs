@@ -14,7 +14,7 @@ import qualified Data.IntSet as IS
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 143 Unsolved result
+problem = pureProblem 143 Solved result
 
 {-
   Idea:
@@ -109,23 +109,21 @@ prims =
         primTuples
   where
     {-
-      TODO: update doc.
+      The problem requries that:
       p + q + r <= maxSum
 
-      Here we can relax this constraint to make it a bit easier:
+      Here as we are searching i,j,k, where i,j can be assigned
+      to p,q or q,r or p,r. We don't have a easy way to put a precise bound
+      on things, so instead let's just relax this to:
 
-      p + q + 1 <= maxSum
+      i + j + 1 <= maxSum (we assume r = 1, which is a fairly safe bound to use)
+      ==> i + j < maxSum
+      ==> 2 m n + m^2 < maxSum
 
-      p + q + 1
-      = 2 m n + n^2 + m^2 - n^2
-      = 2 m n + m^2 + 1 <= 2m^2 + m^2 + 1 == 3m^2 + 1 <= maxSum
-
-      3m^2 < maxSum
-
-      Well, let's just say m <= integerSquareRoot (maxSum / 3),
-      once we have the triple, fine-grain checks can be applied.
+      We could apply n = 1 for a tighter bound, but let's just do `maxM < sqrt maxSum`
+      and worry about it later - we'll do a second filter when constructing
+      the large triangle anyways.
      -}
-    -- TODO: this bound is wrong.
     maxM = integerSquareRoot' maxSum
     primTuples :: [] PrimTuple
     primTuples = do
