@@ -5,8 +5,10 @@ module ProjectEuler.Problem146
 import Control.Monad
 import Data.Maybe
 import Math.NumberTheory.Primes
+import Data.List
 
 import qualified Data.List.Ordered as LOrdered
+import qualified Data.List.Match as LMatch
 
 import ProjectEuler.Types
 
@@ -84,14 +86,20 @@ hasPrimePattern n =
   in a guarding function.
  -}
 mkFilter :: Int -> Int -> Bool
-mkFilter p = isAllowed
+mkFilter p =
+    if LMatch.lessOrEqualLength allowed denied
+      then isAllowed
+      else isNotDenied
   where
     isAllowed v = (v `rem` p) `elem` allowed
+    isNotDenied v = (v `rem` p) `notElem` denied
     cs = [1,3,7,9,13,27 :: Int]
-    -- n^2 should not equal to under mod operation.
+    -- n^2 should not equal to any of those under mod operation.
     xs = LOrdered.nubSort (fmap ((p -) . (`rem` p)) cs)
-    allowed =
-      filter (\n -> (n*n `rem` p) `notElem` xs) [1..p-1]
+    (allowed, denied) =
+      partition
+        (\n -> (n*n `rem` p) `notElem` xs)
+        [0..p-1]
 
 result :: Int
 result =
@@ -100,15 +108,13 @@ result =
     . takeWhile (<= 1000000 * 150)
     $ concat (iterate (fmap (+ cycleLen)) firstCycle)
   where
-    smallPrimes = [2,3,5,7,11,13]
-    [f3,f7,f11,f13] = fmap mkFilter [3,7,11,13]
+    smallPrimes = 2 : 5 : [3,7,11,13,17,29]
+    -- drop 2,5 as the check is unnecessary given the way we generate the list.
+    pFilters = mkFilter <$> drop 2 smallPrimes
     cycleLen = product smallPrimes
     -- only do detailed checking on first cycle,
     -- after that we can simply reuse this checked result
     firstCycle = do
       n <- [10,20..cycleLen]
-      guard $ f3 n
-      guard $ f7 n
-      guard $ f11 n
-      guard $ f13 n
+      guard $ all ($ n) pFilters
       pure n
