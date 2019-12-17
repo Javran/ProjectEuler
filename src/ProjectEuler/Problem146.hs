@@ -3,7 +3,10 @@ module ProjectEuler.Problem146
   ) where
 
 import Control.Monad
-import Math.NumberTheory.Primes.Testing
+import Data.Maybe
+import Math.NumberTheory.Primes
+
+import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
 
@@ -68,22 +71,44 @@ problem = pureProblem 146 Solved result
   **n == none of [2,6,7,11] (mod 11)**
  -}
 
-hasPrimePattern :: Integer -> Bool
+hasPrimePattern :: Int -> Bool
 hasPrimePattern n =
     all tryPrime [1,3,7,9,13,27]
     && all (not . tryPrime) [5,11,15,17,19,21,23,25]
   where
     nSq = n * n
-    tryPrime c = isPrime (nSq + c)
+    tryPrime c = isJust $ isPrime (nSq + c)
 
-result :: Integer
+{-
+  This function encodes the "mod p" reasoning described above
+  in a guarding function.
+ -}
+mkFilter :: Int -> Int -> Bool
+mkFilter p = isAllowed
+  where
+    isAllowed v = (v `rem` p) `elem` allowed
+    cs = [1,3,7,9,13,27 :: Int]
+    -- n^2 should not equal to under mod operation.
+    xs = LOrdered.nubSort (fmap ((p -) . (`rem` p)) cs)
+    allowed =
+      filter (\n -> (n*n `rem` p) `notElem` xs) [1..p-1]
+
+result :: Int
 result =
-  sum
-  . filter hasPrimePattern
-  $ do
-    n <- [10,20..1000000 * 150]
-    guard $ (n `rem` 3) `elem` [1,2]
-    guard $ (n `rem` 7) `elem` [3,4]
-    guard $ (n `rem` 11) `elem` [1,4,5,6,7,10]
-    guard $ (n `rem` 13) `notElem` [2,6,7,11]
-    pure n
+    sum
+    . filter hasPrimePattern
+    . takeWhile (<= 1000000 * 150)
+    $ concat (iterate (fmap (+ cycleLen)) firstCycle)
+  where
+    smallPrimes = [2,3,5,7,11,13]
+    [f3,f7,f11,f13] = fmap mkFilter [3,7,11,13]
+    cycleLen = product smallPrimes
+    -- only do detailed checking on first cycle,
+    -- after that we can simply reuse this checked result
+    firstCycle = do
+      n <- [10,20..cycleLen]
+      guard $ f3 n
+      guard $ f7 n
+      guard $ f11 n
+      guard $ f13 n
+      pure n
