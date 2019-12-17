@@ -72,13 +72,13 @@ problem = pureProblem 146 Solved result
   **n == none of [2,6,7,11] (mod 11)**
  -}
 
-hasPrimePattern :: Int -> Bool
-hasPrimePattern n =
+hasPrimePattern :: (Int -> Bool) -> Int -> Bool
+hasPrimePattern isPrime' n =
     all tryPrime [1,3,7,9,13,27]
     && all (not . tryPrime) [5,11,15,17,19,21,23,25]
   where
     nSq = n * n
-    tryPrime c = isJust (isPrime v)
+    tryPrime c = isPrime' v
       where
         v = nSq + c
 
@@ -106,10 +106,28 @@ mkFilter p =
         (\n -> (n*n `rem` p) `IS.notMember` xs)
         $ IS.fromDistinctAscList [lo..p-1]
 
+fastSieve :: Int -> Bool
+fastSieve n = all (mightBePrime . (nSq +)) [1,3,7,9,13,27]
+  where
+    nSq = n * n
+    -- this relies on the assumption that all those primes are less than v,
+    -- which is true given that n is started at 10,
+    -- therefore v is at least 101
+    mightBePrime v =
+      all
+        (\p -> v `rem` p /= 0)
+        {-
+          this list of prime is randomly tuned.
+          the idea here is to do some cheap filtering
+          before calling the expensive "isPrime" operation.
+         -}
+        [2,3,11,13,29,37]
+
 result :: Int
 result =
     sum
-    . filter hasPrimePattern
+    . filter (hasPrimePattern (isJust . isPrime))
+    . filter fastSieve
     . takeWhile (<= 1000000 * 150)
     $ getCandidate <$> [0..]
   where
