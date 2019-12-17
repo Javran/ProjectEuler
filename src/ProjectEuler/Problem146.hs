@@ -3,12 +3,11 @@ module ProjectEuler.Problem146
   ) where
 
 import Control.Monad
+import Control.DeepSeq
 import Data.Maybe
 import Math.NumberTheory.Primes
-import Data.List
 
-import qualified Data.List.Ordered as LOrdered
-import qualified Data.List.Match as LMatch
+import qualified Data.IntSet as IS
 
 import ProjectEuler.Types
 
@@ -87,27 +86,28 @@ hasPrimePattern n =
  -}
 mkFilter :: Int -> Int -> Bool
 mkFilter p =
-    if LMatch.lessOrEqualLength allowed denied
+    if IS.size allowed < IS.size denied
       then isAllowed
       else isNotDenied
   where
-    isAllowed v = (v `rem` p) `elem` allowed
-    isNotDenied v = (v `rem` p) `notElem` denied
-    cs = [1,3,7,9,13,27 :: Int]
+    isAllowed v = (v `rem` p) `IS.member` allowed
+    isNotDenied v = (v `rem` p) `IS.notMember` denied
+    cs = IS.fromDistinctAscList [1,3,7,9,13,27 :: Int]
     -- n^2 should not equal to any of those under mod operation.
-    xs = LOrdered.nubSort (fmap ((p -) . (`rem` p)) cs)
+    xs = IS.map ((p -) . (`rem` p)) cs
     (allowed, denied) =
-      partition
-        (\n -> (n*n `rem` p) `notElem` xs)
-        [0..p-1]
+      IS.partition
+        (\n -> (n*n `rem` p) `IS.notMember` xs)
+        $ IS.fromDistinctAscList [0..p-1]
 
 result :: Int
 result =
     sum
     . filter hasPrimePattern
     . takeWhile (<= 1000000 * 150)
-    $ concat (iterate (fmap (+ cycleLen)) firstCycle)
+    $ concat (iterate (fmap (+ cycleLen)) $ force firstCycle)
   where
+    -- some tunable small primes for quicking generating a firstCycle.
     smallPrimes = 2 : 5 : [3,7,11,13,17,29]
     -- drop 2,5 as the check is unnecessary given the way we generate the list.
     pFilters = mkFilter <$> drop 2 smallPrimes
