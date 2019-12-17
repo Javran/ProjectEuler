@@ -3,11 +3,11 @@ module ProjectEuler.Problem146
   ) where
 
 import Control.Monad
-import Control.DeepSeq
 import Data.Maybe
 import Math.NumberTheory.Primes
 
 import qualified Data.IntSet as IS
+import qualified Data.Vector.Unboxed as VU
 
 import ProjectEuler.Types
 
@@ -105,13 +105,20 @@ result =
     sum
     . filter hasPrimePattern
     . takeWhile (<= 1000000 * 150)
-    $ concat (iterate (fmap (+ cycleLen)) $ force firstCycle)
+    $ getCandidate <$> [0..]
   where
     -- some tunable small primes for quicking generating a firstCycle.
     smallPrimes = 2 : 5 : [3,7,11,13,17,29]
     -- drop 2,5 as the check is unnecessary given the way we generate the list.
     pFilters = mkFilter <$> drop 2 smallPrimes
     cycleLen = product smallPrimes
+
+    getCandidate i = q * cycleLen + firstCycleV VU.! r
+      where
+        (q,r) = i `quotRem` vLen
+    vLen = VU.length firstCycleV
+    firstCycleV = VU.fromList firstCycle
+
     -- only do detailed checking on first cycle,
     -- after that we can simply reuse this checked result
     firstCycle = do
