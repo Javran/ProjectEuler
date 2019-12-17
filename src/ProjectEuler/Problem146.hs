@@ -78,7 +78,9 @@ hasPrimePattern n =
     && all (not . tryPrime) [5,11,15,17,19,21,23,25]
   where
     nSq = n * n
-    tryPrime c = isJust $ isPrime (nSq + c)
+    tryPrime c = isJust (isPrime v)
+      where
+        v = nSq + c
 
 {-
   This function encodes the "mod p" reasoning described above
@@ -95,10 +97,14 @@ mkFilter p =
     cs = IS.fromDistinctAscList [1,3,7,9,13,27 :: Int]
     -- n^2 should not equal to any of those under mod operation.
     xs = IS.map ((p -) . (`rem` p)) cs
+    -- a small hack here: the "correct" method is to start from 0,
+    -- for most of the primes that we are testing however,
+    -- starting from 0 only slows it down.
+    lo = if p == 29 then 0 else 1
     (allowed, denied) =
       IS.partition
         (\n -> (n*n `rem` p) `IS.notMember` xs)
-        $ IS.fromDistinctAscList [0..p-1]
+        $ IS.fromDistinctAscList [lo..p-1]
 
 result :: Int
 result =
