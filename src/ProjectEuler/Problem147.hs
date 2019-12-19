@@ -27,6 +27,10 @@ problem = pureProblem 147 Unsolved result
   I imagine if we can find a way to get f (m+1) n from f c r  (1 <= c <= m, 1 <= r <= n),
   we will be up to a good start.
 
+  Update: I just realized tilted rectangles and those regular ones do not have interaction with each other:
+  a tilted (non-unit) one can only be form from other smaller tilted rectangles and vice versa,
+  it will be easier we can count them separately.
+
  -}
 
 result = ()
