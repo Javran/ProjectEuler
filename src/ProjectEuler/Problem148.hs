@@ -20,26 +20,23 @@ problem = pureProblem 148 Unsolved result
   and here we want to find the number of elements not divisible by 7
   in the first x rows of Pascal's triangle.
 
-  Okay, some interesting findings:
+  Here Lucas's theorem sounds promising: https://en.wikipedia.org/wiki/Lucas's_theorem,
+  namely: A binomial coefficient binomial n k is divisible by a prime p
+  if and only if at least one of the base p digits of k is greater than the corresponding digit of n.
 
-  - https://en.wikipedia.org/wiki/Lucas's_theorem
-  - Some divisibility properties of binomial coefficients, Daniel Yaqubi, Madjid Mirzavaziri
+  After comparing the result implemented with Lucas's theorem with naive one,
+  we have confirmed its correctness, and allow us to have some speed up.
 
-  > An elementary property of binomial coefficients is that "n choose k"
-  is divisible by a prime p for all 1 < k < n if and only if n is a power of p.
-
-  > A binomial coefficient binom {m}{n} is divisible by a prime p
-  if and only if at least one of the base p digits of n is greater than the corresponding digit of m.
+  This isn't fast enough though, but the next potential speed up is obvious:
+  given a number n, we want to know how many numbers in [0..n] has at least one of base 7 digit
+  greater than corresponding digit of n.
 
  -}
 
 {-
   Tell if binomial n k is divisible by 7.
 
-  The following implementation is based on Lucas's theorem (https://en.wikipedia.org/wiki/Lucas's_theorem),
-  which says, A binomial coefficient binomial n k is divisible by a prime p
-  if and only if at least one of the base p digits of k is greater than the corresponding digit of n.
-
+  The implementation uses Lucas's theorem.
  -}
 binomialDivBy7 :: Int -> Int -> Bool
 binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
@@ -55,4 +52,9 @@ toBase7Rev = unfoldr f
 
 checkRow n = foldMap (\k -> if binomialDivBy7 n k then 0 :: Sum Int else 1) [0..n]
 
-result = getSum $ foldMap checkRow [0 :: Int .. 10 ^! 4 - 1]
+result = getSum $ foldMap checkRow [0 :: Int .. 10 ^! 3 - 1]
+{-
+  Some results obtained from current implementation:
+  - [0 .. 10^3 - 1] => 118335
+  - [0 .. 10^4 - 1] => 6264360
+ -}
