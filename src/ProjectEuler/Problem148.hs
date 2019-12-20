@@ -56,7 +56,7 @@ problem = pureProblem 148 Unsolved result
 
   So, in short:
   f(b) = 0 (b < 7)
-  f(7n+b) = 7*f(n) + (n+1-f(n)-1)*(6-b)
+  f(7n+b) = 7*f(n) + (n+1-f(n)-1)*(6-b) = (b+1)*f(n) + n*(6-b)
 
  -}
 
@@ -72,20 +72,26 @@ binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
     kIn7Rev = toBase7Rev k
 
 toBase7Rev :: Int -> [Int]
-toBase7Rev = unfoldr f
+toBase7Rev = unfoldr go
   where
-    f 0 = Nothing
-    f n = let (q,r) = n `quotRem` 7 in Just (r, q)
+    go 0 = Nothing
+    go n = let (q,r) = n `quotRem` 7 in Just (r, q)
 
+{- Implements f(n) as described above -}
+f :: Int -> Int
 f m
   | m < 7 = 0
-  | otherwise = let (n,b) = m `quotRem` 7 in 7*f n + (n - f n)*(6-b)
+  | otherwise = let (n,b) = m `quotRem` 7 in (b+1)*f n + n*(6-b)
 
 countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 :: Sum Int else 1) [0..n]
 
-result = all (\t -> t  + 1 == getSum (countRow t) + f t) [0 .. 10 ^! 4 - 1]
+countRowFast n = Sum $ n + 1 - f n
+
+result = getSum . foldMap countRowFast $ [0 .. 10 ^! 9 - 1]
 {-
   Some results obtained from current implementation:
   - [0 .. 10^3 - 1] => 118335
   - [0 .. 10^4 - 1] => 6264360
+  - [0 .. 10^5 - 1] => 346238256
+  - [0 .. 10^7 - 1] => 788306648416
  -}
