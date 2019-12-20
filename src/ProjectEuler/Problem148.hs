@@ -4,10 +4,12 @@ module ProjectEuler.Problem148
   ) where
 
 import Math.Combinat.Numbers.Sequences
+import Data.Monoid
+
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 148 Unsolved run
+problem = pureProblem 148 Unsolved result
 
 {-
   Idea: For Pascal's triangle,
@@ -31,6 +33,6 @@ problem = Problem 148 Unsolved run
 
  -}
 
-checkRow n = (n,) <$> filter ((== 0) . (`rem` 7) . binomial n) [0..n]
+checkRow n = foldMap ((\r -> if r /= 0 then 1 :: Sum Int else 0) . (`rem` 7) . binomial n) [0..n]
 
-run = mapM_ logT $ filter (not . null) $ fmap checkRow [1 :: Int ..100]
+result = getSum . foldMap checkRow $ [0 :: Int .. 99]
