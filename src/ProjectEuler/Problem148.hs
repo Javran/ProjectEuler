@@ -70,12 +70,11 @@ binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
   where
     nIn7Rev = toBase7Rev n
     kIn7Rev = toBase7Rev k
-
-toBase7Rev :: Int -> [Int]
-toBase7Rev = unfoldr go
-  where
-    go 0 = Nothing
-    go n = let (q,r) = n `quotRem` 7 in Just (r, q)
+    toBase7Rev :: Int -> [Int]
+    toBase7Rev = unfoldr go
+      where
+        go 0 = Nothing
+        go v = let (q,r) = v `quotRem` 7 in Just (r, q)
 
 {- Implements f(n) as described above -}
 f :: Int -> Int
@@ -83,10 +82,13 @@ f m
   | m < 7 = 0
   | otherwise = let (n,b) = m `quotRem` 7 in (b+1)*f n + n*(6-b)
 
-countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 :: Sum Int else 1) [0..n]
+_countRow :: Int -> Sum Int
+_countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 else 1) [0..n]
 
+countRowFast :: Int -> Sum Int
 countRowFast n = Sum $ n + 1 - f n
 
+result :: Int
 result = getSum . foldMap countRowFast $ [0 .. 10 ^! 9 - 1]
 {-
   Some results obtained from current implementation:
