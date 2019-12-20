@@ -1,10 +1,10 @@
-{-# LANGUAGE TupleSections #-}
 module ProjectEuler.Problem148
   ( problem
   ) where
 
-import Math.Combinat.Numbers.Sequences
 import Data.Monoid
+import Data.List
+import Petbox
 
 import ProjectEuler.Types
 
@@ -33,6 +33,26 @@ problem = pureProblem 148 Unsolved result
 
  -}
 
-checkRow n = foldMap ((\r -> if r /= 0 then 1 :: Sum Int else 0) . (`rem` 7) . binomial n) [0..n]
+{-
+  Tell if binomial n k is divisible by 7.
 
-result = getSum . foldMap checkRow $ [0 :: Int .. 99]
+  The following implementation is based on Lucas's theorem (https://en.wikipedia.org/wiki/Lucas's_theorem),
+  which says, A binomial coefficient binomial n k is divisible by a prime p
+  if and only if at least one of the base p digits of k is greater than the corresponding digit of n.
+
+ -}
+binomialDivBy7 :: Int -> Int -> Bool
+binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
+  where
+    nIn7Rev = toBase7Rev n
+    kIn7Rev = toBase7Rev k
+
+toBase7Rev :: Int -> [Int]
+toBase7Rev = unfoldr f
+  where
+    f 0 = Nothing
+    f n = let (q,r) = n `quotRem` 7 in Just (r, q)
+
+checkRow n = foldMap (\k -> if binomialDivBy7 n k then 0 :: Sum Int else 1) [0..n]
+
+result = getSum $ foldMap checkRow [0 :: Int .. 10 ^! 4 - 1]
