@@ -2,8 +2,6 @@ module ProjectEuler.Problem148
   ( problem
   ) where
 
-import Data.Monoid
-import Data.List
 import Petbox
 
 import ProjectEuler.Types
@@ -12,6 +10,8 @@ problem :: Problem
 problem = pureProblem 148 Unsolved result
 
 {-
+  Note: old implementation removed. see history of this file for detail.
+
   Idea: For Pascal's triangle,
   The number on n-th row and k-th column is:
 
@@ -60,25 +60,6 @@ problem = pureProblem 148 Unsolved result
 
  -}
 
-{-
-  Tell if binomial n k is divisible by 7.
-
-  The implementation uses Lucas's theorem.
- -}
-binomialDivBy7 :: Int -> Int -> Bool
-binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
-  where
-    nIn7Rev = toBase7Rev n
-    kIn7Rev = toBase7Rev k
-    toBase7Rev :: Int -> [Int]
-    toBase7Rev = unfoldr go
-      where
-        go 0 = Nothing
-        go v = let (q,r) = v `quotRem` 7 in Just (r, q)
-
-_countRow :: Int -> Sum Int
-_countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 else 1) [0..n]
-
 {- Implements f(n) as described above -}
 f :: Int -> Int
 f m
@@ -99,7 +80,7 @@ f m
   => [ (i+1)*f n + n*(6-i) | i <- [0..b] ] (definition)
   => f n * [ i+1 | i <- [0..b] ] + n * [ 6-i | i <- [0..b] ]
   => (f n * (b+1) * (b+2) + n * (42 - (5-b)*(6-b))) / 2
-  => (f n * (b+1) * (b+2) + n * (12 + 11*b - b*b)) / 2
+  => (f n * (b*b + 3*b+2) + n * (12 + 11*b - b*b)) / 2
 
  -}
 fSum :: Int -> Int
@@ -107,20 +88,10 @@ fSum m
   | m < 7 = 0
   | otherwise =
     let (n,b) = m `quotRem` 7
-        sumCur = ((b+1)*(b+2)*f n + n*(12 + 11*b - b*b)) `quot` 2
+        sumCur = ((b*b + 3*b + 2)*f n + n*(12 + 11*b - b*b)) `quot` 2
     in sumCur + fSum (7*n-1)
 
-_countRowFast :: Int -> Sum Int
-_countRowFast n = Sum $ n + 1 - f n
-
 result :: Int
-result = ((n+1)*(n+2) `quot` 2)  - fSum n
+result = ((n+1)*(n+2) `quot` 2) - fSum n
   where
     n = 10 ^! 9 - 1
-{-
-  Some results obtained from current implementation:
-  - [0 .. 10^3 - 1] => 118335
-  - [0 .. 10^4 - 1] => 6264360
-  - [0 .. 10^5 - 1] => 346238256
-  - [0 .. 10^7 - 1] => 788306648416
- -}
