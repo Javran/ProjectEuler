@@ -61,6 +61,11 @@ problem = pureProblem 148 Unsolved result
   f(7n+b) = 7*f(n) + (n+1-f(n)-1)*(6-b) = (b+1)*f(n) + n*(6-b)
 
   Some after thoughts:
+
+  - Continuing from f(n) defined above, I realized that to calculate f(7n+b), one need to compute f(n) first,
+    so we can batch some work together by computing f(7n+0)+f(7n+1)+...+f(7n+b) in one go, which is exactly
+    what fSum defined below does.
+
   - Some claimed the result looks like a Sierpinski triangle - I haven't realize that though.
 
  -}
