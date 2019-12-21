@@ -76,20 +76,47 @@ binomialDivBy7 n k = any (uncurry (<)) $ zip nIn7Rev kIn7Rev
         go 0 = Nothing
         go v = let (q,r) = v `quotRem` 7 in Just (r, q)
 
+_countRow :: Int -> Sum Int
+_countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 else 1) [0..n]
+
 {- Implements f(n) as described above -}
 f :: Int -> Int
 f m
   | m < 7 = 0
   | otherwise = let (n,b) = m `quotRem` 7 in (b+1)*f n + n*(6-b)
 
-_countRow :: Int -> Sum Int
-_countRow n = foldMap (\k -> if binomialDivBy7 n k then 0 else 1) [0..n]
+{-
+  Note that the process of computing f(7 n + b) all require computing f(n),
+  we might as well batch those computations together:
 
-countRowFast :: Int -> Sum Int
-countRowFast n = Sum $ n + 1 - f n
+  fSum(m) = sum of f(i), where i <- [0..m].
+
+  If m = 7*n + b (0 <= b < 7):
+
+  fSum(m) = fSum(7*n-1) + [ f(7*n+i) | i <- [0..b] ]
+
+  [ f(7*n+i) | i <- [0..b] ]
+  => [ (i+1)*f n + n*(6-i) | i <- [0..b] ] (definition)
+  => f n * [ i+1 | i <- [0..b] ] + n * [ 6-i | i <- [0..b] ]
+  => (f n * (b+1) * (b+2) + n * (42 - (5-b)*(6-b))) / 2
+  => (f n * (b+1) * (b+2) + n * (12 + 11*b - b*b)) / 2
+
+ -}
+fSum :: Int -> Int
+fSum m
+  | m < 7 = 0
+  | otherwise =
+    let (n,b) = m `quotRem` 7
+        sumCur = ((b+1)*(b+2)*f n + n*(12 + 11*b - b*b)) `quot` 2
+    in sumCur + fSum (7*n-1)
+
+_countRowFast :: Int -> Sum Int
+_countRowFast n = Sum $ n + 1 - f n
 
 result :: Int
-result = getSum . foldMap countRowFast $ [0 .. 10 ^! 9 - 1]
+result = ((n+1)*(n+2) `quot` 2)  - fSum n
+  where
+    n = 10 ^! 9 - 1
 {-
   Some results obtained from current implementation:
   - [0 .. 10^3 - 1] => 118335
