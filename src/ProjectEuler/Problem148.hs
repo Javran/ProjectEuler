@@ -2,6 +2,8 @@ module ProjectEuler.Problem148
   ( problem
   ) where
 
+import Data.Monoid
+import Data.Word
 import Petbox
 
 import ProjectEuler.Types
@@ -58,13 +60,16 @@ problem = pureProblem 148 Unsolved result
   f(b) = 0 (b < 7)
   f(7n+b) = 7*f(n) + (n+1-f(n)-1)*(6-b) = (b+1)*f(n) + n*(6-b)
 
+  Some after thoughts:
+  - Some claimed the result looks like a Sierpinski triangle - I haven't realize that though.
+
  -}
 
 {- Implements f(n) as described above -}
-f :: Int -> Int
+f :: Int -> Word64
 f m
   | m < 7 = 0
-  | otherwise = let (n,b) = m `quotRem` 7 in (b+1)*f n + n*(6-b)
+  | otherwise = let (n,b) = m `quotRem` 7 in fInt (b+1)*f n + fInt (n * (6-b))
 
 {-
   Note that the process of computing f(7 n + b) all require computing f(n),
@@ -83,15 +88,19 @@ f m
   => (f n * (b*b + 3*b+2) + n * (12 + 11*b - b*b)) / 2
 
  -}
-fSum :: Int -> Int
+fSum :: Int -> Sum Word64
 fSum m
   | m < 7 = 0
   | otherwise =
     let (n,b) = m `quotRem` 7
-        sumCur = ((b*b + 3*b + 2)*f n + n*(12 + 11*b - b*b)) `quot` 2
-    in sumCur + fSum (7*n-1)
+        sumCur = (fInt (b*b + 3*b + 2)*f n + fInt (n*(12 + 11*b - b*b))) `quot` 2
+    in Sum sumCur <> fSum (7*n-1)
 
-result :: Int
-result = ((n+1)*(n+2) `quot` 2) - fSum n
+{-
+  Because 2^59 < (n+1) * (n+2) < 2^60, to be compliant with the standard in which
+  Int is only guaranteed to be in range -2^29 .. 2^29-1, we'll use Word64 here.
+ -}
+result :: Word64
+result = fInt ((n+1)*(n+2) `quot` 2) - getSum (fSum n)
   where
     n = 10 ^! 9 - 1
