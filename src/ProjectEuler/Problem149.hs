@@ -39,8 +39,8 @@ numTable = runST $ do
     -- for 1 <= k <= 55
     forM_ [1..55] $ \k -> do
       let -- being careful here not to overflow.
-          v0 = modPlus 100003 (modMul (-200003) k)
-          v1 = modMul k (modMul k (modMul k 300007))
+          v0 = 100003 - 200003 * k
+          v1 = modMul (k*k) (modMul k 300007)
           val = modPlus v0 v1 - 500000
       VUM.write vec k (fromIntegral val)
     forM_ [56..l*l] $ \k -> do
