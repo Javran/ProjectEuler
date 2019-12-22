@@ -9,7 +9,7 @@ import Petbox
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 148 Unsolved result
+problem = pureProblem 148 Solved result
 
 {-
   Note: old implementation removed. see history of this file for detail.
