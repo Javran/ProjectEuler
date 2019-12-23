@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module ProjectEuler.Problem149
   ( problem
   ) where
@@ -6,6 +7,7 @@ import Control.Monad
 import Control.Monad.ST
 import Data.Int
 import Petbox
+import Data.List
 
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
@@ -29,9 +31,26 @@ problem = pureProblem 149 Unsolved result
   we aren't supposed to find any patterns that can help speeding up the process.
   but I'll need to take a closer look.
 
+  Assuming that we can learn nothing of use from the way that these numbers are generated,
+  we can still use Kadane's algorithm as describe from:
+  https://en.wikipedia.org/wiki/Maximum_subarray_problem
  -}
 
 result = (numTable VU.! 10, numTable VU.! 100)
+
+{-
+  Kadane's algorithm to compute sum of adjacent numbers.
+  Note that if the array (or the sequence of things) are all negative,
+  the algorithm will return 0, which is fine for our case, because
+  there are definitely positive numbers in our array (for example, s_100 = 86613)
+ -}
+maxSubArray :: (Foldable t, Num a, Ord a) => t a -> a
+maxSubArray = fst . foldl' kadaneAux (0, 0)
+  where
+    kadaneAux (bestSum, prevSum) curVal = (bestSum', curSum)
+      where
+        curSum = max 0 (prevSum + curVal)
+        bestSum' = max bestSum curSum
 
 numTable :: VU.Vector Int32
 numTable = runST $ do
