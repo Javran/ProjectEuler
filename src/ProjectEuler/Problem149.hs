@@ -15,7 +15,7 @@ import qualified Data.Vector.Unboxed.Mutable as VUM
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 149 Unsolved result
+problem = pureProblem 149 Solved result
 
 {-
   Idea:
