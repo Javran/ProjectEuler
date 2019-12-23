@@ -52,6 +52,17 @@ maxSubArray = fst . foldl' kadaneAux (0, 0)
         curSum = max 0 (prevSum + curVal)
         bestSum' = max bestSum curSum
 
+
+numTableSmall :: VU.Vector Int32
+numTableSmall =
+  VU.fromList
+    [ -1 -- reserved so that we can index starting from 1 for the purpose of being consistent with the problem.
+    , -2, 5, 3, 2
+    , 9, -6, 5, 1
+    , 3, 2, 7, 3
+    , -1, 8, -4, 8
+    ]
+
 numTable :: VU.Vector Int32
 numTable = runST $ do
     vec <- VUM.unsafeNew sz
