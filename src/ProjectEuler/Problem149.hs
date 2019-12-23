@@ -36,7 +36,7 @@ problem = pureProblem 149 Unsolved result
   https://en.wikipedia.org/wiki/Maximum_subarray_problem
  -}
 
-result = genLineCoords (4 :: Int) -- (numTable VU.! 10, numTable VU.! 100)
+result = maximum (findMax numTable 2000 (genLineCoords 2000))
 
 genLineCoords l = rows <> cols <> diags0 <> diags1
   where
@@ -50,6 +50,15 @@ genLineCoords l = rows <> cols <> diags0 <> diags1
     diags1 =
       [ [ (r,c) | r <- [1 .. l+k], let c = r - k ] | k <- [1-l .. 0]]
       <> [ [ (r,c) | r <- [k+1 .. l] , let c = r - k] | k <- [1 .. l-1] ]
+
+getVal :: VUM.Unbox a => VU.Vector a -> Int -> (Int, Int) -> a
+getVal vec l (r,c) = vec VU.! ((r-1)*l + c)
+
+findMax :: VU.Vector Int32 -> Int -> [[(Int, Int)]] -> [Int32]
+findMax vec l = fmap (maxSubArray . getVecLine)
+  where
+    getVecLine :: [(Int,Int)] -> [Int32]
+    getVecLine = fmap (getVal vec l)
 
 {-
   Kadane's algorithm to compute sum of adjacent numbers.
