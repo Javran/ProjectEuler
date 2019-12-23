@@ -36,7 +36,20 @@ problem = pureProblem 149 Unsolved result
   https://en.wikipedia.org/wiki/Maximum_subarray_problem
  -}
 
-result = (numTable VU.! 10, numTable VU.! 100)
+result = genLineCoords (4 :: Int) -- (numTable VU.! 10, numTable VU.! 100)
+
+genLineCoords l = rows <> cols <> diags0 <> diags1
+  where
+    rows = [ [(r,c) | c <- [1..l]] | r <- [1..l] ]
+    cols = [ [(r,c) | r <- [1..l]] | c <- [1..l] ]
+    -- let's say diags0 is of the direction that keeps r + c = k a constant.
+    diags0 =
+      [ [ (r,c) | r <- [1..k-1], let c = k - r ] | k <- [2 .. l+1] ]
+      <> [ [ (r,c) | r <- [k-l..l], let c = k - r ] | k <- [l+2 .. l+l] ]
+    -- diags1 keeps r - c = k a constant. (TODO)
+    diags1 =
+      [ [ (r,c) | r <- [1 .. l+k], let c = r - k ] | k <- [1-l .. 0]]
+      <> [ [ (r,c) | r <- [k+1 .. l] , let c = r - k] | k <- [1 .. l-1] ]
 
 {-
   Kadane's algorithm to compute sum of adjacent numbers.
