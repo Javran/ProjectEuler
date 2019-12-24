@@ -34,6 +34,19 @@ problem = pureProblem 149 Solved result
   Assuming that we can learn nothing of use from the way that these numbers are generated,
   we can still use Kadane's algorithm as describe from:
   https://en.wikipedia.org/wiki/Maximum_subarray_problem
+
+  Afterthoughts: (TODO)
+
+  Note that it is not necessary to have the full matrix available before running the algorithm:
+  for every coordinate (r,c), we send the value in question to:
+  - an array indexed by r
+  - another array indexed by c
+  - another array indexed by r+c
+  - another array indexed by r-c
+
+  then after we have gone through all the numbers, we can simply scan these 4 arrays
+  to get the max out of them.
+
  -}
 
 result :: Int32
