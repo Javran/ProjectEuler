@@ -36,9 +36,19 @@ problem = pureProblem 149 Solved result
   https://en.wikipedia.org/wiki/Maximum_subarray_problem
  -}
 
+result :: Int32
 result = maximum (findMax numTable 2000 (genLineCoords 2000))
 
-genLineCoords l = rows <> cols <> diags0 <> diags1
+type Coord = (Int,Int)
+type LineCoords = [] Coord -- coordinates that are in the same line.
+
+genLineCoords :: Int -> [] LineCoords
+genLineCoords l =
+    {-
+      note that for coordinate (r,c), we have 1 <= r,c <= l,
+      the index is started at one to make it consistent with problem's description.
+     -}
+    rows <> cols <> diags0 <> diags1
   where
     rows = [ [(r,c) | c <- [1..l]] | r <- [1..l] ]
     cols = [ [(r,c) | r <- [1..l]] | c <- [1..l] ]
@@ -51,10 +61,10 @@ genLineCoords l = rows <> cols <> diags0 <> diags1
       [ [ (r,c) | r <- [1 .. l+k], let c = r - k ] | k <- [1-l .. 0]]
       <> [ [ (r,c) | r <- [k+1 .. l] , let c = r - k] | k <- [1 .. l-1] ]
 
-getVal :: VUM.Unbox a => VU.Vector a -> Int -> (Int, Int) -> a
+getVal :: VUM.Unbox a => VU.Vector a -> Int -> Coord -> a
 getVal vec l (r,c) = vec VU.! ((r-1)*l + c)
 
-findMax :: VU.Vector Int32 -> Int -> [[(Int, Int)]] -> [Int32]
+findMax :: VU.Vector Int32 -> Int -> [LineCoords] -> [Int32]
 findMax vec l = fmap (maxSubArray . getVecLine)
   where
     getVecLine :: [(Int,Int)] -> [Int32]
@@ -74,17 +84,6 @@ maxSubArray = fst . foldl' kadaneAux (0, 0)
         curSum = max 0 (prevSum + curVal)
         bestSum' = max bestSum curSum
 
-
-numTableSmall :: VU.Vector Int32
-numTableSmall =
-  VU.fromList
-    [ -1 -- reserved so that we can index starting from 1 for the purpose of being consistent with the problem.
-    , -2, 5, 3, 2
-    , 9, -6, 5, 1
-    , 3, 2, 7, 3
-    , -1, 8, -4, 8
-    ]
-
 numTable :: VU.Vector Int32
 numTable = runST $ do
     vec <- VUM.unsafeNew sz
@@ -98,7 +97,8 @@ numTable = runST $ do
     forM_ [56..l*l] $ \k -> do
       kM24 <- VUM.read vec (k-24)
       kM55 <- VUM.read vec (k-55)
-      let v0 = modPlus (modPlus (fInt kM24) (fInt kM55)) 1000000
+      let v0 :: Int
+          v0 = modPlus (modPlus (fInt kM24) (fInt kM55)) 1000000
           val = v0 - 500000
       VUM.write vec k (fromIntegral val)
     VU.unsafeFreeze vec
