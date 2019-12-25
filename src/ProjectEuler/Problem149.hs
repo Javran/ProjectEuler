@@ -7,7 +7,6 @@ import Control.Monad
 import Control.Monad.ST
 import Data.Int
 import Petbox
-import Data.List
 
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
@@ -61,16 +60,27 @@ type Coord = (Int,Int)
  -}
 data Kadane v = Kadane v v deriving Functor
 
-updateKadane (Kadane vecBest vecCur) i val = do
-  vBest <- VUM.read vecBest i
-  vCur <- VUM.read vecCur i
-  let (vBest', vCur') = kadaneAux (vBest, vCur) val
-  VUM.write vecBest i vBest'
-  VUM.write vecCur i vCur'
+{-
+  Kadane's algorithm to compute sum of adjacent numbers.
+  Note that if the array (or the sequence of things) are all negative,
+  the algorithm will return 0, which is fine for our case, because
+  there are definitely positive numbers in our array (for example, s_100 = 86613)
+ -}
+kadaneAux :: (Num a, Ord a) => (a, a) -> a -> (a, a)
+kadaneAux (bestSum, prevSum) curVal = (bestSum', curSum)
+  where
+    curSum = max 0 (prevSum + curVal)
+    bestSum' = max bestSum curSum
 
 findMatrixMax :: Int -> [] (Coord, Int32) -> Int32
 findMatrixMax l cs = runST $ do
   let initKadane sz = Kadane <$> VUM.new sz <*> VUM.new sz
+      updateKadane (Kadane vecBest vecCur) i val = do
+        vBest <- VUM.read vecBest i
+        vCur <- VUM.read vecCur i
+        let (vBest', vCur') = kadaneAux (vBest, vCur) val
+        VUM.write vecBest i vBest'
+        VUM.write vecCur i vCur'
   rowsKn <- initKadane l
   colsKn <- initKadane l
   diags0Kn <- initKadane (l+l-1)
@@ -90,18 +100,6 @@ findMatrixMax l cs = runST $ do
   diags0Max <- getMax diags0Kn
   diags1Max <- getMax diags1Kn
   pure $ maximum [rowsMax, colsMax, diags0Max, diags1Max]
-
-{-
-  Kadane's algorithm to compute sum of adjacent numbers.
-  Note that if the array (or the sequence of things) are all negative,
-  the algorithm will return 0, which is fine for our case, because
-  there are definitely positive numbers in our array (for example, s_100 = 86613)
- -}
-kadaneAux :: (Num a, Ord a) => (a, a) -> a -> (a, a)
-kadaneAux (bestSum, prevSum) curVal = (bestSum', curSum)
-      where
-        curSum = max 0 (prevSum + curVal)
-        bestSum' = max bestSum curSum
 
 cells :: [] (Coord, Int32)
 cells = zip [ (r,c) | r <- [0..1999], c <- [0..1999] ] vals
