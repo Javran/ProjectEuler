@@ -11,12 +11,17 @@ problem = pureProblem 147 Unsolved result
   Idea: I guess this is a dynamic programming problem.
   but I expect this one to be somewhat difficult.
 
-  Let's say a rectangle is "tightly situated" in a cross-hatched grid,
-  if that rectangle has all its edges (or corners, if tilted) touching
-  the edge of that grid. (well I know this definition isn't perfect for tilted
-  rectangles, but for now let's just move on)
+  Observation: we should be able to treat this as two separated counting problem:
 
-  If we define f(m,n) to be the number rectangles that can be tightly situated
+  - putting rectangles into grids without cross-hatches.
+  - putting rectangles into grids with only cross-hatches.
+
+  So I previously want to see how far we can go with a concept of "tightly situated",
+  turns out this does not lead us too far. This is simply because a "tightly situated"
+  situation has, well, exactly one solution by definition. So instead we should really
+  try counting with less constraints and see how it goes:
+
+  If we define f(m,n) to be the number rectangles that can be situated
   inside a m x n grid (m are columns and n rows).
 
   few properties to begin with:
@@ -26,10 +31,6 @@ problem = pureProblem 147 Unsolved result
 
   I imagine if we can find a way to get f (m+1) n from f c r  (1 <= c <= m, 1 <= r <= n),
   we will be up to a good start.
-
-  Update: I just realized tilted rectangles and those regular ones do not have interaction with each other:
-  a tilted (non-unit) one can only be form from other smaller tilted rectangles and vice versa,
-  it will be easier we can count them separately.
 
  -}
 
