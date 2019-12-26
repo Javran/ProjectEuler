@@ -2,6 +2,10 @@ module ProjectEuler.Problem150
   ( problem
   ) where
 
+import Data.Bits
+import Data.Int
+import Petbox
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -28,6 +32,14 @@ problem = pureProblem 150 Unsolved result
 
  -}
 
-result = ()
+result = take 10 (unfoldr (Just . linearCongruentialGen) 0)
 
-
+linearCongruentialGen :: Int64 -> (Int32, Int64)
+linearCongruentialGen t = (s, t')
+  where
+    -- for powers of 2, we have:
+    -- x `rem` (2^k) === x .&. (2^k - 1)
+    -- where k >= 0
+    t' = (615949*t + 797807) .&. (2 ^! 20 - 1)
+    s :: Int32
+    s = fInt $ t' - 2 ^! 19
