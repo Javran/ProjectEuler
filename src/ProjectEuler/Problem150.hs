@@ -97,3 +97,8 @@ linearCongruentialGen t = (s, t')
     t' = (615949*t + 797807) .&. (2 ^! 20 - 1)
     s :: Int32
     s = fInt $ t' - 2 ^! 19
+
+{-
+  Note: got the right answer, but definitely need some speed up:
+  Time elapsed: 360720.5873 ms
+ -}
