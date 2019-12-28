@@ -72,9 +72,9 @@ sample =
   ]
 
 theTriangle :: [[Int32]]
-theTriangle = unfoldr go (0, gens)
+theTriangle = unfoldr go (1, gens)
   where
-    gens = unfoldr (Just . linearCongruentialGen) 1
+    gens = unfoldr (Just . linearCongruentialGen) 0
     go (1001, _) = Nothing
     go (n, xs) = Just (ys, (n+1,zs))
       where
