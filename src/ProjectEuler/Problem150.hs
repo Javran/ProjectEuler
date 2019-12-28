@@ -6,6 +6,7 @@ import Data.Bits
 import Data.Int
 import Petbox
 
+import qualified Data.Map.Strict as M
 import qualified Data.Vector.Unboxed as VU
 
 import ProjectEuler.Types
@@ -45,8 +46,32 @@ mkFastSum xs = getSum
     l = length xs
     vs = VU.fromListN (l + 1) $ 0 : scanl1 (+) xs
 
-result =
-  take 10 (unfoldr (Just . linearCongruentialGen) 0)
+mkTriSum :: M.Map (Int,Int) Int32 -> [Int32] -> M.Map (Int,Int) Int32
+mkTriSum prevRow curRow = M.fromList $ do
+    l <- [1 .. len]
+    i <- [0 .. len - l]
+    let j = i + l - 1
+    if l == 1
+      then pure ((i,j), getCurRowSum i i)
+      else
+        let baseSum = getCurRowSum i j
+        in pure ((i,j), baseSum + prevRow M.! (i,j-1))
+  where
+    len = length curRow
+    getCurRowSum = mkFastSum curRow
+
+sample :: [[Int32]]
+sample =
+  [ [15]
+  , [-14,-7]
+  , [20,-13,-5]
+  , [-3,8,23,-26]
+  , [1,-4,-5,-18,5]
+  , [-16,31,2,9,28,3]
+  ]
+
+result = minimum $ concatMap M.elems $ scanl mkTriSum M.empty sample
+  -- take 10 (unfoldr (Just . linearCongruentialGen) 0)
 
 linearCongruentialGen :: Int64 -> (Int32, Int64)
 linearCongruentialGen t = (s, t')
