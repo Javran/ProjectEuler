@@ -2,18 +2,20 @@ module ProjectEuler.Problem150
   ( problem
   ) where
 
+import Control.Monad
+import Control.Monad.ST
 import Data.Bits
 import Data.Int
-import Petbox
 import Data.Maybe
+import Petbox
 
-import qualified Data.Map.Strict as M
 import qualified Data.Vector.Unboxed as VU
+import qualified Data.Vector.Unboxed.Mutable as VUM
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 150 Unsolved result
+problem = pureProblem 150 Solved result
 
 {-
   Idea:
@@ -34,6 +36,14 @@ problem = pureProblem 150 Unsolved result
 
   Now our task is simply to find the minimum of triSum.
 
+  Note: the change from using Data.Map.Strict to a linear indexed unboxed Vector
+  is very siginificant:
+
+  - Data.Map.Strict: 360720.5873 ms
+  - Data.Vector.Unboxed: 1341.3732 ms
+
+  TODO: cleanup.
+
  -}
 
 {-
@@ -47,46 +57,48 @@ mkFastSum xs = getSum
     l = length xs
     vs = VU.fromListN (l + 1) $ 0 : scanl1 (+) xs
 
-mkTriSum :: M.Map (Int,Int) Int32 -> [Int32] -> M.Map (Int,Int) Int32
-mkTriSum prevRow curRow = M.fromList $ do
-    l <- [1 .. len]
-    i <- [0 .. len - l]
-    let j = i + l - 1
-    if l == 1
-      then pure ((i,j), getCurRowSum i i)
-      else
-        let baseSum = getCurRowSum i j
-        in pure ((i,j), baseSum + prevRow M.! (i,j-1))
+type TriSum = VU.Vector Int32
+
+{-
+  Given a 2d index (i,j) where i <= j,
+  make a 1d index.
+ -}
+triSumInd :: Int -> Int -> Int
+triSumInd i j = i + (j*(j+1) `rem` 2)
+
+mkTriSum :: TriSum -> [Int32] -> TriSum
+mkTriSum prevVec curRow = runST $ do
+    let sz = triSumInd (len-1) (len-1) + 1
+    curVec <- VUM.unsafeNew sz
+    forM_ [1 .. len] $ \l ->
+      forM_ [0 .. len-l] $ \i -> do
+        let j = i + l - 1
+            baseSum = getCurRowSum i j
+        VUM.write
+          curVec
+          (triSumInd i j)
+          (baseSum + if l == 1 then 0 else prevVec VU.! triSumInd i (j-1))
+    VU.unsafeFreeze curVec
   where
     len = length curRow
     getCurRowSum = mkFastSum curRow
-
-sample :: [[Int32]]
-sample =
-  [ [15]
-  , [-14,-7]
-  , [20,-13,-5]
-  , [-3,8,23,-26]
-  , [1,-4,-5,-18,5]
-  , [-16,31,2,9,28,3]
-  ]
 
 theTriangle :: [[Int32]]
 theTriangle = unfoldr go (1, gens)
   where
     gens = unfoldr (Just . linearCongruentialGen) 0
-    go (1001, _) = Nothing
-    go (n, xs) = Just (ys, (n+1,zs))
-      where
-        (ys,zs) = splitAt n xs
+    go (n, xs)
+      | n > 1000 = Nothing
+      | (ys,zs) <- splitAt n xs = Just (ys, (n+1,zs))
 
+result :: Int32
 result =
-    minimum $ mapMaybe triSumToMin $ scanl mkTriSum M.empty theTriangle
+    minimum $ mapMaybe triSumToMin $ scanl mkTriSum (VU.fromList []) theTriangle
   where
     triSumToMin m =
-      if M.size m == 0
+      if VU.length m == 0
         then Nothing
-        else Just (minimum (M.elems m))
+        else Just (minimum (VU.toList m))
 
 linearCongruentialGen :: Int64 -> (Int32, Int64)
 linearCongruentialGen t = (s, t')
@@ -97,8 +109,3 @@ linearCongruentialGen t = (s, t')
     t' = (615949*t + 797807) .&. (2 ^! 20 - 1)
     s :: Int32
     s = fInt $ t' - 2 ^! 19
-
-{-
-  Note: got the right answer, but definitely need some speed up:
-  Time elapsed: 360720.5873 ms
- -}
