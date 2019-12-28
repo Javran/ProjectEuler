@@ -5,6 +5,7 @@ module ProjectEuler.Problem150
 import Data.Bits
 import Data.Int
 import Petbox
+import Data.Maybe
 
 import qualified Data.Map.Strict as M
 import qualified Data.Vector.Unboxed as VU
@@ -70,8 +71,22 @@ sample =
   , [-16,31,2,9,28,3]
   ]
 
-result = minimum $ concatMap M.elems $ scanl mkTriSum M.empty sample
-  -- take 10 (unfoldr (Just . linearCongruentialGen) 0)
+theTriangle :: [[Int32]]
+theTriangle = unfoldr go (0, gens)
+  where
+    gens = unfoldr (Just . linearCongruentialGen) 1
+    go (1001, _) = Nothing
+    go (n, xs) = Just (ys, (n+1,zs))
+      where
+        (ys,zs) = splitAt n xs
+
+result =
+    minimum $ mapMaybe triSumToMin $ scanl mkTriSum M.empty theTriangle
+  where
+    triSumToMin m =
+      if M.size m == 0
+        then Nothing
+        else Just (minimum (M.elems m))
 
 linearCongruentialGen :: Int64 -> (Int32, Int64)
 linearCongruentialGen t = (s, t')
