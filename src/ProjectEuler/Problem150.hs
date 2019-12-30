@@ -36,13 +36,32 @@ problem = pureProblem 150 Solved result
 
   Now our task is simply to find the minimum of triSum.
 
-  Note: the change from using Data.Map.Strict to a linear indexed unboxed Vector
+  First thing, there is a well known technique for get the sum of any consecutive range
+  in an immutable array. This is implemented as `mkFastSum` below.
+  With O(n) preprocessing, the query takes O(1) time to do.
+  This optimization allows us to just get the correct answer - as I kind of expect
+  that using a simple Map will give us some speed penalties, I want to
+  have some simple optimization to give the slow solution a little speedup.
+
+  Then the next challenge is how to get triSum(r-1,_,_) when we are computing
+  triSum(r,_,_), the (slow) answer is simple:
+  use a Map and with key (i,j) pointing to value triSum(r-1,i,j).
+  This gives us the correct answer but the solution itself is a bit slow.
+  But now since we have got the correct one, we can make it a faster one.
+
+  The trick here is to realize that for (i,j) that satisfies j <= i,
+  we can encode that into a linear index i + j*(j+1) / 2,
+  which is a compact encoding that has no conflicts.
+  (this encoding is intuitive if you consider (i,j) to be coordinates of a triangle whose first layer
+  has one element, 2nd layer 2 elements, and so on, and count 0,1,2... from the very first element)
+
+  Turns out the change from using Data.Map.Strict to a linear indexed unboxed Vector
   is very siginificant:
 
   - Data.Map.Strict: 360720.5873 ms
   - Data.Vector.Unboxed: 1341.3732 ms
 
-  TODO: cleanup.
+  I'm sure there are still things we can optimize here, but I'll move on for now.
 
  -}
 
