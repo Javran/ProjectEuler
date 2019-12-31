@@ -7,6 +7,7 @@ import Control.Monad.State
 import Data.Function
 import System.Random.TF
 import System.Random.TF.Instances
+import Debug.Trace
 
 import ProjectEuler.Types
 
@@ -67,8 +68,8 @@ experiment :: Monad m => StateT TFGen m Int
 experiment =
     fix
       (\loop e@(Envelope a b c d) count ->
-          if a + b + c == 0
-            then pure (count + d)
+          if traceShow e $ a + b + c == 0
+            then pure $ count + (d - 1) -- last batch doesn't count.
             else do
               let l = a + b + c + d
               ind <- state (randomR (0, l-1))
@@ -80,7 +81,9 @@ experiment =
   where
     e0 = Envelope 1 1 1 1
 
+-- TODO: something is wrong here, because I'm getting the
+-- same number everytime despite taking random state transitions.
 run = do
   g <- liftIO newTFGen
-  (as, _) <- runStateT (replicateM 10 experiment) g
+  (as, _) <- runStateT (replicateM 1 experiment) g
   logT as
