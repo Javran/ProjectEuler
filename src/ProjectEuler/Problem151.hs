@@ -2,6 +2,8 @@ module ProjectEuler.Problem151
   ( problem
   ) where
 
+import Control.Monad
+
 import ProjectEuler.Types
 
 problem :: Problem
@@ -41,8 +43,20 @@ problem = pureProblem 151 Unsolved result
 
     So the state can be encoded into a 10 bit number.
 
+  Well, actually, we can try some simulation first and see if leads us
+  to an correct answer.
+
  -}
 
-result = ()
+data Envolope = Envolope Int Int Int Int deriving Show
 
+nexts :: Envolope -> [] Envolope
+nexts (Envolope a b c d) =
+    pickA2 <> pickA3 <> pickA4 <> pickA5
+  where
+    pickA2 = replicate a $ Envolope (a-1) (b+1) (c+1) (d+1)
+    pickA3 = replicate b $ Envolope a (b-1) (c+1) (d+1)
+    pickA4 = replicate c $ Envolope a b (c-1) (d+1)
+    pickA5 = replicate d $ Envolope a b c (d-1)
 
+result = show (nexts $ Envolope 0 2 2 2)
