@@ -51,6 +51,7 @@ dependencies:
 - terminfo
 - text
 - text-show
+- tf-random
 - time
 - transformers-base
 - turtle

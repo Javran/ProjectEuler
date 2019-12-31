@@ -3,11 +3,15 @@ module ProjectEuler.Problem151
   ) where
 
 import Control.Monad
+import Control.Monad.State
+import Data.Function
+import System.Random.TF
+import System.Random.TF.Instances
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 151 Unsolved result
+problem = Problem 151 Unsolved run
 
 {-
   Idea: not sure where to go right now, but there're definitely some pattern
@@ -48,15 +52,35 @@ problem = pureProblem 151 Unsolved result
 
  -}
 
-data Envolope = Envolope Int Int Int Int deriving Show
+data Envelope = Envelope Int Int Int Int deriving Show
 
-nexts :: Envolope -> [] Envolope
-nexts (Envolope a b c d) =
+nexts :: Envelope -> [] Envelope
+nexts (Envelope a b c d) =
     pickA2 <> pickA3 <> pickA4 <> pickA5
   where
-    pickA2 = replicate a $ Envolope (a-1) (b+1) (c+1) (d+1)
-    pickA3 = replicate b $ Envolope a (b-1) (c+1) (d+1)
-    pickA4 = replicate c $ Envolope a b (c-1) (d+1)
-    pickA5 = replicate d $ Envolope a b c (d-1)
+    pickA2 = replicate a $ Envelope (a-1) (b+1) (c+1) (d+1)
+    pickA3 = replicate b $ Envelope a (b-1) (c+1) (d+1)
+    pickA4 = replicate c $ Envelope a b (c-1) (d+1)
+    pickA5 = replicate d $ Envelope a b c (d-1)
 
-result = show (nexts $ Envolope 0 2 2 2)
+experiment :: Monad m => StateT TFGen m Int
+experiment =
+    fix
+      (\loop e@(Envelope a b c d) count ->
+          if a + b + c == 0
+            then pure (count + d)
+            else do
+              let l = a + b + c + d
+              ind <- state (randomR (0, l-1))
+              let e'@(Envelope _ _ _ d') = nexts e !! ind
+                  count' = if d' < d then count + 1 else count
+              loop e' count'
+         )
+      e0 0
+  where
+    e0 = Envelope 1 1 1 1
+
+run = do
+  g <- liftIO newTFGen
+  (as, _) <- runStateT (replicateM 10 experiment) g
+  logT as
