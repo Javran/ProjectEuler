@@ -3,6 +3,7 @@ module ProjectEuler.Problem151
   ( problem
   ) where
 
+import Petbox
 import Control.Monad
 import Control.Monad.State
 import Data.Function
@@ -82,10 +83,33 @@ experiment =
   where
     e0 = Envelope 1 1 1 1
 
-experiments :: TFGen -> [] (Int, Int)
-experiments g0 = -- TODO: accumulate.
-  zip (unfoldr (Just . runState experiment) g0) [1..]
+experiments :: TFGen -> [] Int
+experiments = unfoldr (Just . runState experiment)
+
+{-
+  pair <numerator, denominator>.
+ -}
+averages :: TFGen -> [] (Int, Int)
+averages g = zip accumulated [1..]
+  where
+    accumulated = scanl1 (+) $ experiments g
+
+{-
+  here the threshold is 1 / thresRcpl (i.e. the reciprocal)
+  also it is expected that xs is infinite.
+ -}
+findFixpoint :: Int -> [] (Int, Int) -> (Int, Int)
+findFixpoint thresRcpl xs =
+    snd $ firstSuchThat withinThreshold zs
+  where
+    withinThreshold ((a,b),(c,d)) =
+      (fInt thresRcpl :: Integer) * abs (fInt $ a * d - b * c) < fInt b * fInt d
+    zs = zip xs (tail xs)
+
+sample :: Int -> [a] -> [a]
+sample n (x:xs) = x : sample n (drop (n-1) xs)
 
 run = do
   g <- liftIO newTFGen
-  logT (take 20 $ experiments g)
+  let (n,d) = findFixpoint 100000000 (sample 20 $ averages g)
+  logT (fInt n / fInt d :: Double)
