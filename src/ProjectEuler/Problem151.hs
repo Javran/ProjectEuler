@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module ProjectEuler.Problem151
   ( problem
   ) where
@@ -7,7 +8,7 @@ import Control.Monad.State
 import Data.Function
 import System.Random.TF
 import System.Random.TF.Instances
-import Debug.Trace
+import Data.List
 
 import ProjectEuler.Types
 
@@ -64,26 +65,27 @@ nexts (Envelope a b c d) =
     pickA4 = replicate c $ Envelope a b (c-1) (d+1)
     pickA5 = replicate d $ Envelope a b c (d-1)
 
-experiment :: Monad m => StateT TFGen m Int
+experiment :: State TFGen Int
 experiment =
     fix
-      (\loop e@(Envelope a b c d) count ->
-          if traceShow e $ a + b + c == 0
-            then pure $ count + (d - 1) -- last batch doesn't count.
-            else do
-              let l = a + b + c + d
-              ind <- state (randomR (0, l-1))
-              let e'@(Envelope _ _ _ d') = nexts e !! ind
-                  count' = if d' < d then count + 1 else count
-              loop e' count'
+      (\loop e@(Envelope a b c d) !count -> do
+          let l = a + b + c + d
+          ind <- state (randomR (0, l-1))
+          let e'@(Envelope a' b' c' d') = nexts e !! ind
+              l' = a' + b' + c' + d'
+              count' = if l' == 1 then count + 1 else count
+          if l' == 0
+            then pure count'
+            else loop e' count'
          )
       e0 0
   where
     e0 = Envelope 1 1 1 1
 
--- TODO: something is wrong here, because I'm getting the
--- same number everytime despite taking random state transitions.
+experiments :: TFGen -> [] (Int, Int)
+experiments g0 = -- TODO: accumulate.
+  zip (unfoldr (Just . runState experiment) g0) [1..]
+
 run = do
   g <- liftIO newTFGen
-  (as, _) <- runStateT (replicateM 1 experiment) g
-  logT as
+  logT (take 20 $ experiments g)
