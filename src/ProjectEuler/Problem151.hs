@@ -103,13 +103,38 @@ findFixpoint thresRcpl xs =
     snd $ firstSuchThat withinThreshold zs
   where
     withinThreshold ((a,b),(c,d)) =
-      (fInt thresRcpl :: Integer) * abs (fInt $ a * d - b * c) < fInt b * fInt d
+      (fInt thresRcpl :: Integer) * abs (fInt a * fInt d - fInt b * fInt c) < fInt b * fInt d
     zs = zip xs (tail xs)
 
+-- for only taking samples by some distances in between.
+-- this is an attempt of eliminating the instability cause by "outliers"
 sample :: Int -> [a] -> [a]
 sample n (x:xs) = x : sample n (drop (n-1) xs)
 
 run = do
   g <- liftIO newTFGen
-  let (n,d) = findFixpoint 100000000 (sample 20 $ averages g)
-  logT (fInt n / fInt d :: Double)
+  let z@(n,d) = findFixpoint 100000000 (sample 500 $ averages g)
+  logT z
+  -- minus one one the result as the last batch doesn't count.
+  logT (fInt (n - d) / fInt d :: Double)
+
+{-
+
+Result from some runs:
+
+(29572856,20194501)
+0.46440142294181963
+
+(3868498,2642501)
+0.46395327759573224
+
+(23265801,15888501)
+0.464316929583225
+
+with thresRcpl = 100000000, and `sample 500` applied.
+
+the precision is not as good as I like,
+but I guess this is still a good starting point - at least we now know
+what value are we looking for - those that "lies around" these numbers.
+
+ -}
