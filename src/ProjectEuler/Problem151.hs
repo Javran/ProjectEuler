@@ -3,19 +3,11 @@ module ProjectEuler.Problem151
   ( problem
   ) where
 
-import Petbox
-import Control.Monad
-import Control.Monad.State
-import Data.Function
-import System.Random.TF
-import System.Random.TF.Instances
-import Data.List
 import Data.Bits
 import Data.Ratio
+import Petbox
 import Text.Printf
 import TextShow
-
-import qualified Data.Text as T
 
 import ProjectEuler.Types
 
@@ -71,14 +63,20 @@ problem = pureProblem 151 Solved result
 
   with threshold = 1/100000000, and `sample 500` applied.
 
- -}
+  Note: the original implementation is a monte carlo simulation,
+  which is then removed during cleanup, see history of this file.
 
+ -}
 
 data Envelope = Envelope !Int !Int !Int !Int deriving (Show, Eq)
 
 ePack :: Envelope -> Int
 ePack (Envelope a b c d) = d .|. shiftL c 4 .|. shiftL b 7 .|. shiftL a 10
 
+{-
+  Let f(a,b,c,d) be the expectation, we can simply compute it without losing any precision
+  by using Rational type.
+ -}
 f :: Int -> Rational
 f ev
   | tot == 0 = 0
@@ -105,71 +103,16 @@ eUnpack v = Envelope a b c d
     b = shiftR v 7 .&. 3
     a = shiftR v 10 .&. 1
 
-nexts :: Envelope -> [] Envelope
-nexts (Envelope a b c d) =
-    pickA2 <> pickA3 <> pickA4 <> pickA5
-  where
-    pickA2 = replicate a $ Envelope (a-1) (b+1) (c+1) (d+1)
-    pickA3 = replicate b $ Envelope a (b-1) (c+1) (d+1)
-    pickA4 = replicate c $ Envelope a b (c-1) (d+1)
-    pickA5 = replicate d $ Envelope a b c (d-1)
-
-experiment :: State TFGen Int
-experiment =
-    fix
-      (\loop e@(Envelope a b c d) !count -> do
-          let l = a + b + c + d
-          ind <- state (randomR (0, l-1))
-          let e'@(Envelope a' b' c' d') = nexts e !! ind
-              l' = a' + b' + c' + d'
-              count' = if l' == 1 then count + 1 else count
-          if l' == 0
-            then pure count'
-            else loop e' count'
-         )
-      e0 0
-  where
-    e0 = Envelope 1 1 1 1
-
-experiments :: TFGen -> [] Int
-experiments = unfoldr (Just . runState experiment)
-
 {-
-  pair <numerator, denominator>.
+  TODO:
+  this is a workaround to print out floating numbers with a specific precision
+  without double quotes surrounding them.
  -}
-averages :: TFGen -> [] (Int, Int)
-averages g = zip accumulated [1..]
-  where
-    accumulated = scanl1 (+) $ experiments g
-
-{-
-  here the threshold is 1 / thresRcpl (i.e. the reciprocal)
-  also it is expected that xs is infinite.
- -}
-findFixpoint :: Int -> [] (Int, Int) -> (Int, Int)
-findFixpoint thresRcpl xs =
-    snd $ firstSuchThat withinThreshold zs
-  where
-    withinThreshold ((a,b),(c,d)) =
-      (fInt thresRcpl :: Integer) * abs (fInt a * fInt d - fInt b * fInt c) < fInt b * fInt d
-    zs = zip xs (tail xs)
-
--- for only taking samples by some distances in between.
--- this is an attempt of eliminating the instability cause by "outliers"
-sample :: Int -> [a] -> [a]
-sample n (x:xs) = x : sample n (drop (n-1) xs)
-
-run = do
-  g <- liftIO newTFGen
-  let z@(n,d) = findFixpoint 100000000 (sample 500 $ averages g)
-  logT z
-  -- minus one one the result as the last batch doesn't count.
-  logT (fInt (n - d) / fInt d :: Double)
-
 newtype Rounded = Rounded Double
 
 instance TextShow Rounded where
   showb (Rounded v) = fromString (printf "%.6f" v)
 
 -- TODO: cleanup pending.
-result = Rounded (fromRational (f (ePack $ Envelope 1 1 1 1) - 1) :: Double)
+result :: Rounded
+result = Rounded (fromRational (f (ePack $ Envelope 1 1 1 1) - 1))
