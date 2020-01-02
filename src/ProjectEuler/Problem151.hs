@@ -10,11 +10,12 @@ import Data.Function
 import System.Random.TF
 import System.Random.TF.Instances
 import Data.List
+import Data.Bits
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = Problem 151 Unsolved run
+problem = pureProblem 151 Unsolved result
 
 {-
   Idea: not sure where to go right now, but there're definitely some pattern
@@ -48,14 +49,37 @@ problem = Problem 151 Unsolved run
     - 0 <= c <= 7 (up to 3 bits)
     - 0 <= d <= 15 (up to 4 bits)
 
-    So the state can be encoded into a 10 bit number.
+    So the state can be encoded into a 10-bit number.
 
   Well, actually, we can try some simulation first and see if leads us
   to an correct answer.
+  Update: we are looking for some number around:
+
+  (29572856,20194501)
+  0.46440142294181963
+
+  (3868498,2642501)
+  0.46395327759573224
+
+  (23265801,15888501)
+  0.464316929583225
+
+  with threshold = 1/100000000, and `sample 500` applied.
 
  -}
 
-data Envelope = Envelope Int Int Int Int deriving Show
+data Envelope = Envelope !Int !Int !Int !Int deriving (Show, Eq)
+
+ePack :: Envelope -> Int
+ePack (Envelope a b c d) = d .|. shiftL c 4 .|. shiftL b 7 .|. shiftL a 10
+
+eUnpack :: Int -> Envelope
+eUnpack v = Envelope a b c d
+  where
+    d = v .&. 15
+    c = shiftR v 4 .&. 7
+    b = shiftR v 7 .&. 3
+    a = shiftR v 10 .&. 1
 
 nexts :: Envelope -> [] Envelope
 nexts (Envelope a b c d) =
@@ -118,23 +142,4 @@ run = do
   -- minus one one the result as the last batch doesn't count.
   logT (fInt (n - d) / fInt d :: Double)
 
-{-
-
-Result from some runs:
-
-(29572856,20194501)
-0.46440142294181963
-
-(3868498,2642501)
-0.46395327759573224
-
-(23265801,15888501)
-0.464316929583225
-
-with thresRcpl = 100000000, and `sample 500` applied.
-
-the precision is not as good as I like,
-but I guess this is still a good starting point - at least we now know
-what value are we looking for - those that "lies around" these numbers.
-
- -}
+result = show [ e | a <- [0..1], b <- [0..3], c <- [0..7], d <- [0..15], let e = Envelope a b c d, e /= eUnpack (ePack e) ]
