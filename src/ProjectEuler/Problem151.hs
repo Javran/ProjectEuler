@@ -11,11 +11,16 @@ import System.Random.TF
 import System.Random.TF.Instances
 import Data.List
 import Data.Bits
+import Data.Ratio
+import Text.Printf
+import TextShow
+
+import qualified Data.Text as T
 
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 151 Unsolved result
+problem = pureProblem 151 Solved result
 
 {-
   Idea: not sure where to go right now, but there're definitely some pattern
@@ -68,10 +73,29 @@ problem = pureProblem 151 Unsolved result
 
  -}
 
+
 data Envelope = Envelope !Int !Int !Int !Int deriving (Show, Eq)
 
 ePack :: Envelope -> Int
 ePack (Envelope a b c d) = d .|. shiftL c 4 .|. shiftL b 7 .|. shiftL a 10
+
+f :: Int -> Rational
+f ev
+  | tot == 0 = 0
+  | otherwise =
+      let cur = if tot == 1 then 1 else 0
+          caseA =
+            if a > 0 then f (ePack $ Envelope (a-1) (b+1) (c+1) (d+1)) else 0
+          caseB =
+            if b > 0 then f (ePack $ Envelope a (b-1) (c+1) (d+1)) else 0
+          caseC =
+            if c > 0 then f (ePack $ Envelope a b (c-1) (d+1)) else 0
+          caseD =
+            if d > 0 then f (ePack $ Envelope a b c (d-1)) else 0
+      in cur + caseA * (fInt a % tot) + caseB * (fInt b % tot) + caseC * (fInt c % tot) + caseD * (fInt d % tot)
+  where
+    Envelope a b c d = eUnpack ev
+    tot = fInt $ a + b + c + d
 
 eUnpack :: Int -> Envelope
 eUnpack v = Envelope a b c d
@@ -142,4 +166,10 @@ run = do
   -- minus one one the result as the last batch doesn't count.
   logT (fInt (n - d) / fInt d :: Double)
 
-result = show [ e | a <- [0..1], b <- [0..3], c <- [0..7], d <- [0..15], let e = Envelope a b c d, e /= eUnpack (ePack e) ]
+newtype Rounded = Rounded Double
+
+instance TextShow Rounded where
+  showb (Rounded v) = fromString (printf "%.6f" v)
+
+-- TODO: cleanup pending.
+result = Rounded (fromRational (f (ePack $ Envelope 1 1 1 1) - 1) :: Double)
