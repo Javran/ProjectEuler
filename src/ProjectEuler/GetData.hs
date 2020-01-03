@@ -68,17 +68,37 @@ getDataContent = snd . getDataPair
 newtype Answers = Answers (IM.IntMap [T.Text]) deriving Show
 
 {-
-  Format of data/answers.yaml:
 
+  Given the way that Project Euler's answer is submitted, I think it's fair to make following assumptions:
+  - the answer should not have any whitespace character as prefix or suffix.
+  - all characters should be in the range of ASCII.
+  - no quoting / escaping involved with the answer. in fact, most of the time the answer is simply a number
+
+  And the format of data/answers.yaml is specificed with those assumptions in mind:
+
+  - as its extension name suggested, this file is supposed to be parse-able by a yaml parser.
   - top level is a dictionary with field "answers"
   - under "answers", a dictionary from problem id (integer) to expected output.
-  - the expected output is structured:
-    + one line being either an integer (will be converted to a string) or a string,
-      if the output is exactly one line.
-    + a non-empty array that each item of it is either an integer or a string,
-      interpreted exactly the same as if it's exactly one line.
-  - note that the string is never quoted and there is no escaping,
-    for this project's use case, I don't think this will be necessary.
+  - since I'm making the assumption that no quoting / escaping is involved,
+    surrounding quotation marks around string literals can be omitted.
+  - the expected output is structured as:
+    + a non-empty array that each item of it is either an integer or a string.
+      the result will be of type [Text] and corresponds to every line generated from
+      ProjectEuler.Types.PEM.
+    + If the expected output is exactly one line:
+      it can merge with the key line to form the shorthand: "<problem id>: <expected answer>".
+
+      i.e. the following two are equivalent:
+
+      > <problem id>:
+      >   - 1234
+
+      vs.
+
+      > <problem_id>: 1234
+
+      Given the assumptions I'm making, this shorthand allows simplifying the data file quite a lot.
+
  -}
 instance FromJSON Answers where
   parseJSON =

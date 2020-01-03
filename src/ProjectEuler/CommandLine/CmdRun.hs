@@ -23,8 +23,8 @@ import ProjectEuler.CommandLine.Common
 
   Note that this is by no means an accurate execution time,
   as we have intentionally put all solution programs together,
-  some sharing will happen, making overall time less than
-  running each of them individually.
+  some sharing could happen, which could make overall time less than
+  the total time running each of them individually.
 
   However, this still helps in detecting solutions that
   takes a long time to run and therefore surface potential points
