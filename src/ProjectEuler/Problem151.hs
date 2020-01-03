@@ -2,11 +2,8 @@ module ProjectEuler.Problem151
   ( problem
   ) where
 
-import Data.Bits
 import Data.Ratio
 import Petbox
-import Text.Printf
-import TextShow
 
 import ProjectEuler.Types
 
@@ -92,16 +89,5 @@ f a b c d
   where
     tot = fInt $ a + b + c + d
 
-{-
-  TODO:
-  this is a workaround to print out floating numbers with a specific precision
-  without double quotes surrounding them.
- -}
-newtype Rounded = Rounded Double
-
-instance TextShow Rounded where
-  showb (Rounded v) = fromString (printf "%.6f" v)
-
--- TODO: cleanup pending.
-result :: Rounded
-result = Rounded (fromRational (f 1 1 1 1 - 1))
+result :: Rounded Double
+result = Rounded 6 (fromRational (f 1 1 1 1 - 1))

@@ -1,6 +1,7 @@
 {-# LANGUAGE
     GeneralizedNewtypeDeriving
   , UndecidableInstances
+  , FlexibleInstances
   #-}
 module ProjectEuler.Types
   ( ProblemStatus(..)
@@ -12,14 +13,16 @@ module ProjectEuler.Types
   , logT
   , logText
   , io
+  , Rounded(..)
   ) where
 
 import Control.Arrow
 import Control.Monad.Base
-import Control.Monad.Trans.Control
-import Control.Monad.Writer.Strict -- TODO: use CPS
 import Control.Monad.Fail
 import Control.Monad.Random
+import Control.Monad.Trans.Control
+import Control.Monad.Writer.Strict -- TODO: use CPS
+import Text.Printf
 import TextShow
 
 import qualified Data.DList as DL
@@ -100,3 +103,11 @@ newtype PEM a
     , MonadRandom
     )
 
+{-
+  Rounded defines a TextShow instance
+  For floating number outputs that require rounding to a specific precision.
+ -}
+data Rounded f = Rounded Int f
+
+instance TextShow (Rounded Double) where
+  showb (Rounded p v) = fromString (printf "%.*f" p v)
