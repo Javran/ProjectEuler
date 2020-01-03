@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module ProjectEuler.Problem151
   ( problem
   ) where
@@ -68,40 +67,30 @@ problem = pureProblem 151 Solved result
 
  -}
 
-data Envelope = Envelope !Int !Int !Int !Int deriving (Show, Eq)
-
-ePack :: Envelope -> Int
-ePack (Envelope a b c d) = d .|. shiftL c 4 .|. shiftL b 7 .|. shiftL a 10
-
 {-
   Let f(a,b,c,d) be the expectation, we can simply compute it without losing any precision
   by using Rational type.
  -}
-f :: Int -> Rational
-f ev
+f :: Int -> Int -> Int -> Int -> Rational
+f a b c d
   | tot == 0 = 0
   | otherwise =
       let cur = if tot == 1 then 1 else 0
           caseA =
-            if a > 0 then f (ePack $ Envelope (a-1) (b+1) (c+1) (d+1)) else 0
+            if a > 0 then f (a-1) (b+1) (c+1) (d+1) else 0
           caseB =
-            if b > 0 then f (ePack $ Envelope a (b-1) (c+1) (d+1)) else 0
+            if b > 0 then f a (b-1) (c+1) (d+1) else 0
           caseC =
-            if c > 0 then f (ePack $ Envelope a b (c-1) (d+1)) else 0
+            if c > 0 then f a b (c-1) (d+1) else 0
           caseD =
-            if d > 0 then f (ePack $ Envelope a b c (d-1)) else 0
-      in cur + caseA * (fInt a % tot) + caseB * (fInt b % tot) + caseC * (fInt c % tot) + caseD * (fInt d % tot)
+            if d > 0 then f a b c (d-1) else 0
+      in cur
+         + caseA * (fInt a % tot)
+         + caseB * (fInt b % tot)
+         + caseC * (fInt c % tot)
+         + caseD * (fInt d % tot)
   where
-    Envelope a b c d = eUnpack ev
     tot = fInt $ a + b + c + d
-
-eUnpack :: Int -> Envelope
-eUnpack v = Envelope a b c d
-  where
-    d = v .&. 15
-    c = shiftR v 4 .&. 7
-    b = shiftR v 7 .&. 3
-    a = shiftR v 10 .&. 1
 
 {-
   TODO:
@@ -115,4 +104,4 @@ instance TextShow Rounded where
 
 -- TODO: cleanup pending.
 result :: Rounded
-result = Rounded (fromRational (f (ePack $ Envelope 1 1 1 1) - 1))
+result = Rounded (fromRational (f 1 1 1 1 - 1))
