@@ -1,4 +1,4 @@
-resolver: lts-14.12
+resolver: lts-15.12
 packages:
 - .
 
@@ -6,5 +6,7 @@ extra-deps:
 - git: https://github.com/Javran/petbox.git
   commit: e107742a5426b63441a7b62dd105294bc3d66a58
 - PSQueue-1.1.0.1
-- set-cover-0.1
+- set-cover-0.1.1
 - combinat-0.2.9.0
+
+allow-newer: true
