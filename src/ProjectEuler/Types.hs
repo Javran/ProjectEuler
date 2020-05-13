@@ -18,7 +18,6 @@ module ProjectEuler.Types
 
 import Control.Arrow
 import Control.Monad.Base
-import Control.Monad.Fail
 import Control.Monad.Random
 import Control.Monad.Trans.Control
 import Control.Monad.Writer.Strict -- TODO: use CPS

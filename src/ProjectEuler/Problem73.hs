@@ -1,10 +1,10 @@
-{-# LANGUAGE MultiWayIf #-}
+{-# LANGUAGE MultiWayIf, TypeApplications #-}
 module ProjectEuler.Problem73
   ( problem
   ) where
 
 import Data.Ratio
-import Math.NumberTheory.Primes.Factorisation
+import Math.NumberTheory.Primes hiding (isPrime)
 import Math.NumberTheory.Primes.Testing
 import Petbox
 
@@ -22,8 +22,8 @@ phi n =
     then n-1
     else (n `div` denom) * numer
  where
-   nFactorised = factorise' . fromIntegral $ n
-   uprimes =  LO.sort . map (fromIntegral . fst) $ nFactorised
+   nFactorised = factorise @Int . fromIntegral $ n
+   uprimes =  LO.sort . map (fromIntegral . unPrime . fst) $ nFactorised
    numer = product . map (subtract 1) $ uprimes
    denom = product uprimes
 

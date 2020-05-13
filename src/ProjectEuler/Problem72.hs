@@ -3,7 +3,7 @@ module ProjectEuler.Problem72
   ) where
 
 import Data.Int
-import Math.NumberTheory.Primes.Factorisation
+import Math.NumberTheory.Primes hiding (isPrime)
 import Math.NumberTheory.Primes.Testing
 
 import qualified Data.List.Ordered as LO
@@ -21,8 +21,8 @@ phi n =
     then n-1
     else (n `div` denom) * numer
  where
-   nFactorised = factorise' . fromIntegral $ n
-   uprimes =  LO.sort . map (fromIntegral . fst) $ nFactorised
+   nFactorised = factorise n
+   uprimes = LO.sort . map (fromIntegral . unPrime . fst) $ nFactorised
    numer = product . map (subtract 1) $ uprimes
    denom = product uprimes
 

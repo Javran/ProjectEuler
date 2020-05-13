@@ -2,7 +2,7 @@ module ProjectEuler.Problem47
   ( problem
   ) where
 
-import Math.NumberTheory.Primes.Factorisation
+import Math.NumberTheory.Primes
 import ProjectEuler.Types
 
 problem :: Problem
@@ -13,7 +13,7 @@ find4Consecutives conList restList
     | [a,b,c,d] <- conList = [d,c,b,a]
     | otherwise =
         let (hd:tl) = restList
-        in if length (fst <$> factorise' (fromIntegral hd)) >= 4
+        in if length (fst <$> factorise hd) >= 4
           then find4Consecutives (hd:conList) tl
           else find4Consecutives [] tl
 

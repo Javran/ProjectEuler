@@ -2,7 +2,7 @@ module ProjectEuler.Problem124
   ( problem
   ) where
 
-import Math.NumberTheory.Primes.Factorisation
+import Math.NumberTheory.Primes
 
 import qualified Data.List.Ordered as LOrdered
 import qualified Data.IntMap.Strict as IM
@@ -35,7 +35,7 @@ maxN :: Int
 maxN = 100000
 
 calcRadical :: Int -> Int
-calcRadical x = product (fromIntegral . fst <$> factorise (fromIntegral x))
+calcRadical x = product (fromIntegral . unPrime . fst <$> factorise x)
 
 result :: Int
 result =
