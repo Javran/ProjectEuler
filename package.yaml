@@ -60,6 +60,8 @@ dependencies:
 - utility-ht
 - vector
 - yaml
+- integer-roots
+- semirings
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded

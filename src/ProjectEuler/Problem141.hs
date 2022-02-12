@@ -3,8 +3,7 @@ module ProjectEuler.Problem141
   ) where
 
 import Data.Word
-import Math.NumberTheory.Powers.Squares
-
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem

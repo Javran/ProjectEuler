@@ -1,18 +1,18 @@
 {-# LANGUAGE TypeApplications #-}
+
 module ProjectEuler.Problem98
   ( problem
-  ) where
+  )
+where
 
 import Control.Monad
 import Data.List
-import Math.NumberTheory.Powers.Squares
-import Petbox
-
 import qualified Data.List.Ordered as LOrdered
-import qualified Data.Text as T
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
-
+import qualified Data.Text as T
+import Math.NumberTheory.Roots
+import Petbox
 import ProjectEuler.GetData
 
 problem :: Problem
@@ -28,14 +28,14 @@ parseWords raw = read $ "[" <> T.unpack raw <> "]"
  -}
 groupAnagrams :: [String] -> [(S.Set Char, [String])]
 groupAnagrams =
-    foldMap mkGroup
+  foldMap mkGroup
     . M.elems
     . M.fromListWith (<>)
     . fmap (\x -> (sort x, [x]))
   where
     mkGroup [] = []
     mkGroup [_] = []
-    mkGroup xs@(h:_) = [(S.fromList h, xs)]
+    mkGroup xs@(h : _) = [(S.fromList h, xs)]
 
 {-
   Now that we know in the worst case we'll have 9 characters
@@ -59,33 +59,33 @@ groupAnagrams =
  -}
 
 startSearch :: (S.Set Char, [String]) -> [((String, Int), (String, Int))]
-startSearch (cSet, ws) = search M.empty (S.toList cSet) [0..9] ws
+startSearch (cSet, ws) = search M.empty (S.toList cSet) [0 .. 9] ws
 
 search :: M.Map Char Int -> [] Char -> [] Int -> [String] -> [((String, Int), (String, Int))]
 search assigns remainedChars remainedDigits curWords
   | null curWords = []
   | null remainedChars =
-      let validWords = concatMap validate curWords
-          validate w = do
-            let val = digitsToInt . fmap (assigns M.!) $ w
-            guard (isSquare' @Int val)
-            pure (w,val)
-      in [(a,b) | a@(wa,_) <- validWords, b@(wb,_) <- validWords, wa < wb]
+    let validWords = concatMap validate curWords
+        validate w = do
+          let val = digitsToInt . fmap (assigns M.!) $ w
+          guard (isSquare @Int val)
+          pure (w, val)
+     in [(a, b) | a@(wa, _) <- validWords, b@(wb, _) <- validWords, wa < wb]
   | null remainedDigits = []
   | otherwise = do
-      let (rc:remainedChars') = remainedChars
-      (d,remainedDigits') <- pick remainedDigits
-      let assigns' = M.insert rc d assigns
-          curWords' = filter noLeadingZero curWords
-          noLeadingZero [] = True
-          noLeadingZero (h:_) = M.lookup h assigns' /= Just 0
-      search (M.insert rc d assigns) remainedChars' remainedDigits' curWords'
+    let (rc : remainedChars') = remainedChars
+    (d, remainedDigits') <- pick remainedDigits
+    let assigns' = M.insert rc d assigns
+        curWords' = filter noLeadingZero curWords
+        noLeadingZero [] = True
+        noLeadingZero (h : _) = M.lookup h assigns' /= Just 0
+    search (M.insert rc d assigns) remainedChars' remainedDigits' curWords'
 
 compute :: T.Text -> Int
 compute =
   maximum
-  . concatMap (\((_,a),(_,b)) -> [a,b])
-  . LOrdered.nubSort
-  . concatMap startSearch
-  . groupAnagrams
-  . parseWords
+    . concatMap (\((_, a), (_, b)) -> [a, b])
+    . LOrdered.nubSort
+    . concatMap startSearch
+    . groupAnagrams
+    . parseWords

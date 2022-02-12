@@ -1,15 +1,15 @@
 module ProjectEuler.Problem66
   ( problem
-  ) where
+  )
+where
 
 import Data.Foldable
 import Data.Maybe
 import Data.Ord
 import Data.Ratio
-import Math.NumberTheory.Powers.Squares
-
-import ProjectEuler.Types
+import Math.NumberTheory.Roots
 import ProjectEuler.Problem64 (gen)
+import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 66 Solved result
@@ -34,14 +34,15 @@ problem = pureProblem 66 Solved result
 
  -}
 approx :: [Integer] -> [Rational -> Rational]
-approx (x:xs) = scanl (\acc i t -> acc (1 / (i%1 + t))) (x%1 +) xs
+approx (x : xs) = scanl (\acc i t -> acc (1 / (i % 1 + t))) (x % 1 +) xs
 approx [] = error "unreachable"
 
 solve :: Int -> (Integer, Integer)
 solve d = head . mapMaybe isSolution $ approxs
   where
-    isSolution r = if x * x - toInteger d * y * y == 1
-        then Just (x,y)
+    isSolution r =
+      if x * x - toInteger d * y * y == 1
+        then Just (x, y)
         else Nothing
       where
         x = numerator r
@@ -63,6 +64,6 @@ solve d = head . mapMaybe isSolution $ approxs
  -}
 result :: Int
 result = fst . maximumBy (comparing snd) $ do
-  d <- filter (not . isSquare') [2..1000]
-  let (x,_) = solve d
+  d <- filter (not . isSquare) [2 .. 1000]
+  let (x, _) = solve d
   pure (d, x)

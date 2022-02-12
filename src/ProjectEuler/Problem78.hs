@@ -44,6 +44,10 @@ pFast n
         mapM_ writeVal [1..limit]
         pure mary
 
+
+{-
+  TODO: this seems to take forever to run?
+ -}
 result :: Int
 result =
   fst . firstSuchThat ((== 0) . (`mod` 1000000) . snd)

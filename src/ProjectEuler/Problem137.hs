@@ -5,8 +5,7 @@ module ProjectEuler.Problem137
 
 import Data.Maybe
 import Data.Word
-import Math.NumberTheory.Powers.Squares
-
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem

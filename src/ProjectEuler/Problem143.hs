@@ -1,16 +1,17 @@
-{-# LANGUAGE LambdaCase, BangPatterns #-}
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE LambdaCase #-}
+
 module ProjectEuler.Problem143
   ( problem
-  ) where
+  )
+where
 
 import Control.Monad
-import Math.NumberTheory.Powers.Squares
-import Petbox
-
 import qualified Data.DList as DL
 import qualified Data.IntMap.Strict as IM
 import qualified Data.IntSet as IS
-
+import Math.NumberTheory.Roots
+import Petbox
 import ProjectEuler.Types
 
 problem :: Problem
@@ -98,19 +99,20 @@ type PrimTuple = (Int, Int, Int) -- i <= j <= k
  -}
 prims :: IM.IntMap [PrimTuple]
 prims =
-    -- this filter rules out values that are singleton lists.
-    -- since we want to pick 3 triangles that can join together to form a larger one,
-    -- those singletons are never useful.
-    IM.filter (\case
-                  -- no case for empty list.
-                  -- due to the fact that this is a dictionary, there's no need of that.
-                  [_] -> False
-                  _ -> True)
+  -- this filter rules out values that are singleton lists.
+  -- since we want to pick 3 triangles that can join together to form a larger one,
+  -- those singletons are never useful.
+  IM.filter
+    (\case
+       -- no case for empty list.
+       -- due to the fact that this is a dictionary, there's no need of that.
+       [_] -> False
+       _ -> True)
     . IM.map DL.toList
     . IM.fromListWith (<>)
     $ concatMap
-        (\t@(i,j,_) -> let d = DL.singleton t in [(i,d),(j,d)])
-        primTuples
+      (\t@(i, j, _) -> let d = DL.singleton t in [(i, d), (j, d)])
+      primTuples
   where
     {-
       The problem requries that:
@@ -128,19 +130,19 @@ prims =
       and worry about it later - we'll do a second filter when constructing
       the large triangle anyways.
      -}
-    maxM = integerSquareRoot' maxSum
+    maxM = integerSquareRoot maxSum
     primTuples :: [] PrimTuple
     primTuples = do
-      m <- [1..maxM]
-      n <- [1..m-1]
-      guard $ (m-n) `rem` 3 /= 0
+      m <- [1 .. maxM]
+      n <- [1 .. m -1]
+      guard $ (m - n) `rem` 3 /= 0
       guard $ gcd m n == 1
-      let i = 2*m*n + n*n
-          j = m*m - n*n
-          k = m*m + m*n + n*n
-          (i',j') = if i <= j then (i,j) else (j,i)
-          maxScale = maxSum `quot` (i+j)
-      [ (i'*s,j'*s,k*s) | s <- [1..maxScale] ]
+      let i = 2 * m * n + n * n
+          j = m * m - n * n
+          k = m * m + m * n + n * n
+          (i', j') = if i <= j then (i, j) else (j, i)
+          maxScale = maxSum `quot` (i + j)
+      [(i' * s, j' * s, k * s) | s <- [1 .. maxScale]]
 
 doSearch :: [] Int
 doSearch = do
@@ -148,24 +150,24 @@ doSearch = do
   (p, tsPre) <- IM.toAscList prims
   -- now that p is the shortest,
   -- we are only interested in those greater than p
-  let ts = filter (\(!u,!v,_) -> u >= p && v >= p) tsPre
+  let ts = filter (\(!u, !v, _) -> u >= p && v >= p) tsPre
   -- pick two tuples from the list
-  ((_,y0,_),ts0) <- pickInOrder ts
-  ~((_,y1,_),_) <- pickInOrder ts0
+  ((_, y0, _), ts0) <- pickInOrder ts
+  ~((_, y1, _), _) <- pickInOrder ts0
   -- we now have two "other sides",
   -- let's assign q,r so that q <= r.
-  let (q,r) = if y0 <= y1 then (y0, y1) else (y1, y0)
-      s = p+q+r
+  let (q, r) = if y0 <= y1 then (y0, y1) else (y1, y0)
+      s = p + q + r
   guard $ s <= maxSum
   -- now we have q and r, what we need to do is to simple look it up.
   Just vs <- [prims IM.!? q]
   -- just simply need to check whether it's possible,
   -- no need of actually getting that value.
-  guard $ any (\(x,y,_z) -> (x,y) == (q,r)) vs
+  guard $ any (\(x, y, _z) -> (x, y) == (q, r)) vs
   pure s
 
 result :: Int
 result =
   IS.foldr' (+) 0
-  . IS.fromList
-  $ doSearch
+    . IS.fromList
+    $ doSearch

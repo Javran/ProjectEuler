@@ -1,11 +1,10 @@
-resolver: lts-16.3
+resolver: lts-18.20
 packages:
 - .
 
 extra-deps:
 - git: https://github.com/Javran/petbox.git
-  commit: 65bcc598026a3aaec4ebae7767644d431df7c6a4
+  commit: 8e921c41862dbe37ae8d957e88cea7961362e303
 - PSQueue-1.1.0.1
 - combinat-0.2.9.0
 
-allow-newer: true

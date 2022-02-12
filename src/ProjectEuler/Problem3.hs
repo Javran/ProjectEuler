@@ -1,10 +1,11 @@
 module ProjectEuler.Problem3
   ( problem
-  ) where
+  )
+where
 
-import ProjectEuler.Types
-import Math.NumberTheory.Powers.Squares
+import Math.NumberTheory.Roots
 import Petbox
+import ProjectEuler.Types
 
 problem :: Problem
 problem = pureProblem 3 Solved result
@@ -14,9 +15,9 @@ n = 600851475143
 
 result :: Integer
 result =
-    head . filter (\x -> n `rem` x == 0)
+  head . filter (\x -> n `rem` x == 0)
     . reverse
     . takeWhile (<= q)
     $ primes
   where
-    q = integerSquareRoot' n
+    q = integerSquareRoot n

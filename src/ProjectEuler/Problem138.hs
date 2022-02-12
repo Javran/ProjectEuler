@@ -1,12 +1,12 @@
 module ProjectEuler.Problem138
   ( problem
-  ) where
+  )
+where
 
-import Data.Maybe
-import Math.NumberTheory.Powers
 import Control.Monad
+import Data.Maybe
 import Data.Word
-
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem
@@ -76,22 +76,22 @@ problem = pureProblem 138 Solved result
  -}
 _doSearch :: [Int]
 _doSearch =
-  take 7
-  $ mapMaybe
+  take 7 $
+    mapMaybe
       (\l -> do
-          z <- exactSquareRoot (5*l*l-1)
-          let r = z `mod` 5
-          guard $ r == 2 || r == 3
-          pure l)
-      [1..]
+         z <- exactSquareRoot (5 * l * l -1)
+         let r = z `mod` 5
+         guard $ r == 2 || r == 3
+         pure l)
+      [1 ..]
 
 fibs :: [Word64]
-fibs = 0:1:zipWith (+) (tail fibs) fibs
+fibs = 0 : 1 : zipWith (+) (tail fibs) fibs
 
 result :: Word64
-result = sum $ f <$> [1..12]
+result = sum $ f <$> [1 .. 12]
   where
-    f n = fibs !! (6*n+3) `quot` 2
+    f n = fibs !! (6 * n + 3) `quot` 2
 
 {-
   The following solution is given by https://www.alpertron.com.ar/QUAD.HTM,
@@ -99,8 +99,9 @@ result = sum $ f <$> [1..12]
  -}
 _resultAlt :: Int
 _resultAlt =
-    sum . fmap (abs . snd)
-    . take 12 . tail
+  sum . fmap (abs . snd)
+    . take 12
+    . tail
     $ iterate next (0, 1)
   where
-    next (x, y) = (-9 * x - 8 * y - 8, -10 * x  - 9 * y - 8)
+    next (x, y) = (-9 * x - 8 * y - 8, -10 * x - 9 * y - 8)

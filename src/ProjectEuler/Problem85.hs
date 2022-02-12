@@ -5,8 +5,7 @@ module ProjectEuler.Problem85
 import Control.Monad
 import Data.List
 import Data.Ord
-import Math.NumberTheory.Powers.Squares
-
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem

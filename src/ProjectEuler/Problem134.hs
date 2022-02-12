@@ -1,10 +1,10 @@
 module ProjectEuler.Problem134
   ( problem
-  ) where
+  )
+where
 
-import Math.NumberTheory.Moduli.Chinese
+import Math.NumberTheory.Moduli
 import Petbox
-
 import ProjectEuler.Types
 
 problem :: Problem
@@ -43,15 +43,17 @@ problem = pureProblem 134 Solved result
  -}
 primePairs :: [(Int, Int)]
 primePairs =
-    takeWhile ((<= 1000000) . fst)
+  takeWhile ((<= 1000000) . fst)
     . dropWhile ((< 5) . fst)
     $ zip primes (tail primes)
 
 findConn :: Int -> Int -> Int
-findConn p1 p2 = prod
+findConn p1 p2 = case r of
+  SomeMod k -> fromInteger $ getVal k
+  _ -> error "unreachabke"
   where
     l = digitLen p1
-    Just prod = chineseCoprime (p1, 10 ^! l) (0, p2)
+    Just r = chineseSomeMod (fromIntegral p1 `modulo` (10 ^! l)) (0 `modulo` fromIntegral p2)
 
 result :: Int
 result = sum $ uncurry findConn <$> primePairs

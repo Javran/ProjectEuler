@@ -5,8 +5,7 @@ module ProjectEuler.Problem97
 
 import Data.Int
 import Data.Function
-
-import Math.NumberTheory.Powers.Squares
+import Math.NumberTheory.Roots
 
 import ProjectEuler.Types
 
@@ -17,7 +16,7 @@ base :: Integral i => i
 base = 10000000000
 
 lim :: Int64
-lim = fromInteger $ integerSquareRoot' (fromIntegral @Int64 @Integer maxBound)
+lim = fromInteger $ integerSquareRoot (fromIntegral @Int64 @Integer maxBound)
 
 {-
   2^64 has 20 digits in decimal, so if we are multiplying

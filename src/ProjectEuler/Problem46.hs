@@ -2,9 +2,8 @@ module ProjectEuler.Problem46
   ( problem
   ) where
 
-import Math.NumberTheory.Powers.Squares
 import Petbox
-
+import Math.NumberTheory.Roots
 import qualified Data.List.Ordered as LOrdered
 
 import ProjectEuler.Types
@@ -22,7 +21,7 @@ writtenAsPrimeAnd2Sq :: Int -> Bool
 writtenAsPrimeAnd2Sq n =
     any primeAnd2Sq rangedPrimes
   where
-    primeAnd2Sq p = r == 0 && isSquare' q
+    primeAnd2Sq p = r == 0 && isSquare q
       where
         (q, r) = (n - p) `quotRem` 2
     rangedPrimes = takeWhile (<= n) primes

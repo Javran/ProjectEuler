@@ -1,8 +1,9 @@
 module ProjectEuler.Problem100
   ( problem
-  ) where
+  )
+where
 
-import Math.NumberTheory.Powers.Squares
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem
@@ -36,11 +37,10 @@ rbPairs :: [(Integer, Integer)]
 rbPairs = (\b -> (f b, b)) <$> bs
   where
     bs :: [Integer]
-    bs = 1 : 3 : zipWith (\x y -> 6*x-y-2) (tail bs) bs
-    f b = (integerSquareRoot' delta - (2*b-1)) `div` 2
+    bs = 1 : 3 : zipWith (\x y -> 6 * x - y -2) (tail bs) bs
+    f b = (integerSquareRoot delta - (2 * b -1)) `div` 2
       where
-        delta = 8*b*b-8*b+1
+        delta = 8 * b * b -8 * b + 1
 
 result :: Integer
-result = snd . head $ filter (\(r,b) -> r+b > (10 :: Integer)^ (12 :: Int)) rbPairs
-
+result = snd . head $ filter (\(r, b) -> r + b > (10 :: Integer) ^ (12 :: Int)) rbPairs

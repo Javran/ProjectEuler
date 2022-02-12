@@ -5,7 +5,7 @@ module ProjectEuler.Problem127
 import Control.Monad
 import Data.Bifunctor
 import Data.Monoid
-import Math.NumberTheory.Euclidean
+import Data.Euclidean
 import Math.NumberTheory.Primes
 
 import qualified Data.DList as DL

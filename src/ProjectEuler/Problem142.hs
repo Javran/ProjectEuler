@@ -1,13 +1,12 @@
 module ProjectEuler.Problem142
   ( problem
-  ) where
+  )
+where
 
 import Control.Monad
-import Data.List
-import Math.NumberTheory.Powers.Squares
-
 import qualified Data.IntMap.Strict as IM
-
+import Data.List
+import Math.NumberTheory.Roots
 import ProjectEuler.Types
 
 problem :: Problem
@@ -65,46 +64,49 @@ problem = pureProblem 142 Solved result
 
 doSearch3Squares :: Int -> IM.IntMap ([] [Int])
 doSearch3Squares maxN = IM.fromListWith (<>) $ do
-  x <- [1..maxN]
+  x <- [1 .. maxN]
   let part0 = x * x
-  y <- [1..x-1]
+  y <- [1 .. x -1]
   let part1 = part0 + y * y
-  z <- [1..y-1]
+  z <- [1 .. y -1]
   let r = part1 + z * z
   Just _ <- [exactSquareRoot r]
-  pure (r, [[z*z,y*y,part0]])
+  pure (r, [[z * z, y * y, part0]])
 
 doSearch2Squares :: Int -> IM.IntMap ([] [Int])
-doSearch2Squares maxN = IM.filter ((> 2) . length) $ IM.fromListWith (<>) $ do
-  x <- [1..maxN]
-  let part0 = x * x
-  y <- [1..x-1]
-  let r = part0 + y * y
-  Just _ <- [exactSquareRoot r]
-  pure (r, [[y*y,part0]])
+doSearch2Squares maxN = IM.filter ((> 2) . length) $
+  IM.fromListWith (<>) $ do
+    x <- [1 .. maxN]
+    let part0 = x * x
+    y <- [1 .. x -1]
+    let r = part0 + y * y
+    Just _ <- [exactSquareRoot r]
+    pure (r, [[y * y, part0]])
 
 result :: Int
-result = fst $ head $ sortOn fst $ do
-  let maxN = 1000
-      results3Sq = doSearch3Squares maxN
-      results2Sq = doSearch2Squares maxN
-      commonResultPairs =
-        IM.intersectionWith (,) results3Sq results2Sq
-  (aSq, (sq3Lists, sq2Lists)) <- IM.toList commonResultPairs
-  sq3List <- sq3Lists
-  sq2List0 <- sq2Lists -- d^2 = b^2 + f^2
-  sq2List1 <- sq2Lists -- c^2 = b^2 + e^2
-  guard $ null $ intersect sq2List0 sq2List1
-  [bSq, eSq, fSq] <- permutations sq3List
-  guard $ eSq > fSq -- this makes sure that we have z > 0
-  guard $ even (aSq + bSq)
-  guard $ even (eSq + fSq)
-  dSq <- delete eSq sq2List0
-  guard $ dSq == bSq + fSq
-  cSq <- delete fSq sq2List1
-  guard $ even (cSq + dSq)
-  guard $ cSq == bSq + eSq
-  let x = (aSq + bSq) `quot` 2
-      y = (eSq + fSq) `quot` 2
-      z = (cSq - dSq) `quot` 2
-  pure (x + y + z, [x,y,z])
+result = fst $
+  head $
+    sortOn fst $ do
+      let maxN = 1000
+          results3Sq = doSearch3Squares maxN
+          results2Sq = doSearch2Squares maxN
+          commonResultPairs =
+            IM.intersectionWith (,) results3Sq results2Sq
+      (aSq, (sq3Lists, sq2Lists)) <- IM.toList commonResultPairs
+      sq3List <- sq3Lists
+      sq2List0 <- sq2Lists -- d^2 = b^2 + f^2
+      sq2List1 <- sq2Lists -- c^2 = b^2 + e^2
+      guard $ null $ intersect sq2List0 sq2List1
+      [bSq, eSq, fSq] <- permutations sq3List
+      guard $ eSq > fSq -- this makes sure that we have z > 0
+      guard $ even (aSq + bSq)
+      guard $ even (eSq + fSq)
+      dSq <- delete eSq sq2List0
+      guard $ dSq == bSq + fSq
+      cSq <- delete fSq sq2List1
+      guard $ even (cSq + dSq)
+      guard $ cSq == bSq + eSq
+      let x = (aSq + bSq) `quot` 2
+          y = (eSq + fSq) `quot` 2
+          z = (cSq - dSq) `quot` 2
+      pure (x + y + z, [x, y, z])
