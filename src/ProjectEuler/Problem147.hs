@@ -5,7 +5,7 @@ module ProjectEuler.Problem147
 import ProjectEuler.Types
 
 problem :: Problem
-problem = pureProblem 147 Unsolved result
+problem = pureProblem 147 Unsolved (0 :: Int) --result
 
 {-
   Idea: I guess this is a dynamic programming problem.
@@ -34,4 +34,4 @@ problem = pureProblem 147 Unsolved result
 
  -}
 
-result = ()
+-- result = ()

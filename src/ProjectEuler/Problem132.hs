@@ -1,3 +1,4 @@
+{-# LANGUAGE NumericUnderscores #-}
 module ProjectEuler.Problem132
   ( problem
   ) where
@@ -32,4 +33,4 @@ result :: Int
 result =
   sum
   . take 40
-  $ concatMap (\p -> [ p | 1 <- [powModInt 10 (10^!9) (9 * p)]]) primes
+  $ concatMap (\p -> [ p | 1 <- [powModInt 10 1_000_000_000 (9 * p)]]) primes

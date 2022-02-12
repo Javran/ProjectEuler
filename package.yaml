@@ -62,6 +62,7 @@ dependencies:
 - yaml
 - integer-roots
 - semirings
+- mod
 
 _exec-ghc-options: &exe-ghc-options
   - -threaded
