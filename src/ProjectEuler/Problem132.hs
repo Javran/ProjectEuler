@@ -1,11 +1,17 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module ProjectEuler.Problem132
   ( problem
-  ) where
+  )
+where
 
+import Control.Monad
+import Data.Mod.Word
+import Data.Proxy
+import GHC.TypeLits
 import Petbox
-import Math.NumberTheory.Powers.Modular
-
 import ProjectEuler.Types
 
 problem :: Problem
@@ -32,5 +38,11 @@ problem = pureProblem 132 Solved result
 result :: Int
 result =
   sum
-  . take 40
-  $ concatMap (\p -> [ p | 1 <- [powModInt 10 1_000_000_000 (9 * p)]]) primes
+    . take 40
+    $ do
+      p <- primes
+      case someNatVal (fromIntegral (9 * p)) of
+        Just (SomeNat (Proxy :: Proxy md)) -> do
+          let a = 10 :: Data.Mod.Word.Mod md
+          p <$ guard (a ^% (1_000_000_000 :: Int) == 1)
+        Nothing -> error "unreachable"
