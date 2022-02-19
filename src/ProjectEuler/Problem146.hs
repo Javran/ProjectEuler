@@ -1,3 +1,5 @@
+{-# LANGUAGE BlockArguments #-}
+
 module ProjectEuler.Problem146
   ( problem
   )
@@ -71,15 +73,12 @@ problem = pureProblem 146 Solved result
   **n == none of [2,6,7,11] (mod 11)**
  -}
 
-hasPrimePattern :: (Int -> Bool) -> Int -> Bool
-hasPrimePattern isPrime' n =
+hasPrimePattern :: Int -> Bool
+hasPrimePattern n =
   all tryPrime [1, 3, 7, 9, 13, 27]
     && not (any tryPrime [5, 11, 15, 17, 19, 21, 23, 25])
   where
-    nSq = n * n
-    tryPrime c = isPrime' v
-      where
-        v = nSq + c
+    tryPrime c = isJust $ isPrime $ n * n + c
 
 {-
   This function encodes the "mod p" reasoning described above
@@ -120,30 +119,36 @@ fastSieve n = all (mightBePrime . (nSq +)) [1, 3, 7, 9, 13, 27]
           the idea here is to do some cheap filtering
           before calling the expensive "isPrime" operation.
          -}
+
         [2, 3, 11, 13, 29, 37]
+
+-- some tunable small primes for quicking generating a firstCycle.
+smallPrimes :: [Int]
+smallPrimes = 2 : 5 : [3, 7, 11, 13, 17, 29]
+
+-- drop 2,5 as the check is unnecessary given the way we generate the list.
+pFilters :: [Int -> Bool]
+pFilters = mkFilter <$> drop 2 smallPrimes
 
 result :: Int
 result =
   sum
-    . filter (\v -> fastSieve v && hasPrimePattern (isJust . isPrime) v)
+    . filter (\v -> fastSieve v && hasPrimePattern v)
     . takeWhile (<= 1000000 * 150)
     $ getCandidate <$> [0 ..]
   where
-    -- some tunable small primes for quicking generating a firstCycle.
-    smallPrimes = 2 : 5 : [3, 7, 11, 13, 17, 29]
-    -- drop 2,5 as the check is unnecessary given the way we generate the list.
-    pFilters = mkFilter <$> drop 2 smallPrimes
-    cycleLen = product smallPrimes
-
+    vLen = VU.length firstCycleV
     getCandidate i = q * cycleLen + firstCycleV VU.! r
       where
         (q, r) = i `quotRem` vLen
-    vLen = VU.length firstCycleV
-    firstCycleV = VU.fromList firstCycle
 
-    -- only do detailed checking on first cycle,
-    -- after that we can simply reuse this checked result
-    firstCycle = do
-      n <- [10, 20 .. cycleLen]
-      guard $ all ($ n) pFilters
-      pure n
+cycleLen :: Int
+cycleLen = product smallPrimes
+
+firstCycleV :: VU.Vector Int
+firstCycleV = VU.fromList do
+  -- only do detailed checking on first cycle,
+  -- after that we can simply reuse this checked result
+  n <- [10, 20 .. cycleLen]
+  guard $ all ($ n) pFilters
+  pure n
