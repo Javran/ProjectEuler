@@ -1,14 +1,13 @@
 module ProjectEuler.Problem146
   ( problem
-  ) where
+  )
+where
 
 import Control.Monad
-import Data.Maybe
-import Math.NumberTheory.Primes
-
 import qualified Data.IntSet as IS
+import Data.Maybe
 import qualified Data.Vector.Unboxed as VU
-
+import Math.NumberTheory.Primes
 import ProjectEuler.Types
 
 problem :: Problem
@@ -74,8 +73,8 @@ problem = pureProblem 146 Solved result
 
 hasPrimePattern :: (Int -> Bool) -> Int -> Bool
 hasPrimePattern isPrime' n =
-    all tryPrime [1,3,7,9,13,27]
-    && all (not . tryPrime) [5,11,15,17,19,21,23,25]
+  all tryPrime [1, 3, 7, 9, 13, 27]
+    && not (any tryPrime [5, 11, 15, 17, 19, 21, 23, 25])
   where
     nSq = n * n
     tryPrime c = isPrime' v
@@ -88,13 +87,13 @@ hasPrimePattern isPrime' n =
  -}
 mkFilter :: Int -> Int -> Bool
 mkFilter p =
-    if IS.size allowed < IS.size denied
-      then isAllowed
-      else isNotDenied
+  if IS.size allowed < IS.size denied
+    then isAllowed
+    else isNotDenied
   where
     isAllowed v = (v `rem` p) `IS.member` allowed
     isNotDenied v = (v `rem` p) `IS.notMember` denied
-    cs = IS.fromDistinctAscList [1,3,7,9,13,27 :: Int]
+    cs = IS.fromDistinctAscList [1, 3, 7, 9, 13, 27 :: Int]
     -- n^2 should not equal to any of those under mod operation.
     xs = IS.map ((p -) . (`rem` p)) cs
     -- a small hack here: the "correct" method is to start from 0,
@@ -103,11 +102,11 @@ mkFilter p =
     lo = if p == 29 then 0 else 1
     (allowed, denied) =
       IS.partition
-        (\n -> (n*n `rem` p) `IS.notMember` xs)
-        $ IS.fromDistinctAscList [lo..p-1]
+        (\n -> (n * n `rem` p) `IS.notMember` xs)
+        $ IS.fromDistinctAscList [lo .. p -1]
 
 fastSieve :: Int -> Bool
-fastSieve n = all (mightBePrime . (nSq +)) [1,3,7,9,13,27]
+fastSieve n = all (mightBePrime . (nSq +)) [1, 3, 7, 9, 13, 27]
   where
     nSq = n * n
     -- this relies on the assumption that all those primes are less than v,
@@ -121,31 +120,30 @@ fastSieve n = all (mightBePrime . (nSq +)) [1,3,7,9,13,27]
           the idea here is to do some cheap filtering
           before calling the expensive "isPrime" operation.
          -}
-        [2,3,11,13,29,37]
+        [2, 3, 11, 13, 29, 37]
 
 result :: Int
 result =
-    sum
-    . filter (hasPrimePattern (isJust . isPrime))
-    . filter fastSieve
+  sum
+    . filter (\v -> fastSieve v && hasPrimePattern (isJust . isPrime) v)
     . takeWhile (<= 1000000 * 150)
-    $ getCandidate <$> [0..]
+    $ getCandidate <$> [0 ..]
   where
     -- some tunable small primes for quicking generating a firstCycle.
-    smallPrimes = 2 : 5 : [3,7,11,13,17,29]
+    smallPrimes = 2 : 5 : [3, 7, 11, 13, 17, 29]
     -- drop 2,5 as the check is unnecessary given the way we generate the list.
     pFilters = mkFilter <$> drop 2 smallPrimes
     cycleLen = product smallPrimes
 
     getCandidate i = q * cycleLen + firstCycleV VU.! r
       where
-        (q,r) = i `quotRem` vLen
+        (q, r) = i `quotRem` vLen
     vLen = VU.length firstCycleV
     firstCycleV = VU.fromList firstCycle
 
     -- only do detailed checking on first cycle,
     -- after that we can simply reuse this checked result
     firstCycle = do
-      n <- [10,20..cycleLen]
+      n <- [10, 20 .. cycleLen]
       guard $ all ($ n) pFilters
       pure n
