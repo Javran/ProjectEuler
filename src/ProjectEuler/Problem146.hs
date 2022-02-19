@@ -70,7 +70,7 @@ problem = pureProblem 146 Solved result
   **n == one of [1,4,5,6,7,10] (mod 11)**
 
   for mod 13:
-  **n == none of [2,6,7,11] (mod 11)**
+  **n == none of [2,6,7,11] (mod 13)**
  -}
 
 hasPrimePattern :: Int -> Bool
@@ -94,7 +94,7 @@ mkFilter p =
     isNotDenied v = (v `rem` p) `IS.notMember` denied
     cs = IS.fromDistinctAscList [1, 3, 7, 9, 13, 27 :: Int]
     -- n^2 should not equal to any of those under mod operation.
-    xs = IS.map ((p -) . (`rem` p)) cs
+    xs = IS.map (\n -> p - (n `rem` p)) cs
     -- a small hack here: the "correct" method is to start from 0,
     -- for most of the primes that we are testing however,
     -- starting from 0 only slows it down.
@@ -105,9 +105,8 @@ mkFilter p =
         $ IS.fromDistinctAscList [lo .. p -1]
 
 fastSieve :: Int -> Bool
-fastSieve n = all (mightBePrime . (nSq +)) [1, 3, 7, 9, 13, 27]
+fastSieve n = all (\v -> mightBePrime (n * n + v)) [1, 3, 7, 9, 13, 27]
   where
-    nSq = n * n
     -- this relies on the assumption that all those primes are less than v,
     -- which is true given that n is started at 10,
     -- therefore v is at least 101
@@ -150,5 +149,9 @@ firstCycleV = VU.fromList do
   -- only do detailed checking on first cycle,
   -- after that we can simply reuse this checked result
   n <- [10, 20 .. cycleLen]
+  guard $ (n `rem` 3) `elem` [1, 2]
+  guard $ (n `rem` 7) `elem` [3, 4]
+  guard $ (n `rem` 11) `elem` [1, 4, 5, 6, 7, 10]
+  guard $ (n `rem` 13) `notElem` [2, 6, 7, 11]
   guard $ all ($ n) pFilters
   pure n
